@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { listMessages, streamMessage, uploadFile, artifactUrl } from "./apiClient";
 import {
   Send, Loader2, FileText, Globe, Brain, Search, Calendar, Sparkles,
-  Paperclip, X, FileSpreadsheet, FileType,
+  Paperclip, X, FileSpreadsheet, FileType, Download,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -50,16 +50,27 @@ function fileIconFor(name) {
 function Artifact({ a }) {
   const url = artifactUrl(a.url);
   if (a.type === "pdf") {
+    const dlUrl = `${url}${url.includes("?") ? "&" : "?"}dl=1`;
     return (
-      <a href={url} target="_blank" rel="noreferrer" className="group flex items-center gap-3 px-4 py-3 rounded-lg bg-[#221b15] border border-[#f5ede0]/10 hover:border-[#b5a8f5]/40 transition-colors">
-        <div className="w-10 h-10 rounded-md bg-[#ef4444]/15 flex items-center justify-center flex-shrink-0">
-          <FileText className="w-5 h-5 text-[#ef4444]" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-medium text-[#f5ede0] truncate">{a.title}.pdf</div>
-          <div className="text-[11px] text-[#8a8278]">{a.size_kb} KB • click to download</div>
-        </div>
-      </a>
+      <div className="group flex items-center gap-3 px-4 py-3 rounded-lg bg-[#221b15] border border-[#f5ede0]/10 hover:border-[#b5a8f5]/40 transition-colors">
+        <a href={url} target="_blank" rel="noreferrer" className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-10 h-10 rounded-md bg-[#ef4444]/15 flex items-center justify-center flex-shrink-0">
+            <FileText className="w-5 h-5 text-[#ef4444]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[13px] font-medium text-[#f5ede0] truncate">{a.title}.pdf</div>
+            <div className="text-[11px] text-[#8a8278]">{a.size_kb} KB · click to preview</div>
+          </div>
+        </a>
+        <a
+          href={dlUrl}
+          download={`cogent-${(a.title || "doc").replace(/[^a-z0-9-_]+/gi, "-")}.pdf`}
+          className="px-2.5 py-1.5 rounded-md bg-[#f5ede0]/5 hover:bg-[#b5a8f5]/20 text-[11px] font-mono uppercase tracking-wider text-[#b5a8f5] inline-flex items-center gap-1.5 transition-colors flex-shrink-0"
+          title="Download PDF"
+        >
+          <Download className="w-3 h-3" /> Save
+        </a>
+      </div>
     );
   }
   if (a.type === "webapp") {
@@ -70,7 +81,7 @@ function Artifact({ a }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-[13px] font-medium text-[#f5ede0] truncate">{a.title}</div>
-          <div className="text-[11px] text-[#8a8278]">Live web app • click to open</div>
+          <div className="text-[11px] text-[#8a8278]">Live web app · click to open</div>
         </div>
       </a>
     );

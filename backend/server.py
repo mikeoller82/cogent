@@ -372,11 +372,17 @@ async def upload_file(file: UploadFile = File(...)):
 
 # ---------------- Artifacts ----------------
 @api.get("/artifacts/{artifact_id}/download")
-async def download_artifact(artifact_id: str):
+async def download_artifact(artifact_id: str, dl: int = 0):
+    """Serve a PDF artifact. ?dl=1 forces download; otherwise display inline."""
     pdf_path = ARTIFACTS_DIR / f"{artifact_id}.pdf"
-    if pdf_path.exists():
-        return FileResponse(str(pdf_path), media_type="application/pdf", filename=f"cogent-{artifact_id[:8]}.pdf")
-    raise HTTPException(404, "Not found")
+    if not pdf_path.exists():
+        raise HTTPException(404, "Not found")
+    disp = "attachment" if dl else "inline"
+    return FileResponse(
+        str(pdf_path),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'{disp}; filename="cogent-{artifact_id[:8]}.pdf"'},
+    )
 
 
 @api.get("/artifacts/{artifact_id}/render", response_class=HTMLResponse)
