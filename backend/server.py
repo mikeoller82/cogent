@@ -1,89 +1,254 @@
-from fastapi import FastAPI, APIRouter
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-import os
-import logging
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
 from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from datetime import datetime
+from dotenv import load_dotenv
+import os
 import uuid
-from datetime import datetime, timezone
-
+import logging
 
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+load_dotenv(ROOT_DIR / ".env")
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
+from llm_service import run_turn
+from tools import ARTIFACTS_DIR
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger("viktor")
+
+mongo_url = os.environ["MONGO_URL"]
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db = client[os.environ["DB_NAME"]]
 
-# Create the main app without a prefix
-app = FastAPI()
+DEFAULT_WORKSPACE = "default"
 
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
+app = FastAPI(title="Viktor API")
+api = APIRouter(prefix="/api")
 
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+# ---------------- Models ----------------
+class CreateSessionBody(BaseModel):
+    title: Optional[str] = None
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class SessionOut(BaseModel):
+    id: str
+    title: str
+    created_at: datetime
+    updated_at: datetime
+    workspace_id: str
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
+class MessageOut(BaseModel):
+    id: str
+    session_id: str
+    role: str  # user | assistant
+    content: str
+    tool_uses: List[Dict[str, Any]] = []
+    artifacts: List[Dict[str, Any]] = []
+    created_at: datetime
+
+class SendMessageBody(BaseModel):
+    text: str
+
+class MemoryItem(BaseModel):
+    key: str
+    value: str
+
+class ScheduledTaskOut(BaseModel):
+    id: str
+    name: str
+    cadence: str
+    time: str
+    prompt: str
+    status: str
+    created_at: datetime
+    last_run: Optional[datetime] = None
+
+
+# ---------------- Helpers ----------------
+def _doc_to_session(d: dict) -> dict:
+    return {
+        "id": d["id"],
+        "title": d.get("title", "New chat"),
+        "created_at": d["created_at"],
+        "updated_at": d.get("updated_at", d["created_at"]),
+        "workspace_id": d.get("workspace_id", DEFAULT_WORKSPACE),
+    }
+
+
+def _doc_to_message(d: dict) -> dict:
+    return {
+        "id": d["id"],
+        "session_id": d["session_id"],
+        "role": d["role"],
+        "content": d["content"],
+        "tool_uses": d.get("tool_uses", []),
+        "artifacts": d.get("artifacts", []),
+        "created_at": d["created_at"],
+    }
+
+
+# ---------------- Routes ----------------
+@api.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"service": "viktor", "status": "ok"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+@api.get("/sessions", response_model=List[SessionOut])
+async def list_sessions():
+    cursor = db.sessions.find({"workspace_id": DEFAULT_WORKSPACE}).sort("updated_at", -1)
+    items = await cursor.to_list(length=200)
+    return [_doc_to_session(i) for i in items]
 
-# Include the router in the main app
-app.include_router(api_router)
 
+@api.post("/sessions", response_model=SessionOut)
+async def create_session(body: CreateSessionBody):
+    sid = str(uuid.uuid4())
+    now = datetime.utcnow()
+    doc = {
+        "id": sid,
+        "title": body.title or "New chat",
+        "workspace_id": DEFAULT_WORKSPACE,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.sessions.insert_one(doc)
+    return _doc_to_session(doc)
+
+
+@api.delete("/sessions/{session_id}")
+async def delete_session(session_id: str):
+    await db.sessions.delete_one({"id": session_id})
+    await db.messages.delete_many({"session_id": session_id})
+    return {"ok": True}
+
+
+@api.get("/sessions/{session_id}/messages", response_model=List[MessageOut])
+async def list_messages(session_id: str):
+    cursor = db.messages.find({"session_id": session_id}).sort("created_at", 1)
+    items = await cursor.to_list(length=1000)
+    return [_doc_to_message(i) for i in items]
+
+
+@api.post("/sessions/{session_id}/messages", response_model=MessageOut)
+async def send_message(session_id: str, body: SendMessageBody):
+    session = await db.sessions.find_one({"id": session_id})
+    if not session:
+        raise HTTPException(404, "Session not found")
+
+    now = datetime.utcnow()
+    user_msg = {
+        "id": str(uuid.uuid4()),
+        "session_id": session_id,
+        "role": "user",
+        "content": body.text,
+        "tool_uses": [],
+        "artifacts": [],
+        "created_at": now,
+    }
+    await db.messages.insert_one(user_msg)
+
+    # Load prior history (excluding system); we re-fetch so user_msg isn't included as "prior".
+    cursor = db.messages.find({"session_id": session_id, "id": {"$ne": user_msg["id"]}}).sort("created_at", 1)
+    history_docs = await cursor.to_list(length=200)
+    history = [{"role": d["role"], "content": d["content"]} for d in history_docs]
+
+    workspace_id = session.get("workspace_id", DEFAULT_WORKSPACE)
+    try:
+        result = await run_turn(db, session_id, workspace_id, body.text, history)
+    except Exception as e:
+        logger.exception("run_turn failed")
+        result = {"text": f"(error: {e})", "tool_uses": [], "artifacts": []}
+
+    asst_msg = {
+        "id": str(uuid.uuid4()),
+        "session_id": session_id,
+        "role": "assistant",
+        "content": result["text"],
+        "tool_uses": result.get("tool_uses", []),
+        "artifacts": result.get("artifacts", []),
+        "created_at": datetime.utcnow(),
+    }
+    await db.messages.insert_one(asst_msg)
+
+    # update session
+    update = {"updated_at": datetime.utcnow()}
+    if session.get("title") in (None, "", "New chat"):
+        update["title"] = body.text[:60]
+    await db.sessions.update_one({"id": session_id}, {"$set": update})
+
+    return _doc_to_message(asst_msg)
+
+
+# ---------------- Memory ----------------
+@api.get("/memory")
+async def list_memory():
+    cursor = db.memories.find({"workspace_id": DEFAULT_WORKSPACE}, {"_id": 0}).sort("updated_at", -1)
+    items = await cursor.to_list(length=200)
+    return items
+
+
+@api.post("/memory")
+async def add_memory(item: MemoryItem):
+    now = datetime.utcnow()
+    await db.memories.update_one(
+        {"workspace_id": DEFAULT_WORKSPACE, "key": item.key},
+        {"$set": {"value": item.value, "updated_at": now}},
+        upsert=True,
+    )
+    return {"ok": True}
+
+
+@api.delete("/memory/{key}")
+async def delete_memory(key: str):
+    await db.memories.delete_one({"workspace_id": DEFAULT_WORKSPACE, "key": key})
+    return {"ok": True}
+
+
+# ---------------- Scheduled tasks ----------------
+@api.get("/tasks", response_model=List[ScheduledTaskOut])
+async def list_tasks():
+    cursor = db.scheduled_tasks.find({"workspace_id": DEFAULT_WORKSPACE}, {"_id": 0}).sort("created_at", -1)
+    items = await cursor.to_list(length=200)
+    return items
+
+
+@api.delete("/tasks/{task_id}")
+async def delete_task(task_id: str):
+    await db.scheduled_tasks.delete_one({"id": task_id})
+    return {"ok": True}
+
+
+# ---------------- Artifacts ----------------
+@api.get("/artifacts/{artifact_id}/download")
+async def download_artifact(artifact_id: str):
+    pdf_path = ARTIFACTS_DIR / f"{artifact_id}.pdf"
+    if pdf_path.exists():
+        return FileResponse(str(pdf_path), media_type="application/pdf", filename=f"viktor-{artifact_id[:8]}.pdf")
+    raise HTTPException(404, "Not found")
+
+
+@api.get("/artifacts/{artifact_id}/render", response_class=HTMLResponse)
+async def render_artifact(artifact_id: str):
+    html_path = ARTIFACTS_DIR / f"{artifact_id}.html"
+    if html_path.exists():
+        return HTMLResponse(html_path.read_text(encoding="utf-8"))
+    raise HTTPException(404, "Not found")
+
+
+app.include_router(api)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
-async def shutdown_db_client():
+async def shutdown():
     client.close()

@@ -22,10 +22,10 @@ const Hero = () => {
           </p>
 
           <a
-            href="#cta"
+            href="/app"
             className="mt-10 group btn-cream inline-flex items-center gap-3 px-7 py-4 rounded-md hover:scale-[1.02] transition-transform"
           >
-            Get Started For Free
+            Try Viktor Now
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#15110d" strokeWidth="2" fill="none" />
             </svg>

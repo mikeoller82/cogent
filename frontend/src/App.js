@@ -13,6 +13,7 @@ import AskAI from "./components/AskAI";
 import FAQ from "./components/FAQ";
 import FinalCTA from "./components/FinalCTA";
 import Footer from "./components/Footer";
+import ChatApp from "./chat/ChatApp";
 import { Toaster } from "./components/ui/sonner";
 
 function Landing() {
@@ -31,7 +32,6 @@ function Landing() {
       <FAQ />
       <FinalCTA />
       <Footer />
-      <Toaster theme="dark" />
     </div>
   );
 }
@@ -41,7 +41,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/app/*" element={<ChatApp />} />
       </Routes>
+      <Toaster theme="dark" />
     </BrowserRouter>
   );
 }

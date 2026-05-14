@@ -71,7 +71,7 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <a
-            href="#cta"
+            href="/app"
             className="hidden md:inline-flex btn-cream px-5 py-2.5 rounded-md hover:scale-[1.02] transition-transform"
           >
             Get Started For Free
