@@ -30,10 +30,9 @@ const InternetLoves = () => {
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
         <div className="text-center mb-12">
           <h2 className="text-[44px] lg:text-[64px] leading-[1.02] tracking-[-0.035em] font-medium text-[#f5ede0] inline-flex flex-wrap items-center justify-center gap-3">
-            The internet <span className="font-serif-i">loves</span> Viktor
-            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" className="inline-block">
-              <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#b5a8f5" strokeWidth="1.5" />
-              <path d="M12 7L17 12L12 17L7 12L12 7Z" fill="#b5a8f5" fillOpacity="0.4" />
+            The internet <span className="font-serif-i">loves</span> Cogent
+            <svg width="60" height="60" viewBox="0 0 32 32" fill="none" className="inline-block">
+              <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="1.5" strokeLinecap="round" fill="none" /><path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="1.5" strokeLinecap="round" fill="none" /><circle cx="16" cy="16" r="2.4" fill="#b5a8f5" />
             </svg>
             <Heart className="w-10 h-10 text-[#ef4444] fill-[#ef4444]" />
             <Heart className="w-7 h-7 text-[#ec4899] fill-[#ec4899]" />

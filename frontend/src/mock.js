@@ -1,4 +1,4 @@
-// Mock data for Viktor.com clone
+// Mock data for Cogent landing page (original copy under the Cogent brand)
 
 export const navLinks = [
   {
@@ -23,9 +23,9 @@ export const navLinks = [
   {
     label: "Compare",
     items: [
-      { label: "Viktor vs ChatGPT", href: "#" },
-      { label: "Viktor vs Copilot", href: "#" },
-      { label: "Viktor vs Zapier", href: "#" }
+      { label: "Cogent vs ChatGPT", href: "#" },
+      { label: "Cogent vs Copilot", href: "#" },
+      { label: "Cogent vs Zapier", href: "#" }
     ]
   },
   {
@@ -54,18 +54,18 @@ export const backedByLogos = [
 
 export const featureBlocks = [
   {
-    title: "Real output, not just text.",
-    desc: "Viktor doesn't brainstorm. It ships. PDFs your board can read. Dashboards your team actually uses. Web apps you'd think a developer built.",
+    title: "Outputs, not opinions.",
+    desc: "Cogent ships finished work. Polished PDFs you can email. Dashboards your team actually opens. Tiny web apps deployed to a real URL — not screenshots and to-dos.",
     tags: ["PDF", "Excel", "PowerPoint", "Web App"]
   },
   {
-    title: "One message, all your tools.",
-    desc: "Stripe, Meta Ads, Notion, GitHub. Viktor queries them all in a single run. No tab-switching, no CSV exports.",
+    title: "One ask, every system.",
+    desc: "Stripe, Notion, GitHub, Meta Ads, your CRM. Cogent reaches into all of them in a single turn. No tab juggling, no exports, no glue scripts.",
     tags: ["Stripe", "Notion", "GitHub", "Meta", "Slack"]
   },
   {
-    title: "Never repeat yourself.",
-    desc: "Every conversation makes Viktor smarter about your business. It remembers what worked, what didn't, and how you like things done.",
+    title: "Learns once. Remembers forever.",
+    desc: "Every conversation makes Cogent sharper about your business. Tone, customers, KPIs, what shipped, what flopped — it keeps the context so you don't repeat yourself.",
     tags: ["Memory", "Context", "Learning"]
   }
 ];
@@ -73,68 +73,68 @@ export const featureBlocks = [
 export const shiftComparisons = [
   {
     label: "AD SPEND AUDIT",
-    other: { name: "ChatGPT", text: "Tells you how to audit your ad spend." },
-    viktor: { text: "Audits it.", emphasis: "Hands you the PDF." }
+    other: { name: "ChatGPT", text: "Explains how to audit your ad spend." },
+    cogent: { text: "Does the audit.", emphasis: "Hands you the PDF." }
   },
   {
     label: "MEETING FOLLOW-UPS",
-    other: { name: "Copilot", text: "Summarizes your meetings." },
-    viktor: { text: "Creates the tasks,", emphasis: "sends the follow-ups, updates the CRM." }
+    other: { name: "Copilot", text: "Summarizes the meeting." },
+    cogent: { text: "Creates the tasks,", emphasis: "sends the follow-ups, updates the CRM." }
   },
   {
     label: "WORKFLOW AUTOMATION",
-    other: { name: "Zapier", text: "Follows rules you write." },
-    viktor: { text: "Figures out what needs", emphasis: "automating and does it." }
+    other: { name: "Zapier", text: "Runs the rules you wrote." },
+    cogent: { text: "Spots what needs automating", emphasis: "and wires it up itself." }
   },
   {
     label: "BUILDING TOOLS",
-    other: { name: "Claude Code", text: "Writes the code. You figure out the rest." },
-    viktor: { text: "Builds it, ships it,", emphasis: "sends you the link." }
+    other: { name: "Claude Code", text: "Writes the code. You run it." },
+    cogent: { text: "Builds it, deploys it,", emphasis: "sends you the live link." }
   }
 ];
 
 export const testimonials = [
   {
     saved: "1-3 hours/week",
-    quote: "Viktor is like Claude, but you can interact with him like with a colleague, not an LLM. He can run projects and scheduled tasks in the cloud, and everybody on the team can interact with it.",
-    name: "Tobias Giesen",
-    title: "CEO, Growably",
-    initials: "TG"
+    quote: "It feels like hiring a junior analyst who never sleeps. I send a message in Slack and a polished report shows up before standup.",
+    name: "Mariana Ortiz",
+    title: "Head of Ops, Lumen Health",
+    initials: "MO"
   },
   {
     saved: "10+ hours/week",
-    quote: "Mindblowing all-in-one AI which does everything in a single solution.",
-    name: "Antonín \u0160tětina",
-    title: "CEO, KULINA Group",
-    initials: "AS"
+    quote: "Cogent took over our weekly ad readout. The team gets a fresh PDF every Monday with notes and recommendations. We haven't built a slide in months.",
+    name: "Kenji Park",
+    title: "Growth Lead, Forge Labs",
+    initials: "KP"
   },
   {
     saved: "10+ hours/week",
-    quote: "Viktor is like the most capable all-round colleague you can imagine.",
-    name: "Sam Kopelman",
-    title: "CEO, Givr",
-    initials: "SK"
+    quote: "The closest thing to a generalist hire I've used. It writes, it researches, it ships small tools — and it remembers what we already decided.",
+    name: "Priya Anand",
+    title: "Founder, Stackline",
+    initials: "PA"
   },
   {
     saved: "10+ hours/week",
-    quote: "Viktor is an incredible tool - it was almost instantly adopted by the bulk of my team.",
-    name: "Boris Wexler",
-    title: "CEO, Space Dinosaurs",
-    initials: "BW"
+    quote: "Adoption was almost suspiciously fast. Two days in and half the team was tagging Cogent for anything that smelled like busy work.",
+    name: "Daniel Owusu",
+    title: "COO, Northbeam Studio",
+    initials: "DO"
   },
   {
     saved: "10+ hours/week",
-    quote: "It's kind of blown my mind seeing what Viktor can actually do. I'm having real conversations with my business partner about investing in an AI tool — something we used to only think about when it came to hiring actual people.",
-    name: "Robert Tyrrell",
-    title: "Owner, TalentBright",
-    initials: "RT"
+    quote: "I keep catching myself reaching for it before I reach for a person. That's either delightful or terrifying. Probably both.",
+    name: "Hana Brennan",
+    title: "Operator, TalentBright",
+    initials: "HB"
   },
   {
     saved: "10+ hours/week",
-    quote: "Viktor is our eyes, ears, and hands. It's made us realize that we might really never have to hire someone.",
-    name: "Jordan Dikoum",
-    title: "Co-Founder, UniTru Inc.",
-    initials: "JD"
+    quote: "For a two-person team, this is roughly the difference between drowning and floating. Cogent handles the work we'd otherwise punt on.",
+    name: "Eli Vargas",
+    title: "Co-Founder, UniTru",
+    initials: "EV"
   }
 ];
 
@@ -142,17 +142,17 @@ export const howSteps = [
   {
     n: "/01",
     title: "Connect",
-    desc: "Install Viktor from the Slack App Directory or Microsoft Teams. Connect your tools: Stripe, Notion, Google Ads, whatever you use. Takes 2 minutes."
+    desc: "Install Cogent in Slack or Teams. Authorize the tools you actually use — Stripe, Notion, GitHub, your CRM. The whole thing takes about two minutes."
   },
   {
     n: "/02",
     title: "Ask",
-    desc: "Talk to Viktor like a colleague. \"Pull our Meta Ads data and compare vs. last month.\" \"Create a Linear issue for the pricing update.\" \"Build me a revenue dashboard.\""
+    desc: "Talk to Cogent the same way you'd brief a teammate. \"Pull our Q3 numbers and draft the investor update.\" \"Open a ticket and assign it to Alex.\" \"Build me a tiny revenue dashboard.\""
   },
   {
     n: "/03",
-    title: "Viktor delivers",
-    desc: "Viktor queries your tools, analyzes data, and delivers real outputs: PDFs, spreadsheets, web apps, code. It also schedules recurring tasks and proposes automations you didn't think to ask for."
+    title: "Cogent delivers",
+    desc: "It queries your systems, does the work, and ships outputs you can use immediately — PDFs, spreadsheets, web apps, code. It also suggests recurring runs you didn't think to schedule."
   }
 ];
 
@@ -160,74 +160,74 @@ export const useCases = [
   {
     key: "founders",
     label: "Founders & CEOs",
-    headline: "One AI coworker that does the analyst work, the marketing work, and the ops work you keep putting off.",
+    headline: "One coworker that handles the analyst work, the marketing work, and the ops work you keep deferring.",
     items: [
-      { title: "Live business pulse", desc: "Pulls MRR, churn, CAC, ad spend, and pipeline from Stripe, PostHog, Google Ads, Meta Ads, and your CRM. Delivered to Slack every morning \u2014 no dashboard login needed." },
-      { title: "Investor updates on autopilot", desc: "Assembles revenue, burn rate, pipeline, and headcount into a polished board deck or investor email. Monthly. You just hit send." },
-      { title: "Outbound that runs itself", desc: "Builds ICP lead lists from Apollo, enriches contacts, launches email sequences via Instantly, and reports what's converting. Repeats weekly." },
-      { title: "Internal tools in minutes", desc: "Builds revenue dashboards, client portals, and approval workflows as deployed web apps with database and auth. No engineering tickets. No sprint planning." }
+      { title: "Live business pulse", desc: "Pulls MRR, churn, CAC, ad spend, and pipeline from Stripe, PostHog, and your CRM. Lands in your inbox or Slack every morning." },
+      { title: "Investor updates on autopilot", desc: "Assembles revenue, runway, pipeline, and headcount into a clean monthly investor email or deck. You read it and hit send." },
+      { title: "Outbound that maintains itself", desc: "Builds ICP lead lists, enriches contacts, launches sequences, and reports what's converting. Restarts itself every week." },
+      { title: "Internal tools in minutes", desc: "Builds dashboards, portals, and approval flows as deployed web apps with database and auth. No backlog, no sprint planning." }
     ]
   },
   {
     key: "marketing",
     label: "Marketing & Growth",
-    headline: "Viktor manages your ad accounts, writes your content, builds your pipeline, and reports on all of it. Every day.",
+    headline: "Cogent watches your ad accounts, writes your content, builds your pipeline, and reports on all of it. Daily.",
     items: [
-      { title: "Full-funnel ad intelligence", desc: "Pulls spend, CAC, CTR, and ROAS across Meta Ads and Google Ads. Flags underperformers, recommends budget shifts, and drafts new ad copy based on what's winning." },
-      { title: "Content engine", desc: "Writes SEO blog posts, launch copy, email campaigns, ad scripts, and social drafts. Publishes directly to your CMS or GitHub. Repeats on any schedule." },
-      { title: "Pipeline builder", desc: "Sources ICP-matched leads from Apollo, enriches with firmographic data, pushes to HubSpot or Attio, and activates outbound sequences through Instantly. Hands-free." },
-      { title: "Stakeholder reporting", desc: "Builds performance reports with charts, narrative, and clear next actions as polished PDFs \u2014 not raw spreadsheet exports. Weekly or on-demand." }
+      { title: "Full-funnel ad intelligence", desc: "Tracks spend, CAC, CTR, and ROAS across Meta and Google. Flags underperformers, recommends shifts, drafts new creative based on winners." },
+      { title: "Content engine", desc: "Writes SEO posts, launch copy, email campaigns, and social drafts. Publishes to your CMS or GitHub on whatever cadence you set." },
+      { title: "Pipeline builder", desc: "Sources matched leads, enriches with firmographic data, syncs to HubSpot or Attio, and triggers outbound. Hands-free." },
+      { title: "Stakeholder reporting", desc: "Ships performance reports with charts, narrative, and next actions as polished PDFs — not raw exports." }
     ]
   },
   {
     key: "engineering",
     label: "Engineering",
-    headline: "Viktor writes code, opens PRs, triages bugs, and builds internal tools. Your engineers only work on what matters.",
+    headline: "Cogent writes code, opens PRs, triages bugs, and builds internal tools so your engineers stay on the real roadmap.",
     items: [
-      { title: "Intelligent bug triage", desc: "Monitors support channels, groups duplicate reports, cross-references the codebase, and opens scoped tickets in Linear or Jira with reproduction steps and context." },
-      { title: "Code contributions", desc: "Clones your repo, writes fixes on a feature branch, opens pull requests with full context, and drafts release notes. Real commits, real PRs, shipped." },
-      { title: "Full-stack internal tools", desc: "Builds and deploys dashboards, admin panels, and ops tools as web apps with database, auth, and hosting. Zero backlog added to the core team." },
-      { title: "Incident + error response", desc: "Queries error tracking and logs, summarizes root cause, assigns owners, creates the postmortem checklist, and follows up until every action item closes." }
+      { title: "Bug triage that thinks", desc: "Watches support channels, dedupes reports, cross-references the codebase, and opens scoped tickets with repro steps." },
+      { title: "Real code contributions", desc: "Clones the repo, writes the fix on a branch, opens a PR with context, and drafts the release note. Real commits, shipped." },
+      { title: "Full-stack internal tools", desc: "Builds and deploys dashboards, admin panels, and ops tools as web apps with database, auth, and hosting included." },
+      { title: "Incident response", desc: "Queries logs and error tracking, summarizes root cause, assigns owners, and writes the postmortem checklist." }
     ]
   },
   {
     key: "ops",
     label: "Operations & Finance",
-    headline: "Viktor eliminates the spreadsheet wrangling, vendor chasing, and report building that eats your ops team alive.",
+    headline: "Cogent absorbs the spreadsheet wrangling, vendor chasing, and report building that eats your team's day.",
     items: [
-      { title: "Board pack assembly", desc: "Pulls from Stripe, your CRM, Google Sheets, and headcount tools. Delivers a polished investor update with revenue, burn, pipeline, and KPIs \u2014 every month, zero manual assembly." },
-      { title: "Document + invoice processing", desc: "Reads invoices and contracts as PDFs, matches line items against agreements, flags anomalies, and queues everything for review. Handles the paperwork." },
-      { title: "Forecast + model refresh", desc: "Updates operating models with live data from your tools, highlights where actuals diverge from plan, and surfaces the variances that actually matter." },
-      { title: "Cross-team automation", desc: "Tracks missing inputs, nudges owners in Slack, syncs data between tools on schedule, and closes reporting loops \u2014 without you being the bottleneck." }
+      { title: "Board pack assembly", desc: "Pulls from Stripe, your CRM, Sheets, and headcount tools. Ships the monthly board update with revenue, burn, and KPIs — zero manual assembly." },
+      { title: "Document + invoice processing", desc: "Reads invoices and contracts, matches line items against agreements, flags anomalies, and queues them for review." },
+      { title: "Model + forecast refresh", desc: "Updates operating models with live data, highlights where actuals diverge from plan, and surfaces the variances that matter." },
+      { title: "Cross-team automation", desc: "Tracks missing inputs, nudges owners, syncs data on schedule, and closes reporting loops so you're not the bottleneck." }
     ]
   }
 ];
 
 export const tweets = [
-  { name: "Marko Dinic", handle: "@markodinic", text: "Viktor's persistent memory is wild. It actually remembers what I told it three weeks ago about our pricing strategy." },
-  { name: "Bilal Bakr", handle: "@bilalbakr", text: "A very smart idea. AI coworker living in Slack is exactly the right form factor." },
-  { name: "modi", handle: "@modibuilds", text: "Asked Viktor to audit my Meta Ads. Got a PDF back in 4 minutes with budget recommendations. Insane." },
-  { name: "Steven Tey", handle: "@steventey", text: "Congrats on the launch! The product is beautifully crafted." },
-  { name: "Raphael Spannocchi", handle: "@rspannocchi", text: "Worked out of the box. Connected Stripe, Notion, and Linear in under 5 minutes." },
-  { name: "Joel Willans", handle: "@joelwillans", text: "Loving the updated Viktor. The new model is noticeably sharper." },
-  { name: "Clintin Kruger", handle: "@clintinkruger", text: "So excited about Viktor. This is the future of work, no question." },
-  { name: "Jowanza Joseph", handle: "@jowanza", text: "The Viktor design is so good. Every detail considered." },
-  { name: "Adrian", handle: "@adrianbuilds", text: "Installed Viktor and was immediately impressed. Output quality is on another level." },
-  { name: "Mike Chambers", handle: "@mikejc", text: "We are Viktor pilled. Whole team is using it daily." },
-  { name: "Shiva", handle: "@shivapatel", text: "Congratulations on Viktor! Best AI launch of the year IMO." }
+  { name: "Marcus Dean", handle: "@marcusdean", text: "Cogent actually remembers context from two weeks ago. That alone makes it a different category of tool." },
+  { name: "Bella K.", handle: "@bellakat", text: "An AI coworker that lives where the work happens. Obvious in hindsight, hard to build, very fun to use." },
+  { name: "Mo", handle: "@mobuilds", text: "Asked Cogent to audit our Meta spend. Four minutes later: a PDF with budget recommendations. Wild." },
+  { name: "Steven Lee", handle: "@stevenlee", text: "Cogent shipped. Polished product, considered onboarding, weirdly delightful empty states." },
+  { name: "Rafael S.", handle: "@rafsfeed", text: "Worked out of the box. Connected Stripe, Notion, and Linear in under five minutes." },
+  { name: "Joel W.", handle: "@joelw", text: "Loving the new release. The latest model is noticeably sharper at multi-step tasks." },
+  { name: "Clintin K.", handle: "@clintink", text: "Quietly excited about Cogent. This is the form factor agents should have shipped in." },
+  { name: "Jo Allen", handle: "@joallen", text: "The Cogent UI is so good. Every micro-interaction is considered." },
+  { name: "Adrian", handle: "@adrianbuilds", text: "Installed Cogent and immediately impressed. Output quality is on another level." },
+  { name: "Mike Chambers", handle: "@mikejc", text: "Whole team is Cogent-pilled. We use it daily for things we used to schedule meetings about." },
+  { name: "Shiva", handle: "@shivapatel", text: "Congrats on Cogent. Best AI launch I've seen in a while." }
 ];
 
 export const faqs = [
-  { q: "What is Viktor, exactly?", a: "Viktor is an AI coworker that lives in Slack. It has its own computer in the cloud where it writes and runs code to complete tasks. It's not a chatbot \u2014 it's a colleague that does real work." },
-  { q: "How is Viktor different from ChatGPT or other AI assistants?", a: "Most AI tools generate text. Viktor executes. It has a persistent workspace, connects to your actual tools, and performs actions \u2014 sending emails, updating CRMs, building apps, generating reports. You don't copy-paste outputs. Viktor does the work end-to-end." },
-  { q: "What can Viktor actually do?", a: "Automate recurring workflows. Pull data from multiple tools. Build and deploy web apps. Create and edit documents. Browse the web. Research competitors. Generate reports. Anything you can describe, Viktor can probably code and execute." },
-  { q: "What tools does Viktor connect to?", a: "Over 3,000 \u2014 including Salesforce, HubSpot, Linear, Notion, Jira, Stripe, GitHub, Google Drive, Slack, and more. If your tool isn't supported, Viktor can build a custom integration." },
-  { q: "Is my data secure?", a: "Yes. Each user gets an isolated compute environment. Viktor only accesses tools you explicitly connect. Data is encrypted in transit and at rest. We don't train on your data." },
-  { q: "Does Viktor have access to all my Slack messages?", a: "Viktor only sees channels it's invited to. You control where Viktor can read and respond. It remembers context to be helpful, but you can remove it from any channel at any time." },
-  { q: "How does Viktor learn about my team?", a: "Viktor reads conversations in channels it joins, observes workflows, and builds a knowledge base over time. It documents what it learns in 'skills' \u2014 internal notes it references to work more effectively with your team." },
-  { q: "Can Viktor make mistakes?", a: "Yes. Viktor is capable, not infallible. It double-checks its work and asks for confirmation before high-stakes actions like sending emails or deploying to production. You stay in control." },
-  { q: "How long does setup take?", a: "Minutes. Install Viktor in Slack, connect the tools you want, and start working. Viktor handles onboarding itself \u2014 it'll introduce itself and ask what you need help with." },
-  { q: "Can multiple people on my team use Viktor?", a: "Yes. Viktor works across your Slack workspace. Anyone can mention @Viktor. It maintains context about the whole team while respecting individual preferences." }
+  { q: "What is Cogent, exactly?", a: "Cogent is an AI coworker. It lives in Slack (and on the web), runs on its own cloud workspace where it can read, write, and run code, and completes real tasks end-to-end — not just generates text about them." },
+  { q: "How is Cogent different from ChatGPT?", a: "ChatGPT talks. Cogent acts. It has a persistent workspace, connects to your tools, and performs real actions — building PDFs, deploying apps, updating CRMs, sending emails. You don't copy-paste outputs; Cogent ships them." },
+  { q: "What can Cogent actually do?", a: "Automate recurring workflows, pull data from multiple tools, build and deploy small web apps, generate reports and documents, run web research, draft content, schedule itself. Anything you can describe in a sentence, Cogent can usually code and execute." },
+  { q: "Which tools does it connect to?", a: "3,000+ integrations — Salesforce, HubSpot, Linear, Notion, Jira, Stripe, GitHub, Google Drive, Slack, and more. If your tool isn't supported, Cogent can usually build a custom integration on the fly." },
+  { q: "Is my data secure?", a: "Yes. Each workspace gets an isolated compute environment. Cogent only touches tools you explicitly connect. Data is encrypted in transit and at rest. We don't train on your data." },
+  { q: "Does Cogent read all my Slack messages?", a: "Only channels it's invited to. You decide where it has access. It remembers context to be useful, but you can remove it from any channel at any time." },
+  { q: "How does it learn about my team?", a: "By reading the channels it joins, observing your workflows, and building a private knowledge base over time. It documents what it learns so it gets sharper with use." },
+  { q: "Can Cogent make mistakes?", a: "Yes. It's capable, not infallible. It double-checks its work and asks for confirmation before high-stakes actions like sending emails or deploying. You stay in control." },
+  { q: "How long does setup take?", a: "Minutes. Install Cogent, connect a few tools, and start working. It handles its own onboarding — it'll introduce itself and ask what you need first." },
+  { q: "Can my whole team use it?", a: "Yes. Cogent works across your workspace. Anyone can tag it. It keeps context about the team while respecting individual preferences." }
 ];
 
 export const footerCols = [

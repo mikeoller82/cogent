@@ -20,10 +20,10 @@ const OtherIcon = ({ name }) => {
   );
 };
 
-const ViktorIcon = () => (
+const CogentIcon = () => (
   <div className="w-7 h-7 rounded-md bg-[#1d1813] border border-[#b5a8f5]/40 flex items-center justify-center">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#b5a8f5" strokeWidth="2" />
+    <svg width="14" height="14" viewBox="0 0 32 32" fill="none">
+      <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2" strokeLinecap="round" fill="none" /><path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2" strokeLinecap="round" fill="none" /><circle cx="16" cy="16" r="2" fill="#b5a8f5" />
     </svg>
   </div>
 );
@@ -68,11 +68,11 @@ const Shift = () => {
                 </div>
                 <div className="bg-[#1d1813] rounded-xl border border-[#b5a8f5]/15 p-5">
                   <div className="flex items-center gap-2.5 mb-3">
-                    <ViktorIcon />
-                    <span className="text-[13px] font-medium text-[#f5ede0]">Viktor</span>
+                    <CogentIcon />
+                    <span className="text-[13px] font-medium text-[#f5ede0]">Cogent</span>
                   </div>
                   <p className="text-[20px] leading-[1.3] tracking-[-0.01em] text-[#f5ede0]">
-                    <span className="text-[#b5a8f5]">{c.viktor.text}</span> {c.viktor.emphasis}
+                    <span className="text-[#b5a8f5]">{c.cogent.text}</span> {c.cogent.emphasis}
                   </p>
                 </div>
               </div>

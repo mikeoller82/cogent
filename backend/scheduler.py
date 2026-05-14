@@ -1,4 +1,4 @@
-"""Scheduler worker for recurring Viktor tasks.
+"""Scheduler worker for recurring Cogent tasks.
 Uses AsyncIOScheduler. On startup, loads all active scheduled_tasks from MongoDB
 and registers cron jobs. Each job runs the task prompt through llm_service and
 stores the run output as a system-authored message in a special 'scheduled run'
@@ -13,7 +13,7 @@ from typing import Optional
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-logger = logging.getLogger("viktor.scheduler")
+logger = logging.getLogger("cogent.scheduler")
 
 _scheduler: Optional[AsyncIOScheduler] = None
 _db_ref = None
@@ -39,7 +39,7 @@ def _trigger_for(cadence: str, time_str: str) -> Optional[CronTrigger]:
 
 
 async def _run_task(task_id: str):
-    """Execute a single scheduled task: run prompt through Viktor, save result."""
+    """Execute a single scheduled task: run prompt through Cogent, save result."""
     from llm_service import run_turn
     db = _db_ref
     task = await db.scheduled_tasks.find_one({"id": task_id, "status": "active"})
@@ -99,7 +99,7 @@ async def _run_task(task_id: str):
 
 
 def _job_id(task_id: str) -> str:
-    return f"viktor-task-{task_id}"
+    return f"cogent-task-{task_id}"
 
 
 async def add_task_job(task: dict):

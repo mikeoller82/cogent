@@ -6,19 +6,19 @@ const providers = [
     name: "ChatGPT",
     bg: "#10a37f",
     initial: "C",
-    href: "https://chatgpt.com/?q=I%27m+evaluating+Viktor%2C+the+AI+coworker+for+Slack+and+Teams.+What+does+it+do%3F",
+    href: "https://chatgpt.com/?q=I%27m+evaluating+Cogent%2C+the+AI+coworker+for+Slack+and+Teams.+What+does+it+do%3F",
   },
   {
     name: "Perplexity",
     bg: "#20808d",
     initial: "P",
-    href: "https://www.perplexity.ai/search?q=Viktor+AI+coworker+for+Slack",
+    href: "https://www.perplexity.ai/search?q=Cogent+AI+coworker+for+Slack",
   },
   {
     name: "Claude",
     bg: "#cc785c",
     initial: "A",
-    href: "https://claude.ai/new?q=I%27m+evaluating+Viktor%2C+the+AI+coworker+for+Slack",
+    href: "https://claude.ai/new?q=I%27m+evaluating+Cogent%2C+the+AI+coworker+for+Slack",
   },
 ];
 
@@ -31,7 +31,7 @@ const AskAI = () => {
           Ask AI <span className="font-serif-i">about us</span>
         </h2>
         <p className="mt-5 text-[16px] text-[#a8a092] max-w-[480px] mx-auto">
-          Pick your favorite AI and ask what it thinks about Viktor.
+          Pick your favorite AI and ask what it thinks about Cogent.
           <br /> No filter, no spin.
         </p>
 

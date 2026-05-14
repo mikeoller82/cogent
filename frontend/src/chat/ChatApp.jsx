@@ -12,16 +12,17 @@ function ChatHome() {
     <div className="flex-1 flex items-center justify-center text-center px-8">
       <div className="max-w-md">
         <div className="w-16 h-16 mx-auto rounded-2xl bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center mb-5">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#b5a8f5" strokeWidth="1.8" />
-            <path d="M12 7L17 12L12 17L7 12L12 7Z" fill="#b5a8f5" fillOpacity="0.4" />
+          <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
+            <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            <path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+            <circle cx="16" cy="16" r="2.4" fill="#b5a8f5" />
           </svg>
         </div>
         <h2 className="text-[28px] tracking-[-0.02em] text-[#f5ede0]">
-          What should Viktor do for you?
+          What should Cogent do for you?
         </h2>
         <p className="mt-3 text-[14px] text-[#a8a092]">
-          Start a new chat to begin. Viktor can research, build PDFs, deploy web apps,
+          Start a new chat to begin. Cogent can research, build PDFs, deploy web apps,
           remember facts about your business, and schedule recurring tasks.
         </p>
       </div>

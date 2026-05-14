@@ -12,7 +12,7 @@ const UseCases = () => {
         <div className="text-center mb-12">
           <p className="tiny-label">• Use cases</p>
           <h2 className="mt-5 text-[44px] lg:text-[64px] leading-[1.02] tracking-[-0.035em] font-medium text-[#f5ede0]">
-            What Viktor can <span className="font-serif-i">own</span> for your team
+            What Cogent can <span className="font-serif-i">own</span> for your team
           </h2>
         </div>
 

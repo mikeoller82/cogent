@@ -11,7 +11,7 @@ const Solution = () => {
         <h2 className="mt-5 text-[48px] lg:text-[80px] leading-[1.02] tracking-[-0.04em] font-medium text-[#f5ede0]">
           Just{" "}
           <span className="inline-block px-3 py-1 rounded-lg bg-[#b5a8f5]/15 text-[#b5a8f5] mx-1">
-            @Viktor.
+            @Cogent.
           </span>{" "}
           <span className="font-serif-i">It’s handled.</span>
         </h2>
@@ -27,13 +27,13 @@ const Solution = () => {
               <div className="bg-[#15110d]/80 backdrop-blur-md rounded-2xl border border-[#f5ede0]/10 p-6 text-left">
                 <div className="flex items-start gap-3 mb-4">
                   <div className="w-9 h-9 rounded bg-[#b5a8f5]/20 flex items-center justify-center">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#b5a8f5" strokeWidth="2" />
+                    <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+                      <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2" strokeLinecap="round" fill="none" /><path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2" strokeLinecap="round" fill="none" /><circle cx="16" cy="16" r="2" fill="#b5a8f5" />
                     </svg>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-[14px] font-medium text-[#f5ede0]">Viktor</span>
+                      <span className="text-[14px] font-medium text-[#f5ede0]">Cogent</span>
                       <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#b5a8f5]/20 text-[#b5a8f5] font-mono">APP</span>
                       <span className="text-[11px] text-[#8a8278]">2:43 PM</span>
                     </div>

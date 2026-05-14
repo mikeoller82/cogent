@@ -9,25 +9,26 @@ const Hero = () => {
         <div className="flex flex-col items-center text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1d1813] border border-[#f5ede0]/10 text-[12px] text-[#d8d0c2] font-mono">
             <span>🇺🇸</span>
-            Viktor speaks English
+            Cogent speaks English
           </div>
 
           <h1 className="mt-7 text-[64px] md:text-[96px] leading-[0.95] tracking-[-0.04em] font-medium text-[#f5ede0]">
-            Not a tool. <span className="font-serif-i text-[#f5ede0]">A hire.</span>
+            Hire the agent. <span className="font-serif-i text-[#f5ede0]">Keep the work.</span>
           </h1>
 
           <p className="mt-7 max-w-[620px] text-[18px] leading-[1.5] text-[#b8b0a2]">
-            Viktor is the AI coworker that connects to 3,000+ tools and does the work.
-            Reports, dashboards, code, campaigns.
+            Cogent is an AI coworker that lives where your team does. It plugs into your stack, runs real tasks end-to-end, and ships the output — reports, dashboards, code, campaigns.
           </p>
 
           <a
             href="/app"
             className="mt-10 group btn-cream inline-flex items-center gap-3 px-7 py-4 rounded-md hover:scale-[1.02] transition-transform"
           >
-            Try Viktor Now
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#15110d" strokeWidth="2" fill="none" />
+            Try Cogent Now
+            <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+              <path d="M4 16 Q 16 4, 28 16" stroke="#15110d" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+              <path d="M4 16 Q 16 28, 28 16" stroke="#15110d" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+              <circle cx="16" cy="16" r="2.4" fill="#15110d" />
             </svg>
           </a>
 

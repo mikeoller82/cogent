@@ -49,7 +49,7 @@ const Footer = () => {
 
         <div className="mt-16 pt-6 border-t border-[#f5ede0]/8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[12px] font-mono text-[#8a8278]">
-            © 2025 Viktor. All rights reserved.
+            © 2025 Cogent. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-[12px] font-mono text-[#8a8278]">
             <a href="#" className="hover:text-[#f5ede0] transition-colors">Privacy</a>

@@ -53,7 +53,7 @@ export default function MemoryPanel() {
           <h1 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">Memory</h1>
         </div>
         <p className="text-[14px] text-[#a8a092] mb-8">
-          Facts Viktor remembers across all conversations. Viktor adds these automatically when you share context—you can also add them manually.
+          Facts Cogent remembers across all conversations. Cogent adds these automatically when you share context—you can also add them manually.
         </p>
 
         <div className="bg-[#1d1813] border border-[#f5ede0]/8 rounded-xl p-4 mb-6">
@@ -84,7 +84,7 @@ export default function MemoryPanel() {
           {loading && <div className="text-[13px] text-[#6e6760]">Loading…</div>}
           {!loading && items.length === 0 && (
             <div className="text-[13px] text-[#6e6760] py-6 text-center">
-              No memories yet. Tell Viktor about yourself in a chat.
+              No memories yet. Tell Cogent about yourself in a chat.
             </div>
           )}
           {items.map((m) => (

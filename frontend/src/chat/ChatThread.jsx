@@ -141,13 +141,15 @@ function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, isStreaming 
   return (
     <div className="flex gap-3">
       <div className="w-8 h-8 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center flex-shrink-0">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#b5a8f5" strokeWidth="2" />
+        <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
+          <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
+          <circle cx="16" cy="16" r="2.4" fill="#b5a8f5" />
         </svg>
       </div>
       <div className="flex-1 min-w-0 space-y-2.5">
         <div className="flex items-baseline gap-2">
-          <span className="text-[13px] font-medium text-[#f5ede0]">Viktor</span>
+          <span className="text-[13px] font-medium text-[#f5ede0]">Cogent</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#b5a8f5]/15 text-[#b5a8f5] font-mono">APP</span>
           {m.created_at && (
             <span className="text-[11px] text-[#6e6760]">
@@ -291,7 +293,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
       setMessages(fresh);
       if (refreshSessions) refreshSessions();
     } catch (e) {
-      toast.error("Viktor failed to respond. Try again.");
+      toast.error("Cogent failed to respond. Try again.");
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
     } finally {
       setSending(false);
@@ -325,7 +327,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
           )}
           {!loading && messages.length === 0 && (
             <div className="py-10">
-              <h2 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">Hi, I’m Viktor.</h2>
+              <h2 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">Hi, I’m Cogent.</h2>
               <p className="mt-2 text-[14px] text-[#a8a092]">
                 Ask me to research, write, build, or remember something. You can also attach files (PDF, CSV, Excel, text).
               </p>
@@ -386,7 +388,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKey}
-              placeholder="Message Viktor…"
+              placeholder="Message Cogent…"
               rows={1}
               className="flex-1 bg-transparent resize-none outline-none px-2 py-2 text-[14.5px] text-[#f5ede0] placeholder:text-[#6e6760] max-h-[200px]"
               style={{ minHeight: "40px" }}
@@ -400,7 +402,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
             </button>
           </div>
           <p className="mt-2 text-[11px] text-[#6e6760] text-center font-mono">
-            viktor can search the web, build pdfs & web apps, remember facts, schedule tasks, read your files.
+            cogent can search the web, build pdfs & web apps, remember facts, schedule tasks, read your files.
           </p>
         </div>
       </div>

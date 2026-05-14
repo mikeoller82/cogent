@@ -27,12 +27,13 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
     <aside className="w-[280px] flex-shrink-0 h-screen flex flex-col border-r border-[#f5ede0]/8 bg-[#16110c]">
       <div className="px-4 py-4 border-b border-[#f5ede0]/8">
         <Link to="/" className="flex items-center gap-2 mb-4">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#b5a8f5" strokeWidth="1.8" />
-            <path d="M12 7L17 12L12 17L7 12L12 7Z" fill="#b5a8f5" fillOpacity="0.4" />
+          <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
+            <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            <path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            <circle cx="16" cy="16" r="2.4" fill="#b5a8f5" />
           </svg>
-          <span className="font-mono text-[14px] text-[#f5ede0]">
-            get<span className="text-[#b5a8f5]">viktor</span>.com
+          <span className="font-mono text-[15px] text-[#f5ede0] lowercase">
+            co<span className="text-[#b5a8f5]">gent</span>
           </span>
         </Link>
         <button

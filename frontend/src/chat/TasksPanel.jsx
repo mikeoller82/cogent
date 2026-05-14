@@ -56,7 +56,7 @@ export default function TasksPanel() {
           <h1 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">Scheduled tasks</h1>
         </div>
         <p className="text-[14px] text-[#a8a092] mb-8">
-          Recurring work Viktor runs automatically. Ask Viktor in chat to schedule new tasks, or run them manually with “Run now.”
+          Recurring work Cogent runs automatically. Ask Cogent in chat to schedule new tasks, or run them manually with “Run now.”
         </p>
 
         <div className="space-y-2">

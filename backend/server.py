@@ -22,7 +22,7 @@ from file_extract import extract_text_from_file
 import scheduler as sched
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-logger = logging.getLogger("viktor")
+logger = logging.getLogger("cogent")
 
 mongo_url = os.environ["MONGO_URL"]
 client = AsyncIOMotorClient(mongo_url)
@@ -33,7 +33,7 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 DEFAULT_WORKSPACE = "default"
 
-app = FastAPI(title="Viktor API")
+app = FastAPI(title="Cogent API")
 api = APIRouter(prefix="/api")
 
 
@@ -128,7 +128,7 @@ async def _build_message_with_attachments(text: str, attachments: List[Attachmen
 # ---------------- Routes ----------------
 @api.get("/")
 async def root():
-    return {"service": "viktor", "status": "ok"}
+    return {"service": "cogent", "status": "ok"}
 
 
 # Sessions
@@ -375,7 +375,7 @@ async def upload_file(file: UploadFile = File(...)):
 async def download_artifact(artifact_id: str):
     pdf_path = ARTIFACTS_DIR / f"{artifact_id}.pdf"
     if pdf_path.exists():
-        return FileResponse(str(pdf_path), media_type="application/pdf", filename=f"viktor-{artifact_id[:8]}.pdf")
+        return FileResponse(str(pdf_path), media_type="application/pdf", filename=f"cogent-{artifact_id[:8]}.pdf")
     raise HTTPException(404, "Not found")
 
 
