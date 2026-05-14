@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { listTasks, deleteTask } from "./apiClient";
-import { Calendar, Trash2, Clock } from "lucide-react";
+import { Link } from "react-router-dom";
+import { listTasks, deleteTask, runTaskNow } from "./apiClient";
+import { Calendar, Trash2, Clock, Play, MessageSquare, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function TasksPanel() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [running, setRunning] = useState({});
 
   const refresh = async () => {
     try {
@@ -16,7 +18,11 @@ export default function TasksPanel() {
     }
   };
 
-  useEffect(() => { refresh(); }, []);
+  useEffect(() => {
+    refresh();
+    const i = setInterval(refresh, 4000);
+    return () => clearInterval(i);
+  }, []);
 
   const handleDelete = async (id) => {
     try {
@@ -24,6 +30,19 @@ export default function TasksPanel() {
       refresh();
     } catch (e) {
       toast.error("Failed to delete");
+    }
+  };
+
+  const handleRunNow = async (id) => {
+    setRunning((p) => ({ ...p, [id]: true }));
+    try {
+      await runTaskNow(id);
+      toast.success("Task queued. Check the linked chat in a few seconds.");
+      setTimeout(refresh, 1500);
+    } catch (e) {
+      toast.error("Failed to run");
+    } finally {
+      setTimeout(() => setRunning((p) => ({ ...p, [id]: false })), 5000);
     }
   };
 
@@ -37,7 +56,7 @@ export default function TasksPanel() {
           <h1 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">Scheduled tasks</h1>
         </div>
         <p className="text-[14px] text-[#a8a092] mb-8">
-          Recurring work Viktor runs automatically. Ask Viktor in chat to schedule a new task.
+          Recurring work Viktor runs automatically. Ask Viktor in chat to schedule new tasks, or run them manually with “Run now.”
         </p>
 
         <div className="space-y-2">
@@ -48,31 +67,46 @@ export default function TasksPanel() {
             </div>
           )}
           {items.map((t) => (
-            <div
-              key={t.id}
-              className="group px-5 py-4 rounded-xl bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#f5ede0]/15 transition-colors"
-            >
+            <div key={t.id} className="group px-5 py-4 rounded-xl bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#f5ede0]/15 transition-colors">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-[15px] font-medium text-[#f5ede0]">{t.name}</div>
-                <button
-                  onClick={() => handleDelete(t.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1.5 text-[#6e6760] hover:text-[#ef4444] transition-all"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleRunNow(t.id)}
+                    disabled={running[t.id]}
+                    className="px-2.5 py-1 rounded-md bg-[#f5ede0]/5 hover:bg-[#b5a8f5]/15 text-[11px] font-mono uppercase tracking-wider text-[#b5a8f5] inline-flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                  >
+                    {running[t.id] ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
+                    Run now
+                  </button>
+                  <button onClick={() => handleDelete(t.id)} className="opacity-0 group-hover:opacity-100 p-1.5 text-[#6e6760] hover:text-[#ef4444] transition-all">
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
               <div className="flex items-center gap-3 text-[12px] text-[#a8a092] font-mono mb-3">
                 <span className="inline-flex items-center gap-1.5">
                   <Clock className="w-3 h-3" /> {t.cadence} at {t.time}
                 </span>
                 <span className="text-[#6e6760]">•</span>
-                <span className={`uppercase tracking-wider ${t.status === "active" ? "text-[#22c55e]" : "text-[#6e6760]"}`}>
-                  {t.status}
-                </span>
+                <span className={`uppercase tracking-wider ${t.status === "active" ? "text-[#22c55e]" : "text-[#6e6760]"}`}>{t.status}</span>
+                {t.last_run && (
+                  <>
+                    <span className="text-[#6e6760]">•</span>
+                    <span>last run {new Date(t.last_run).toLocaleString()}</span>
+                  </>
+                )}
               </div>
               <div className="text-[13px] text-[#d8d0c2] leading-[1.55] bg-[#15110d]/50 border border-[#f5ede0]/5 rounded-md p-3">
                 {t.prompt}
               </div>
+              {t.last_session_id && (
+                <div className="mt-3">
+                  <Link to={`/app/c/${t.last_session_id}`} className="inline-flex items-center gap-1.5 text-[12px] font-mono text-[#b5a8f5] hover:underline">
+                    <MessageSquare className="w-3 h-3" /> Open last run chat
+                  </Link>
+                </div>
+              )}
             </div>
           ))}
         </div>

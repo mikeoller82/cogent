@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { listMessages, sendMessage, artifactUrl } from "./apiClient";
-import { Send, Loader2, FileText, Globe, Brain, Search, Calendar, Sparkles, ArrowDown, Download, ExternalLink } from "lucide-react";
+import { listMessages, streamMessage, uploadFile, artifactUrl } from "./apiClient";
+import {
+  Send, Loader2, FileText, Globe, Brain, Search, Calendar, Sparkles,
+  Paperclip, X, FileSpreadsheet, FileType,
+} from "lucide-react";
 import { toast } from "sonner";
 
 const toolIconMap = {
@@ -21,6 +24,15 @@ const toolLabelMap = {
   schedule_task: "Scheduled a task",
 };
 
+const toolActiveLabel = {
+  web_search: "searching the web",
+  generate_pdf: "writing the pdf",
+  generate_webapp: "building the web app",
+  save_memory: "saving to memory",
+  recall_memory: "recalling memory",
+  schedule_task: "scheduling task",
+};
+
 const SUGGESTIONS = [
   { icon: Search, text: "Research the top 5 AI agent startups in 2026 and summarize them." },
   { icon: FileText, text: "Make me a 1-page PDF brief on prompt-engineering best practices." },
@@ -28,35 +40,31 @@ const SUGGESTIONS = [
   { icon: Brain, text: "Remember: my company is Acme Inc., we sell B2B SaaS to dentists." },
 ];
 
+function fileIconFor(name) {
+  const ext = (name || "").toLowerCase().split(".").pop();
+  if (ext === "pdf") return { Icon: FileText, color: "#ef4444" };
+  if (["csv", "xlsx", "xls", "tsv"].includes(ext)) return { Icon: FileSpreadsheet, color: "#22c55e" };
+  return { Icon: FileType, color: "#60a5fa" };
+}
+
 function Artifact({ a }) {
   const url = artifactUrl(a.url);
   if (a.type === "pdf") {
     return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-        className="group flex items-center gap-3 px-4 py-3 rounded-lg bg-[#221b15] border border-[#f5ede0]/10 hover:border-[#b5a8f5]/40 transition-colors"
-      >
+      <a href={url} target="_blank" rel="noreferrer" className="group flex items-center gap-3 px-4 py-3 rounded-lg bg-[#221b15] border border-[#f5ede0]/10 hover:border-[#b5a8f5]/40 transition-colors">
         <div className="w-10 h-10 rounded-md bg-[#ef4444]/15 flex items-center justify-center flex-shrink-0">
           <FileText className="w-5 h-5 text-[#ef4444]" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-[13px] font-medium text-[#f5ede0] truncate">{a.title}.pdf</div>
-          <div className="text-[11px] text-[#8a8278]">{a.size_kb} KB • PDF</div>
+          <div className="text-[11px] text-[#8a8278]">{a.size_kb} KB • click to download</div>
         </div>
-        <Download className="w-4 h-4 text-[#8a8278] group-hover:text-[#b5a8f5]" />
       </a>
     );
   }
   if (a.type === "webapp") {
     return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-        className="group flex items-center gap-3 px-4 py-3 rounded-lg bg-[#221b15] border border-[#f5ede0]/10 hover:border-[#b5a8f5]/40 transition-colors"
-      >
+      <a href={url} target="_blank" rel="noreferrer" className="group flex items-center gap-3 px-4 py-3 rounded-lg bg-[#221b15] border border-[#f5ede0]/10 hover:border-[#b5a8f5]/40 transition-colors">
         <div className="w-10 h-10 rounded-md bg-[#b5a8f5]/15 flex items-center justify-center flex-shrink-0">
           <Globe className="w-5 h-5 text-[#b5a8f5]" />
         </div>
@@ -64,7 +72,6 @@ function Artifact({ a }) {
           <div className="text-[13px] font-medium text-[#f5ede0] truncate">{a.title}</div>
           <div className="text-[11px] text-[#8a8278]">Live web app • click to open</div>
         </div>
-        <ExternalLink className="w-4 h-4 text-[#8a8278] group-hover:text-[#b5a8f5]" />
       </a>
     );
   }
@@ -94,16 +101,43 @@ function ToolBadge({ use }) {
   );
 }
 
-function MessageBubble({ m }) {
-  if (m.role === "user") {
-    return (
-      <div className="flex justify-end">
-        <div className="max-w-[78%] px-4 py-2.5 rounded-2xl bg-[#b5a8f5]/15 border border-[#b5a8f5]/20 text-[#f5ede0] text-[14.5px] leading-[1.55] whitespace-pre-wrap">
-          {m.content}
-        </div>
+function AttachmentChip({ a, onRemove }) {
+  const { Icon, color } = fileIconFor(a.filename);
+  return (
+    <div className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-[#221b15] border border-[#f5ede0]/10 text-[12px] text-[#d8d0c2]">
+      <Icon className="w-3.5 h-3.5" style={{ color }} />
+      <span className="truncate max-w-[180px]">{a.filename}</span>
+      {onRemove && (
+        <button onClick={() => onRemove(a.id)} className="text-[#6e6760] hover:text-[#ef4444]">
+          <X className="w-3 h-3" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function UserBubble({ m }) {
+  return (
+    <div className="flex justify-end">
+      <div className="max-w-[78%] flex flex-col items-end gap-2">
+        {m.attachments && m.attachments.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 justify-end">
+            {m.attachments.map((a) => <AttachmentChip key={a.id} a={a} />)}
+          </div>
+        )}
+        {m.content && (
+          <div className="px-4 py-2.5 rounded-2xl bg-[#b5a8f5]/15 border border-[#b5a8f5]/20 text-[#f5ede0] text-[14.5px] leading-[1.55] whitespace-pre-wrap">
+            {m.content}
+          </div>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, isStreaming }) {
+  const tools = isStreaming ? liveTools : (m.tool_uses || []);
+  const arts = isStreaming ? liveArtifacts : (m.artifacts || []);
   return (
     <div className="flex gap-3">
       <div className="w-8 h-8 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center flex-shrink-0">
@@ -115,19 +149,29 @@ function MessageBubble({ m }) {
         <div className="flex items-baseline gap-2">
           <span className="text-[13px] font-medium text-[#f5ede0]">Viktor</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#b5a8f5]/15 text-[#b5a8f5] font-mono">APP</span>
-          <span className="text-[11px] text-[#6e6760]">{new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+          {m.created_at && (
+            <span className="text-[11px] text-[#6e6760]">
+              {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          )}
         </div>
-        {m.tool_uses && m.tool_uses.length > 0 && (
+        {tools && tools.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
-            {m.tool_uses.map((t, i) => <ToolBadge key={i} use={t} />)}
+            {tools.map((t, i) => <ToolBadge key={i} use={t} />)}
+          </div>
+        )}
+        {isStreaming && liveStatus && (
+          <div className="flex items-center gap-2 text-[13px] text-[#a8a092]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#b5a8f5] pulse-soft" />
+            <span className="italic">{liveStatus}…</span>
           </div>
         )}
         {m.content && (
           <div className="text-[14.5px] leading-[1.6] text-[#d8d0c2] whitespace-pre-wrap">{m.content}</div>
         )}
-        {m.artifacts && m.artifacts.length > 0 && (
+        {arts && arts.length > 0 && (
           <div className="space-y-2 max-w-[420px]">
-            {m.artifacts.map((a) => <Artifact key={a.id} a={a} />)}
+            {arts.map((a) => <Artifact key={a.id} a={a} />)}
           </div>
         )}
       </div>
@@ -140,7 +184,16 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [attachments, setAttachments] = useState([]); // staged uploads
+  const [uploading, setUploading] = useState(false);
+
+  // streaming live state
+  const [liveStatus, setLiveStatus] = useState("");
+  const [liveTools, setLiveTools] = useState([]);
+  const [liveArtifacts, setLiveArtifacts] = useState([]);
+
   const scrollerRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -152,6 +205,10 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setLiveStatus("");
+    setLiveTools([]);
+    setLiveArtifacts([]);
+    setAttachments([]);
     listMessages(sessionId)
       .then((data) => {
         if (!cancelled) {
@@ -164,32 +221,84 @@ export default function ChatThread({ sessionId, refreshSessions }) {
     return () => { cancelled = true; };
   }, [sessionId]);
 
+  const handleFiles = async (files) => {
+    if (!files || !files.length) return;
+    setUploading(true);
+    try {
+      for (const f of files) {
+        if (f.size > 20 * 1024 * 1024) {
+          toast.error(`${f.name} is too large (max 20MB)`);
+          continue;
+        }
+        const res = await uploadFile(f);
+        setAttachments((prev) => [...prev, res]);
+      }
+    } catch (e) {
+      toast.error("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeAttachment = (id) =>
+    setAttachments((prev) => prev.filter((a) => a.id !== id));
+
   const handleSend = async () => {
     const text = input.trim();
-    if (!text || sending) return;
+    if ((!text && attachments.length === 0) || sending) return;
     setInput("");
+    const sentAttachments = attachments;
+    setAttachments([]);
     setSending(true);
+    setLiveStatus("thinking");
+    setLiveTools([]);
+    setLiveArtifacts([]);
+
     const optimistic = {
       id: `tmp-${Date.now()}`,
       role: "user",
       content: text,
       tool_uses: [],
       artifacts: [],
+      attachments: sentAttachments,
       created_at: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, optimistic]);
     scrollToBottom();
+
     try {
-      const reply = await sendMessage(sessionId, text);
+      await streamMessage(sessionId, text, sentAttachments, (evt) => {
+        if (evt.type === "status") {
+          if (evt.content === "thinking") setLiveStatus("thinking");
+          else setLiveStatus(evt.content);
+        } else if (evt.type === "tool") {
+          setLiveStatus(toolActiveLabel[evt.data.tool] || `using ${evt.data.tool}`);
+          setLiveTools((prev) => [...prev, evt.data]);
+        } else if (evt.type === "tool_result") {
+          // no-op visually
+        } else if (evt.type === "artifact") {
+          setLiveArtifacts((prev) => [...prev, evt.data]);
+        } else if (evt.type === "final") {
+          setLiveStatus("");
+        } else if (evt.type === "done") {
+          // final assistant message will be appended via refresh below
+        } else if (evt.type === "error") {
+          toast.error(evt.content);
+        }
+        scrollToBottom();
+      });
       const fresh = await listMessages(sessionId);
       setMessages(fresh);
       if (refreshSessions) refreshSessions();
-      scrollToBottom();
     } catch (e) {
       toast.error("Viktor failed to respond. Try again.");
       setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
     } finally {
       setSending(false);
+      setLiveStatus("");
+      setLiveTools([]);
+      setLiveArtifacts([]);
+      scrollToBottom();
     }
   };
 
@@ -200,8 +309,13 @@ export default function ChatThread({ sessionId, refreshSessions }) {
     }
   };
 
+  const onDrop = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files?.length) handleFiles(Array.from(e.dataTransfer.files));
+  };
+
   return (
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="flex-1 flex flex-col min-h-0" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
       <div ref={scrollerRef} className="flex-1 overflow-y-auto">
         <div className="max-w-[820px] mx-auto px-6 py-8 space-y-6">
           {loading && (
@@ -213,15 +327,11 @@ export default function ChatThread({ sessionId, refreshSessions }) {
             <div className="py-10">
               <h2 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">Hi, I’m Viktor.</h2>
               <p className="mt-2 text-[14px] text-[#a8a092]">
-                Ask me to research, write, build, or remember something. Try one of these:
+                Ask me to research, write, build, or remember something. You can also attach files (PDF, CSV, Excel, text).
               </p>
               <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-2">
                 {SUGGESTIONS.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setInput(s.text)}
-                    className="group text-left px-4 py-3 rounded-lg bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#b5a8f5]/30 transition-colors"
-                  >
+                  <button key={i} onClick={() => setInput(s.text)} className="group text-left px-4 py-3 rounded-lg bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#b5a8f5]/30 transition-colors">
                     <s.icon className="w-4 h-4 text-[#b5a8f5] mb-2" />
                     <div className="text-[13px] text-[#d8d0c2] leading-[1.5]">{s.text}</div>
                   </button>
@@ -229,26 +339,49 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               </div>
             </div>
           )}
-          {messages.map((m) => <MessageBubble key={m.id} m={m} />)}
+          {messages.map((m) =>
+            m.role === "user"
+              ? <UserBubble key={m.id} m={m} />
+              : <AssistantBubble key={m.id} m={m} />
+          )}
           {sending && (
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center flex-shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L22 12L12 22L2 12L12 2Z" stroke="#b5a8f5" strokeWidth="2" />
-                </svg>
-              </div>
-              <div className="flex items-center gap-2 text-[13px] text-[#8a8278]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#b5a8f5] pulse-soft" />
-                Viktor is working…
-              </div>
-            </div>
+            <AssistantBubble
+              m={{ content: "" }}
+              liveStatus={liveStatus}
+              liveTools={liveTools}
+              liveArtifacts={liveArtifacts}
+              isStreaming
+            />
           )}
         </div>
       </div>
 
       <div className="border-t border-[#f5ede0]/8 bg-[#16110c]">
         <div className="max-w-[820px] mx-auto px-6 py-4">
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {attachments.map((a) => (
+                <AttachmentChip key={a.id} a={a} onRemove={removeAttachment} />
+              ))}
+            </div>
+          )}
           <div className="flex items-end gap-2 bg-[#1d1813] border border-[#f5ede0]/10 rounded-xl p-2 focus-within:border-[#b5a8f5]/40 transition-colors">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="h-10 w-10 rounded-lg text-[#8a8278] hover:text-[#f5ede0] hover:bg-[#f5ede0]/5 transition-colors flex items-center justify-center disabled:opacity-50"
+              aria-label="attach"
+            >
+              {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              hidden
+              onChange={(e) => { handleFiles(Array.from(e.target.files || [])); e.target.value = ""; }}
+              accept=".pdf,.csv,.tsv,.xlsx,.xls,.txt,.md,.json,.html,.log,.py,.js,.jsx,.ts,.tsx,.css,.yaml,.yml"
+            />
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -260,14 +393,14 @@ export default function ChatThread({ sessionId, refreshSessions }) {
             />
             <button
               onClick={handleSend}
-              disabled={!input.trim() || sending}
+              disabled={(!input.trim() && attachments.length === 0) || sending}
               className="h-10 w-10 rounded-lg bg-[#f5ede0] text-[#15110d] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center hover:bg-white transition-colors"
             >
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </button>
           </div>
           <p className="mt-2 text-[11px] text-[#6e6760] text-center font-mono">
-            viktor can search the web, build pdfs & web apps, remember facts, schedule tasks.
+            viktor can search the web, build pdfs & web apps, remember facts, schedule tasks, read your files.
           </p>
         </div>
       </div>

@@ -261,6 +261,78 @@ backend:
         agent: "testing"
         comment: "Artifacts directory (/app/backend/artifacts) working correctly. PDF and HTML artifacts stored and retrievable via download and render endpoints."
 
+  - task: "Streaming Chat Endpoint (SSE)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py, /app/backend/llm_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/sessions/{id}/messages/stream working correctly. Returns text/event-stream with proper SSE format. Event sequence verified: user_saved (with message + assistant_id), status, final (with content), done (with persisted message). Messages correctly persisted to database. Tested both simple chat and tool-using scenarios."
+
+  - task: "Streaming Chat with Tool Calls"
+    implemented: true
+    working: true
+    file: "/app/backend/llm_service.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Streaming endpoint correctly handles tool calls. Event sequence includes tool event (with tool name and args), tool_result event (with summary), then final and done events. Tested with web_search tool - all events properly formatted and sequenced."
+
+  - task: "File Upload Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/uploads working correctly. Accepts multipart form with field name 'file'. Returns proper response shape: {id, filename, size}. Files stored in /app/backend/uploads directory. Tested with .txt and .csv files."
+
+  - task: "File Extraction and Chat Integration"
+    implemented: true
+    working: true
+    file: "/app/backend/file_extract.py, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "File content extraction working correctly. Text files (.txt) and CSV files properly extracted and passed to LLM. Tested with text file containing 'RAVEN-42' - assistant correctly identified content. CSV test with name/score data - assistant correctly answered 'bob's score is 87'. Attachments properly included in message payload and processed by _build_message_with_attachments."
+
+  - task: "Manual Task Run Trigger"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py, /app/backend/scheduler.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/tasks/{task_id}/run working correctly. Returns {ok: true, message: 'Task queued'} immediately. Task execution happens asynchronously via scheduler.run_task_now(). After 60s wait, verified: last_run timestamp updated, last_session_id set, new session created with ⏰ prefix in title, session contains user prompt and assistant response messages. Full end-to-end flow working."
+
+  - task: "Task Deletion"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py, /app/backend/scheduler.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "DELETE /api/tasks/{task_id} working correctly. Returns {ok: true}. Task removed from database and scheduler job removed via sched.remove_task_job(). Verified task no longer appears in GET /api/tasks list."
+
 frontend:
   - task: "Frontend Testing"
     implemented: false
@@ -277,9 +349,9 @@ frontend:
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
-  last_updated: "2026-01-XX"
+  last_updated: "2026-05-14"
 
 test_plan:
   current_focus: []
@@ -290,3 +362,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Comprehensive backend testing completed. All 19 tests passed successfully. All endpoints working correctly including critical LLM tool-using capabilities. Health check, sessions CRUD, all 7 tool types (simple chat, memory save/recall, PDF generation, web search, webapp generation, schedule task), multi-turn conversation history, and memory CRUD all functioning as expected. No issues found."
+  - agent: "testing"
+    message: "NEW FEATURES TESTING COMPLETED (2026-05-14): All 6 new features tested and working correctly. (1) Streaming chat endpoint (POST /api/sessions/{id}/messages/stream) - SSE format correct, all event types present (user_saved, status, tool, tool_result, final, done), messages persisted. (2) Streaming with tool calls - web_search tool correctly triggered and results streamed. (3) File upload endpoint (POST /api/uploads) - accepts multipart form, returns proper response. (4) File extraction - .txt and .csv files correctly extracted and content passed to LLM, assistant responses accurate. (5) Manual task run trigger (POST /api/tasks/{task_id}/run) - task executes asynchronously, creates session with ⏰ prefix, updates last_run and last_session_id. (6) Task deletion (DELETE /api/tasks/{task_id}) - removes from database and scheduler. NO ISSUES FOUND."
