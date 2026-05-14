@@ -371,26 +371,33 @@ async def upload_file(file: UploadFile = File(...)):
 
 
 # ---------------- Artifacts ----------------
-@api.get("/artifacts/{artifact_id}/download")
-async def download_artifact(artifact_id: str, dl: int = 0):
-    """Serve a PDF artifact. ?dl=1 forces download; otherwise display inline."""
+@api.get("/artifact/{artifact_id}")
+async def get_artifact(artifact_id: str, dl: int = 0):
+    """Serve any artifact. PDFs render inline by default, ?dl=1 to download.
+    HTML artifacts (web apps) always render inline."""
     pdf_path = ARTIFACTS_DIR / f"{artifact_id}.pdf"
-    if not pdf_path.exists():
-        raise HTTPException(404, "Not found")
-    disp = "attachment" if dl else "inline"
-    return FileResponse(
-        str(pdf_path),
-        media_type="application/pdf",
-        headers={"Content-Disposition": f'{disp}; filename="cogent-{artifact_id[:8]}.pdf"'},
-    )
-
-
-@api.get("/artifacts/{artifact_id}/render", response_class=HTMLResponse)
-async def render_artifact(artifact_id: str):
     html_path = ARTIFACTS_DIR / f"{artifact_id}.html"
+    if pdf_path.exists():
+        disp = "attachment" if dl else "inline"
+        return FileResponse(
+            str(pdf_path),
+            media_type="application/pdf",
+            headers={"Content-Disposition": f'{disp}; filename="cogent-{artifact_id[:8]}.pdf"'},
+        )
     if html_path.exists():
         return HTMLResponse(html_path.read_text(encoding="utf-8"))
     raise HTTPException(404, "Not found")
+
+
+# Backward-compat aliases (older messages had these URLs stored in DB)
+@api.get("/artifacts/{artifact_id}/download")
+async def _legacy_download(artifact_id: str, dl: int = 0):
+    return await get_artifact(artifact_id, dl)
+
+
+@api.get("/artifacts/{artifact_id}/render", response_class=HTMLResponse)
+async def _legacy_render(artifact_id: str):
+    return await get_artifact(artifact_id, 0)
 
 
 app.include_router(api)

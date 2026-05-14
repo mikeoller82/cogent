@@ -158,7 +158,7 @@ async def generate_pdf(title: str, sections: list) -> dict:
             "type": "pdf",
             "title": title,
             "size_kb": size_kb,
-            "url": f"/api/artifacts/{artifact_id}/download",
+            "url": f"/api/artifact/{artifact_id}",
         },
     }
 
@@ -171,12 +171,12 @@ async def generate_webapp(title: str, html_doc: str) -> dict:
         html_doc = f"<!DOCTYPE html>\n<html><head><meta charset='utf-8'><title>{html.escape(title)}</title></head><body>\n{html_doc}\n</body></html>"
     fname.write_text(html_doc, encoding="utf-8")
     return {
-        "result": f"Web app deployed at /api/artifacts/{artifact_id}/render. Tell the user to click to open.",
+        "result": f"Web app deployed at /api/artifact/{artifact_id}. Tell the user to click to open.",
         "artifact": {
             "id": artifact_id,
             "type": "webapp",
             "title": title,
-            "url": f"/api/artifacts/{artifact_id}/render",
+            "url": f"/api/artifact/{artifact_id}",
         },
     }
 
