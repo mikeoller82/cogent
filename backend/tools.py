@@ -28,6 +28,7 @@ INK_SOFT = colors.HexColor("#3a342d")
 MUTED = colors.HexColor("#7a7368")
 RULE = colors.HexColor("#e6e0d2")
 PAPER = colors.HexColor("#fafaf5")
+SURFACE = colors.HexColor("#ffffff")
 ACCENT = colors.HexColor("#7c5cf5")
 ACCENT_SOFT = colors.HexColor("#ede9fb")
 SUCCESS = colors.HexColor("#16a34a")
@@ -155,13 +156,16 @@ def _build_styles(accent_color):
             textColor=INK, alignment=TA_LEFT, spaceBefore=0, spaceAfter=4),
         "subtitle": ParagraphStyle("subtitle", parent=ss["Normal"],
             fontName="Helvetica", fontSize=13, leading=18,
-            textColor=MUTED, alignment=TA_LEFT),
+            textColor=MUTED, alignment=TA_LEFT, spaceAfter=4),
         "meta": ParagraphStyle("meta", parent=ss["Normal"],
             fontName="Courier", fontSize=9, leading=12,
             textColor=MUTED, alignment=TA_LEFT, spaceAfter=2),
         "h2": ParagraphStyle("h2", parent=ss["Heading2"],
             fontName="Helvetica-Bold", fontSize=16, leading=22,
             textColor=INK, spaceBefore=22, spaceAfter=10),
+        "section_badge": ParagraphStyle("section_badge", parent=ss["Normal"],
+            fontName="Courier-Bold", fontSize=7.5, leading=9,
+            textColor=accent_color, alignment=TA_LEFT, spaceAfter=5),
         "body": ParagraphStyle("body", parent=ss["Normal"],
             fontName="Helvetica", fontSize=11, leading=17,
             textColor=INK_SOFT, alignment=TA_LEFT, spaceAfter=10),
@@ -325,7 +329,11 @@ def _render_section(sec, styles, accent_color, accent_soft):
 
     t = sec.get("type", "paragraph")
     if t == "heading":
-        return [Paragraph(_escape(sec.get("text", "")), styles["h2"])]
+        return [
+            Spacer(1, 2),
+            Paragraph("SECTION", styles["section_badge"]),
+            Paragraph(_escape(sec.get("text", "")), styles["h2"]),
+        ]
     if t == "paragraph":
         return _paragraph_flow(sec.get("text", ""), styles)
     if t == "bullets":
@@ -346,6 +354,12 @@ def _render_section(sec, styles, accent_color, accent_soft):
 def _make_page_decoration(accent_color):
     def _on_page(canvas, doc):
         canvas.saveState()
+        # warm paper background
+        canvas.setFillColor(PAPER)
+        canvas.rect(0, 0, LETTER[0], LETTER[1], fill=1, stroke=0)
+        # content surface
+        canvas.setFillColor(SURFACE)
+        canvas.roundRect(0.65 * inch, 0.78 * inch, LETTER[0] - 1.3 * inch, LETTER[1] - 1.7 * inch, 12, fill=1, stroke=0)
         # top accent band
         canvas.setFillColor(accent_color)
         canvas.rect(0, LETTER[1] - 14, LETTER[0], 14, fill=1, stroke=0)
