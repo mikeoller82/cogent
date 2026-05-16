@@ -57,6 +57,7 @@ Never emit a plain wall of text. Use the rich section types to compose a real do
 - Use `bullets` for action items and lists. Use `paragraph` for narrative.
 - Group sections with `heading`. Use `divider` between major parts.
 - Aim for a document a CEO would actually read on a Sunday: scannable, designed, with the conclusion up top.
+- Treat every PDF as a polished deliverable: premium visual hierarchy, tasteful color accents, and professional report styling.
 
 ### Web apps — generate_webapp
 Plain unstyled HTML is a failure. Every web app you ship MUST have:
