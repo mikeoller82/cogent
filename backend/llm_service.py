@@ -5,18 +5,19 @@ yields progress events: status, tool, tool_result, artifact, final.
 import os
 import re
 import json
+import asyncio
 from datetime import datetime
 from typing import List, Dict, Any, AsyncGenerator
 
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+import requests
 from dotenv import load_dotenv
 
+import agent_skills
 import tools as tool_impls
 
 load_dotenv()
-EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
-MODEL_PROVIDER = "anthropic"
-MODEL_NAME = "claude-sonnet-4-5-20250929"
+KILOCODE_MODEL_NAME = "nex-agi/nex-n2-pro:free"
+KILOCODE_CHAT_COMPLETIONS_URL = "https://api.kilo.ai/api/gateway/chat/completions"
 MAX_TOOL_TURNS = 6
 
 
@@ -37,6 +38,8 @@ Issue ONE tool call per turn. You may chain multiple turns.
 
 ## Tools available
 {tool_impls.tool_specs_for_prompt()}
+
+{agent_skills.skill_catalog_for_prompt()}
 
 ## Style rules
 - Be brief. Colleagues don't lecture.
@@ -93,6 +96,41 @@ def _parse_tool_call(text: str):
     return parsed, before
 
 
+def _post_kilocode_chat(messages: List[Dict[str, str]]) -> str:
+    api_key = os.environ.get("KILOCODE_API_KEY")
+    if not api_key:
+        raise RuntimeError("Missing KILOCODE_API_KEY")
+
+    response = requests.post(
+        KILOCODE_CHAT_COMPLETIONS_URL,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": KILOCODE_MODEL_NAME,
+            "messages": messages,
+            "max_tokens": 4000,
+        },
+        timeout=120,
+    )
+    if response.status_code >= 400:
+        raise RuntimeError(f"Kilo Gateway error {response.status_code}: {response.text[:500]}")
+
+    data = response.json()
+    try:
+        content = data["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        raise RuntimeError("Kilo Gateway response missing choices[0].message.content")
+    if not isinstance(content, str):
+        raise RuntimeError("Kilo Gateway response content was not text")
+    return content
+
+
+async def _send_kilocode_chat(messages: List[Dict[str, str]]) -> str:
+    return await asyncio.to_thread(_post_kilocode_chat, messages)
+
+
 async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
     name = call.get("name")
     args = call.get("args") or {}
@@ -120,6 +158,10 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
                 args.get("time", "09:00"),
                 args.get("prompt", ""),
             )
+        if name == "activate_skill":
+            return await tool_impls.activate_skill(args.get("name", ""))
+        if name == "read_skill_resource":
+            return await tool_impls.read_skill_resource(args.get("skill_name", ""), args.get("path", ""))
         return {"result": f"Unknown tool: {name}"}
     except Exception as e:
         return {"result": f"Tool error: {e}"}
@@ -165,15 +207,10 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
     yield {"type": "status", "content": "thinking"}
 
     for turn in range(MAX_TOOL_TURNS):
-        chat = LlmChat(
-            api_key=EMERGENT_LLM_KEY,
-            session_id=f"{session_id}-{turn}",
-            system_message=system_prompt,
-            initial_messages=initial_messages.copy(),
-        ).with_model(MODEL_PROVIDER, MODEL_NAME).with_params(max_tokens=4000)
-
+        messages = initial_messages.copy()
+        messages.append({"role": "user", "content": current_user_text})
         try:
-            response_text = await chat.send_message(UserMessage(text=current_user_text))
+            response_text = await _send_kilocode_chat(messages)
         except Exception as e:
             yield {"type": "error", "content": f"LLM error: {e}"}
             final_text = f"(LLM error: {e})"

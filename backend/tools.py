@@ -9,6 +9,7 @@ import asyncio
 from pathlib import Path
 from datetime import datetime
 
+import agent_skills
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -104,7 +105,38 @@ TOOL_SPECS = [
 
 
 def tool_specs_for_prompt() -> str:
-    return json.dumps(TOOL_SPECS, indent=2)
+    specs = list(TOOL_SPECS)
+    if agent_skills.has_skills():
+        specs.extend([
+            {
+                "name": "activate_skill",
+                "description": (
+                    "Load the full instructions for an available Agent Skill. "
+                    "Use before performing a task that matches a listed skill description."
+                ),
+                "args": {"name": "string - one of the available skill names"},
+            },
+            {
+                "name": "read_skill_resource",
+                "description": (
+                    "Read a bundled resource file from an activated Agent Skill, such as "
+                    "references/REFERENCE.md, scripts/helper.py, or assets/template.md."
+                ),
+                "args": {
+                    "skill_name": "string - activated skill name",
+                    "path": "string - relative path inside the skill directory",
+                },
+            },
+        ])
+    return json.dumps(specs, indent=2)
+
+
+async def activate_skill(name: str) -> dict:
+    return await asyncio.to_thread(agent_skills.activate_skill, name)
+
+
+async def read_skill_resource(skill_name: str, path: str) -> dict:
+    return await asyncio.to_thread(agent_skills.read_skill_resource, skill_name, path)
 
 
 # ---------------- Web search ----------------

@@ -92,7 +92,7 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
       </nav>
 
       <div className="px-4 py-3 border-t border-[#f5ede0]/8 text-[10px] font-mono text-[#6e6760]">
-        Powered by Claude Sonnet 4.5
+        Powered by Kilo Gateway
       </div>
     </aside>
   );
