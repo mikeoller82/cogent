@@ -98,6 +98,21 @@ html, body {
 }
 .pulse-soft { animation: pulseSoft 2s ease-in-out infinite; }
 
+/* ── Loop Engineering ────────────────── */
+.loop-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.loop-dot--plan     { background: #d97706; box-shadow: 0 0 6px #d9770666; }
+.loop-dot--execute  { background: #60a5fa; box-shadow: 0 0 6px #60a5fa66; animation: pulseSoft 1.5s ease-in-out infinite; }
+.loop-dot--verify   { background: #b5a8f5; box-shadow: 0 0 6px #b5a8f566; }
+.loop-dot--done     { background: #22c55e; }
+.loop-dot--escalate { background: #dc2626; box-shadow: 0 0 6px #dc262666; }
+.loop-dot--error    { background: #ef4444; box-shadow: 0 0 6px #ef444466; }
+
 @layer base {
   :root {
     --background: 28 30% 6%;

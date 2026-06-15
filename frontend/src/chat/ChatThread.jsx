@@ -40,6 +40,44 @@ const SUGGESTIONS = [
   { icon: Brain, text: "Remember: my company is Acme Inc., we sell B2B SaaS to dentists." },
 ];
 
+const LOOP_PHASE_LABELS = {
+  plan: "planning",
+  execute: "executing",
+  verify: "verifying",
+  done: "done",
+  escalate: "escalating",
+  error: "error",
+};
+
+const VERDICT_COLORS = {
+  PASS: { bg: "#16a34a", label: "pass" },
+  PARTIAL: { bg: "#d97706", label: "partial" },
+  FAIL: { bg: "#dc2626", label: "fail" },
+};
+
+function LoopIndicator({ phase, iteration, verdict }) {
+  if (!phase) return null;
+  const phaseLabel = LOOP_PHASE_LABELS[phase] || phase;
+  const vc = verdict ? VERDICT_COLORS[verdict] : null;
+  return (
+    <div className="inline-flex items-center gap-2 flex-wrap">
+      <span className={`loop-dot loop-dot--${phase}`} />
+      <span className="text-[11px] font-mono tracking-wide text-[#a8a092] uppercase">{phaseLabel}</span>
+      {iteration > 0 && (
+        <span className="text-[10px] font-mono text-[#6e6760]">iter {iteration}</span>
+      )}
+      {vc && (
+        <span
+          className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
+          style={{ color: vc.bg, backgroundColor: `${vc.bg}18` }}
+        >
+          {vc.label}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function fileIconFor(name) {
   const ext = (name || "").toLowerCase().split(".").pop();
   if (ext === "pdf") return { Icon: FileText, color: "#ef4444" };
@@ -146,7 +184,7 @@ function UserBubble({ m }) {
   );
 }
 
-function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, isStreaming }) {
+function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, liveIteration, liveVerdict, isStreaming }) {
   const tools = isStreaming ? liveTools : (m.tool_uses || []);
   const arts = isStreaming ? liveArtifacts : (m.artifacts || []);
   return (
@@ -172,6 +210,9 @@ function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, isStreaming 
           <div className="flex flex-wrap gap-1.5">
             {tools.map((t, i) => <ToolBadge key={i} use={t} />)}
           </div>
+        )}
+        {isStreaming && livePhase && (
+          <LoopIndicator phase={livePhase} iteration={liveIteration} verdict={liveVerdict} />
         )}
         {isStreaming && liveStatus && (
           <div className="flex items-center gap-2 text-[13px] text-[#a8a092]">
@@ -200,10 +241,11 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   const [attachments, setAttachments] = useState([]); // staged uploads
   const [uploading, setUploading] = useState(false);
 
-  // streaming live state
-  const [liveStatus, setLiveStatus] = useState("");
-  const [liveTools, setLiveTools] = useState([]);
-  const [liveArtifacts, setLiveArtifacts] = useState([]);
+  // loop engineering live state
+  const [livePhase, setLivePhase] = useState("");
+  const [liveIteration, setLiveIteration] = useState(0);
+  const [liveVerdict, setLiveVerdict] = useState("");
+  const [liveVerdictNotes, setLiveVerdictNotes] = useState("");
 
   const scrollerRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -284,6 +326,17 @@ export default function ChatThread({ sessionId, refreshSessions }) {
         if (evt.type === "status") {
           if (evt.content === "thinking") setLiveStatus("thinking");
           else setLiveStatus(evt.content);
+        } else if (evt.type === "loop") {
+          const d = evt.data || {};
+          if (d.phase) setLivePhase(d.phase);
+          if (d.iteration) setLiveIteration(d.iteration);
+          if (d.verdict !== undefined) {
+            setLiveVerdict(d.verdict);
+            setLiveVerdictNotes(d.notes || "");
+          }
+          if (d.phase === "done" || d.phase === "error") {
+            // keep final phase visible until stream ends
+          }
         } else if (evt.type === "tool") {
           setLiveStatus(toolActiveLabel[evt.data.tool] || `using ${evt.data.tool}`);
           setLiveTools((prev) => [...prev, evt.data]);
@@ -311,6 +364,10 @@ export default function ChatThread({ sessionId, refreshSessions }) {
       setLiveStatus("");
       setLiveTools([]);
       setLiveArtifacts([]);
+      setLivePhase("");
+      setLiveIteration(0);
+      setLiveVerdict("");
+      setLiveVerdictNotes("");
       scrollToBottom();
     }
   };
@@ -363,8 +420,10 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               liveStatus={liveStatus}
               liveTools={liveTools}
               liveArtifacts={liveArtifacts}
+              livePhase={livePhase}
+              liveIteration={liveIteration}
+              liveVerdict={liveVerdict}
               isStreaming
-            />
           )}
         </div>
       </div>
