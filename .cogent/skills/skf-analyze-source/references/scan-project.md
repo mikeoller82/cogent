@@ -1,0 +1,164 @@
+---
+nextStepFile: 'identify-units.md'
+outputFile: '{forge_data_folder}/analyze-source-report-{project_name}.md'
+heuristicsFile: 'references/unit-detection-heuristics.md'
+scanManifestsProbeOrder:
+  - '{project-root}/_bmad/skf/shared/scripts/skf-scan-manifests.py'
+  - '{project-root}/src/shared/scripts/skf-scan-manifests.py'
+---
+
+<!-- Config: communicate in {communication_language}. -->
+
+# Step 2: Scan Project
+
+## STEP GOAL:
+
+To map the complete project structure by scanning directory trees, detecting service boundaries, identifying package manifests, and cataloging entry points — building the foundation that subsequent steps use for unit identification.
+
+## Rules
+
+- Focus only on structural scanning — do not classify units or map exports yet
+- Do not read source file contents beyond manifest files and entry points
+- Delegate per-file scanning to subagents in parallel when many files are involved (main-thread fallback is fine)
+- Tier-aware scanning depth: Quick (file structure), Forge (+ manifest parsing), Deep (+ config analysis)
+
+## MANDATORY SEQUENCE
+
+### 1. Load Context
+
+Read {outputFile} frontmatter to obtain:
+- `project_paths[]` — the root(s) to scan (one or more paths/URLs)
+- `constituent_refs` — optional per-path git ref overrides (present only when `project_paths` has multiple entries and explicit refs were supplied via `--target-refs`)
+- `forge_tier` — determines scanning depth
+- Scope hints (if any were provided in step 01)
+
+Load {heuristicsFile} for reference on detection signals.
+
+### 2. Scan Directory Structure
+
+**Resolve `{scanManifestsHelper}`** from `{scanManifestsProbeOrder}`; first existing path wins. HALT if no candidate exists.
+
+**For each path in `project_paths[]`**, resolve the constituent ref (if any) and launch a subprocess that scans the project directory structure (aggregate results across all repos with clear repo-level grouping):
+
+**Per-path ref resolution:** If `constituent_refs` is present and contains an entry for the current path, use that ref. For remote paths, this means cloning or fetching at the specified ref (`git clone --branch {ref} --depth 1` or `git show {ref}:<subpath>` for off-HEAD access). For local paths with a non-HEAD ref, check out or read from the specified ref using `git show {ref}:<path>`. When no `constituent_refs` entry exists for a path, use default ref resolution (HEAD for local, latest tag or HEAD for remote).
+
+1. Map the top-level directory tree (2-3 levels deep)
+2. Identify workspace configuration files (pnpm-workspace.yaml, lerna.json, Cargo.toml [workspace], go.work, etc.)
+3. Enumerate package manifests deterministically — invoke `uv run {scanManifestsHelper} scan {path}` and parse the JSON envelope. The script returns `{manifests[], total_unique, monorepo, warnings?}` covering npm/python/rust/go/maven/gradle/ruby/composer/swift; record each `{path, ecosystem}` for the manifests catalog in §4 and capture `monorepo` for the boundary-signal pass in §3
+4. Locate entry point files (index.ts, main.ts, app.ts, main.go, main.rs, __init__.py, etc.)
+5. Detect service configuration (Dockerfile, docker-compose.yml, kubernetes manifests, serverless.yml) — keep this step LLM-driven; file glob + presence check is sufficient, no parsing required
+6. Return structured findings — file paths and types only, not contents. When `constituent_refs` was used, include the resolved ref in each repo-level result group: `{path, ref, manifests[], monorepo, warnings?}`
+
+**If subprocess unavailable:** Perform directory scanning in main thread using file I/O tools.
+
+**Apply scope hints if provided:**
+- If specific directories were given, scan only those
+- If exclusion patterns were given, skip matching directories
+
+**Deep tier additional scanning (IF Deep tier):**
+- Use ast-grep to detect structural patterns across the codebase: `ast-grep -p 'class $NAME' --lang python` (or equivalent per language) to build a class/type inventory
+- Use ast-grep to identify exported function patterns: `ast-grep -p 'def $FUNC($$$PARAMS)' --lang python` at entry points
+- If QMD is available, query for temporal context on the project: recent changes, active development areas, refactoring patterns
+- Record Deep-tier findings separately — they supplement (not replace) the Quick/Forge scan results
+
+### 3. Detect Service Boundaries
+
+Based on scan results, identify potential service boundaries:
+
+**Strong boundary signals:**
+- Independent package manifest (own package.json, Cargo.toml, etc.)
+- Docker/container configuration
+- Separate entry point file
+- Workspace member listing
+
+**Document each detected boundary with:**
+- Path relative to project root
+- Boundary type (service / package / module)
+- Detection signals found (list specific files)
+- Confidence level (strong / moderate / weak)
+
+### 4. Catalog Manifests and Entry Points
+
+Create a structured catalog:
+
+**Manifests found:**
+| Path | Type | Language Indicator |
+|------|------|-------------------|
+| {path} | {manifest_type} | {language} |
+
+**Entry points found:**
+| Path | Type |
+|------|------|
+| {path} | {entry_type} |
+
+**Service configurations found:**
+| Path | Type |
+|------|------|
+| {path} | {config_type} |
+
+### 5. Present Scan Results
+
+"**Project Scan Complete**
+
+**Project:** {project_path}
+**Forge Tier:** {forge_tier}
+
+**Structure Overview:**
+{top-level directory tree}
+
+**Detected Boundaries:** {count}
+{list each boundary with path, type, confidence}
+
+**Manifests Found:** {count}
+{summary table}
+
+**Entry Points Found:** {count}
+{summary table}
+
+**Service Configurations:** {count}
+{summary table}
+
+**Scope Applied:** {hints or 'Full project scan'}
+
+Does this scan look complete? Any directories I should investigate further or skip?"
+
+Wait for user feedback. If user identifies gaps, rescan as directed.
+
+### 6. Append to Report
+
+Append the complete "## Project Scan" section to {outputFile}:
+
+Replace the placeholder `[Appended by scan-project]` with the full scan results including:
+- Structure overview
+- Detected boundaries table
+- Manifests catalog
+- Entry points catalog
+- Service configurations catalog
+- Scope notes
+
+Update {outputFile} frontmatter:
+```yaml
+stepsCompleted: [append 'scan-project' to existing array]
+lastStep: 'scan-project'
+```
+
+### 7. Present MENU OPTIONS
+
+Display: "**Select:** [C] Continue to Unit Identification | [X] Cancel and exit"
+
+#### Menu Handling Logic:
+
+- IF C: Save scan results to {outputFile}, update frontmatter, then load, read entire file, then execute {nextStepFile}
+- IF X: HARD HALT with exit code 6 (`user-cancelled`). Emit the `SKF_ANALYZE_RESULT_JSON` envelope on stderr with `status: "error"`, `halt_reason: "user-cancelled"`, and counts/paths reflecting state at cancellation
+- IF Any other: help user, then [Redisplay Menu Options](#7-present-menu-options)
+
+#### EXECUTION RULES:
+
+- ALWAYS halt and wait for user input after presenting menu
+- **GATE [default: C]** — If `{headless_mode}`: auto-proceed with [C] Continue, log: "headless: auto-continue past scan results"
+- ONLY proceed to next step when user selects 'C'
+
+## CRITICAL STEP COMPLETION NOTE
+
+ONLY WHEN the Project Scan section has been appended to {outputFile} with complete boundary, manifest, and entry point catalogs, and frontmatter stepsCompleted has been updated, will you load and read fully {nextStepFile} to begin unit identification.
+

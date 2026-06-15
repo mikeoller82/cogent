@@ -10,6 +10,8 @@ from pathlib import Path
 from datetime import datetime
 
 import agent_skills
+import skill_forge
+import loop_engine
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -101,6 +103,27 @@ TOOL_SPECS = [
             "prompt": "string - the instruction to execute each run",
         },
     },
+    {
+        "name": "import_skill",
+        "description": (
+            "Import agent skills from a GitHub repository URL into Cogent's skill directory. "
+            "Scans the repo for SKILL.md files, parses their frontmatter, and installs them. "
+            "Use when the user provides a GitHub URL containing agent skills they want to use."
+        ),
+        "args": {
+            "repo_url": "string - full GitHub URL (https://github.com/owner/repo or owner/repo shorthand)",
+            "force": "boolean, optional - overwrite existing skills if true (default false)",
+        },
+    },
+    {
+        "name": "get_loop_state",
+        "description": (
+            "Get the current loop engineering state for this session. "
+            "Use to check your current phase, iteration count, past attempts, "
+            "and verification results. Helps avoid repeating failed approaches."
+        ),
+        "args": {},
+    },
 ]
 
 
@@ -139,10 +162,78 @@ async def read_skill_resource(skill_name: str, path: str) -> dict:
     return await asyncio.to_thread(agent_skills.read_skill_resource, skill_name, path)
 
 
+async def import_skill(repo_url: str, force: bool = False) -> dict:
+    """Import skills from a GitHub URL. Returns a summary for the LLM."""
+    try:
+        result = await skill_forge.import_from_url(repo_url, force=force)
+        lines = [f"Repo: {result['repo']}"]
+        for s in result.get("skills", []):
+            act = s.get("action", "?")
+            name = s.get("name", "?")
+            lines.append(f"  {act}: {name}")
+        if result.get("errors"):
+            for e in result["errors"]:
+                lines.append(f"  error: {e}")
+        return {"result": "\n".join(lines) if lines else "No skills found or imported."}
+    except Exception as e:
+        return {"result": f"Import failed: {e}"}
+
+
 # ---------------- Web search ----------------
 async def web_search(query: str, max_results: int = 5) -> dict:
     def _run():
         from ddgs import DDGS
+        try:
+            with DDGS() as ddg:
+                return list(ddg.text(query, max_results=max_results))
+        except Exception as e:
+            return {"_error": str(e)}
+
+    results = await asyncio.to_thread(_run)
+    if isinstance(results, dict) and "_error" in results:
+        return {"result": f"Search failed: {results['_error']}"}
+    if not results:
+        return {"result": "No results found."}
+    lines = []
+    for i, r in enumerate(results[:max_results], 1):
+        title = r.get("title", "(no title)")
+        href = r.get("href") or r.get("url", "")
+        body = r.get("body", "")
+        lines.append(f"[{i}] {title}\n    {href}\n    {body}")
+    return {"result": "\n\n".join(lines)}
+
+
+# ---------------- Loop state tool ----------------
+async def get_loop_state(session_id: str = "") -> dict:
+    """Return the current loop engineering state as a formatted string."""
+    if session_id:
+        state = loop_engine.load_state(session_id)
+    else:
+        states = loop_engine.get_all_loop_states()
+        if not states:
+            return {"result": "No active loop states."}
+        lines = ["Active loop states:"]
+        for s in states:
+            lines.append(f"  {s['session_id'][:12]} — phase={s['phase']} iter={s['iteration']} task={s['task_description'][:60]}")
+        return {"result": "\n".join(lines)}
+
+    lines = [
+        f"Phase: {state.phase}",
+        f"Iteration: {state.iteration}/{loop_engine.MAX_ITERATIONS}",
+        f"Task: {state.task_description[:120]}",
+        f"Verification: {state.verification_result or 'not run'}",
+        f"Token budget: ~{state.tokens_estimated}/{state.budget_max}",
+        f"Attempts: {len(state.attempts)}",
+        f"Errors: {len(state.errors)}",
+    ]
+    if state.errors:
+        for e in state.errors:
+            lines.append(f"  - {e}")
+    if state.decisions:
+        lines.append("Recent decisions:")
+        for d in state.decisions[-3:]:
+            lines.append(f"  - {d}")
+    return {"result": "\n".join(lines)}
         try:
             with DDGS() as ddg:
                 return list(ddg.text(query, max_results=max_results))

@@ -1,0 +1,31 @@
+{
+  "name": "skf-campaign",
+  "description": "Campaign orchestration \u2014 multi-library skill production with dependency tracking, file-based state, and resume. Use when the user asks to \"run a campaign\" or \"orchestrate skills.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "scripts/.gitkeep",
+    "scripts/campaign-deps.py",
+    "scripts/campaign-parse-manifest.py",
+    "scripts/campaign-provenance.py",
+    "scripts/campaign-render-kickoff.py",
+    "scripts/campaign-report.py",
+    "scripts/campaign-validate-pins.py",
+    "scripts/campaign-validate-state.py",
+    "references/campaign-directive-spec.md",
+    "references/health-check.md",
+    "references/step-01-setup.md",
+    "references/step-02-strategy.md",
+    "references/step-03-pins.md",
+    "references/step-04-provenance.md",
+    "references/step-05-skill-loop.md",
+    "references/step-06-batch.md",
+    "references/step-07-capstone.md",
+    "references/step-08-verify.md",
+    "references/step-09-refine.md",
+    "references/step-10-export.md",
+    "references/step-11-maintenance.md",
+    "references/step-resume.md",
+    "assets/campaign-state-schema.json"
+  ]
+}

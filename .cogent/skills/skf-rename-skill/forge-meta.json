@@ -1,0 +1,13 @@
+{
+  "name": "skf-rename-skill",
+  "description": "Rename a skill across all its versions \u2014 transactional copy-verify-delete with platform context rebuild. Use when the user requests to \"rename a skill.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/execute.md",
+    "references/health-check.md",
+    "references/rebuild-context.md",
+    "references/report.md",
+    "references/select.md"
+  ]
+}

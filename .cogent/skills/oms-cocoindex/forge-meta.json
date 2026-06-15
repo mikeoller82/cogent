@@ -1,0 +1,12 @@
+{
+  "name": "oms-cocoindex",
+  "description": "Use when builds data transformation flows on top of cocoindex \u2014 a",
+  "imported_at": "2026-06-15T23:19:31Z",
+  "metadata": {},
+  "resources": [
+    "references/flow-api.md",
+    "references/op-framework.md",
+    "references/settings-auth.md",
+    "references/sources-targets-functions.md"
+  ]
+}

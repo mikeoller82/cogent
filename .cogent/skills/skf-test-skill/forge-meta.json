@@ -1,0 +1,22 @@
+{
+  "name": "skf-test-skill",
+  "description": "Cognitive completeness verification \u2014 quality gate before export. Use when the user requests to \"test a skill\" or \"verify skill completeness.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "scripts/compute-score.py",
+    "references/coherence-check.md",
+    "references/coverage-check.md",
+    "references/detect-mode.md",
+    "references/external-validators.md",
+    "references/health-check.md",
+    "references/init.md",
+    "references/migration-section-rules.md",
+    "references/report.md",
+    "references/score.md",
+    "references/scoring-rules.md",
+    "references/source-access-protocol.md",
+    "references/step-hard-gate.md",
+    "assets/output-section-formats.md"
+  ]
+}

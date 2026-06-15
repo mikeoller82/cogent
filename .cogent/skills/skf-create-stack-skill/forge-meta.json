@@ -1,0 +1,23 @@
+{
+  "name": "skf-create-stack-skill",
+  "description": "Consolidated project stack skill with integration patterns \u2014 code-mode (analyzes manifests) or compose-mode (synthesizes from existing skills + architecture doc). Use when the user requests to \"create a stack skill\", \"forge a stack\", or \"stack this project\".",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/compile-stack.md",
+    "references/compose-mode-rules.md",
+    "references/detect-integrations.md",
+    "references/detect-manifests.md",
+    "references/generate-output.md",
+    "references/health-check.md",
+    "references/init.md",
+    "references/integration-patterns.md",
+    "references/manifest-patterns.md",
+    "references/parallel-extract.md",
+    "references/rank-and-confirm.md",
+    "references/report.md",
+    "references/validate.md",
+    "assets/provenance-map-schema.md",
+    "assets/stack-skill-template.md"
+  ]
+}

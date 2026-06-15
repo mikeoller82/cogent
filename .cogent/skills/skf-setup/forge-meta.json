@@ -1,0 +1,15 @@
+{
+  "name": "skf-setup",
+  "description": "Initialize forge environment, detect tools, and set capability tier (Quick/Forge/Forge+/Deep). Use when the user requests to \"set up\" or \"initialize the forge\".",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/auto-index.md",
+    "references/ccc-index.md",
+    "references/detect-and-tier.md",
+    "references/health-check.md",
+    "references/report.md",
+    "references/tier-rules.md",
+    "references/write-config.md"
+  ]
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { Plus, MessageSquare, Brain, Calendar, Trash2, Home } from "lucide-react";
+import { Plus, MessageSquare, Brain, Calendar, Wrench, Trash2, Home } from "lucide-react";
 
 export default function Sidebar({ sessions, loading, onNew, onDelete }) {
   const location = useLocation();
@@ -47,6 +47,7 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
       <div className="px-2 py-3 space-y-0.5">
         {navItem("/app", Home, "Home")}
         {navItem("/app/memory", Brain, "Memory")}
+        {navItem("/app/skills", Wrench, "Skills")}
         {navItem("/app/tasks", Calendar, "Scheduled")}
       </div>
 

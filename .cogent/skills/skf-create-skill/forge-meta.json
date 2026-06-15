@@ -1,0 +1,32 @@
+{
+  "name": "skf-create-skill",
+  "description": "Compile a skill from a brief. Supports --batch for multiple briefs. Use when the user requests to \"create a skill\" or \"compile a skill.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/authoritative-files-protocol.md",
+    "references/compile.md",
+    "references/component-extraction.md",
+    "references/ecosystem-check.md",
+    "references/enrich.md",
+    "references/extract.md",
+    "references/extraction-patterns-tracing.md",
+    "references/extraction-patterns.md",
+    "references/generate-artifacts.md",
+    "references/health-check.md",
+    "references/load-brief.md",
+    "references/report.md",
+    "references/source-resolution-protocols.md",
+    "references/step-auto-shard.md",
+    "references/step-doc-rot.md",
+    "references/step-doc-sources.md",
+    "references/sub/ccc-discover.md",
+    "references/sub/fetch-docs.md",
+    "references/sub/fetch-temporal.md",
+    "references/tier-degradation-rules.md",
+    "references/validate.md",
+    "assets/compile-assembly-rules.md",
+    "assets/skill-sections.md",
+    "assets/tessl-dismissal-rules.md"
+  ]
+}

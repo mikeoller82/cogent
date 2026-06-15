@@ -1,0 +1,361 @@
+# SKILL.md Compilation Assembly Rules
+
+## Frontmatter (REQUIRED — agentskills.io compliance)
+
+```yaml
+---
+name: {brief.name}
+description: >
+  {Trigger-optimized description from brief and extraction data.
+  Include what it does, when to use it, and what NOT to use it for.
+  1-1024 chars, optimized for agent discovery.}
+---
+```
+
+**Frontmatter rules:**
+
+- `name`: lowercase alphanumeric + hyphens only, must match the skill output directory name. Prefer gerund form (`processing-pdfs`, `analyzing-spreadsheets`) for clarity.
+- `description`: non-empty, max 1024 chars, optimized for agent discovery. **MUST use third-person voice** ("Processes Excel files..." not "I can help you..." or "You can use this to...") AND **MUST include a trigger phrase** so agents know when to match — one of `Use when …`, `Triggers on …`, or `Reach for this when …`. When using `Use when `, follow with a **gerund** (`Use when building/processing/analyzing X…`) or a noun-phrase clause (`Use when the user requests to "X"`); never a bare indicative verb like `builds`/`processes`, because `skill-check --fix` will prepend a literal `Use when ` to a description missing the trigger phrase, producing ungrammatical output (`Use when builds X…`). Inconsistent point-of-view or a missing trigger phrase causes discovery problems since the description is injected into the system prompt. See `skf-brief-skill/assets/description-voice-examples.md` for the canonical voice palette.
+- **`description` must NOT contain angle brackets** — neither standalone placeholders like `<name>`, `<component>`, `<path>`, nor inline generics like `` `Array<T>` `` or `` `Meta<typeof X>` ``. Both `skill-check`'s `description_field` validator and `tessl`'s deterministic description check parse the frontmatter description as a raw string and reject any `<` or `>`, regardless of markdown context (backticks do NOT protect content here). A rejected description fails the review with 0% score. When the natural phrasing would use angle brackets:
+  - Prefer the curly-brace form in prose: `{name}`, `{component-id}`, `{path}` — readable and tessl-safe.
+  - Uppercase placeholders are also acceptable: `NAME`, `COMPONENT_ID`.
+  - For code-ish fragments, use curly braces in place of angle brackets inside the backticks: `` `Meta{typeof X}` ``, `` `Array{T}` ``.
+
+  Authors should not rely on remembering this — step 5 §2a enforces it via a pre-write sanitization pass that unconditionally replaces every `<` with `{` and every `>` with `}` in the frontmatter `description`. See step 5 §2a for the rule and `assets/tessl-dismissal-rules.md` (`description-xml-tags-guarded-upstream`) for the recovery path if a downstream tool rewrites the description after §2a has run.
+- Only `name` and `description` in frontmatter — `version` and `author` go in metadata.json
+- No other frontmatter fields for standard skills (only `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools` are permitted by spec)
+
+## Two-Tier Assembly
+
+**CRITICAL: Two-tier assembly.** SKILL.md must retain actionable inline content that survives `split-body` extraction. Assemble Tier 1 sections first (always inline), then Tier 2 sections (reference-eligible, may be extracted by split-body).
+
+### Tier 1 — Always Inline (must survive split-body)
+
+These sections form the essential standalone body. Target: **under 300 lines total** for Tier 1. An agent loading only SKILL.md (without references) must get enough to act.
+
+**Section 1 — Overview (~10 lines):**
+- 1-line summary of what the library does
+- Source repo, version, branch
+- Forge tier used for compilation
+- Export count and confidence summary
+
+**Section 2 — Quick Start (~30 lines):**
+- Select the 3-5 most commonly used functions (by import frequency or documentation prominence)
+- One runnable code example showing a typical end-to-end flow (e.g., `add → process → search`)
+- Minimal usage examples — ONLY from source tests or official docs
+- If no examples exist in source, show signature-only quick start
+- Provenance citation for each function
+
+**Section 3 — Common Workflows (~30 lines):**
+- 4-5 patterns showing typical function call sequences
+- Each pattern: 1-line bold description + function call chain with key params
+- Focus on the most common developer tasks, not exhaustive coverage
+- Format example:
+  ```
+  **Add and process data:**
+  `await cognee.add(data) → await cognee.cognify() → await cognee.search(query)`
+  ```
+
+**Section 4 — Key API Summary (~20 lines):**
+- Table of top 10-15 functions: name, purpose, key parameters
+- One row per function — no full signatures, just enough for discovery
+- Provenance citation per function
+
+**Section 4b — Migration & Deprecation Warnings (~10 lines, Deep tier only):**
+- Only populated when step 4 enrichment produced **T2-future** annotations (deprecation warnings, breaking changes, planned renames)
+- List each warning as a single-line bullet: function name, what changed or will change, source citation
+- Max 10 lines — just the actionable warnings, not full context
+- Link to Tier 2 Full API Reference for details: "See Full API Reference for migration details."
+- **Skip entirely** for Quick/Forge tiers or when no T2-future annotations exist — do not emit an empty section
+- This section survives split-body, ensuring agents always see critical migration context
+
+**Section 5 — Key Types (~20 lines):**
+- Most important enum/type definitions inline (e.g., SearchType values, config options)
+- Only types that appear in Quick Start or Common Workflows
+- Full type details go in Tier 2
+
+**Section 6 — Architecture at a Glance (~10 lines):**
+- Bullet list of major subsystem categories (e.g., "Graph DBs: Neo4j, Kuzu, Neptune")
+- Adapter/driver overview — what's available, not how it works
+- Skip for Quick tier or small libraries with < 5 modules
+
+**Section 7 — CLI (~10 lines, if applicable):**
+- Basic CLI commands if the library has a CLI interface
+- Skip if no CLI exists
+
+**Section 7b — Scripts & Assets (~10 lines, if applicable):**
+- Manifest table of included scripts with filename, one-line purpose, and provenance citation
+- Manifest table of included assets with filename, one-line purpose, and provenance citation
+- Each entry: `scripts/{filename}` or `assets/{filename}`, purpose, `[SRC:{source_path}:L1]`
+- Include a note: "Load scripts from `scripts/` and assets from `assets/` when directed by the instructions above."
+- **Skip entirely** when no scripts or assets detected in extraction inventory — do not emit an empty section
+- Like Sections 4b and 7, parsers must treat this section as optional
+
+**Section 8 — Manual Sections:**
+- Seed empty `<!-- [MANUAL] -->` markers:
+```markdown
+<!-- [MANUAL:additional-notes] -->
+<!-- Add custom notes here. This section is preserved during skill updates. -->
+<!-- [/MANUAL:additional-notes] -->
+```
+- Place after Quick Start and after Key API Summary sections
+
+### Tier 2 — Reference-Eligible (can be extracted by split-body)
+
+Assemble Sections 9-11 (Full API Reference, Full Type Definitions, Full Integration Patterns) as defined in the skill-sections data file. These contain full detail and are split into `references/` when the body exceeds 500 lines. Include T2 annotations from enrichment in the Full API Reference (Deep tier only).
+
+**CRITICAL — Tier 2 differentiation from Tier 1:** Tier 2 Full API Reference must contain content that is NOT present in Tier 1's Key API Summary. Specifically:
+
+- **Full parameter tables** with types, defaults, and required/optional flags (Tier 1 only lists key params)
+- **Return value details** including structure, types, and error conditions
+- **T2 temporal annotations** — migration notes, deprecation details, breaking change context (Deep tier)
+- **Usage examples** from source tests or documentation (Tier 1 has signature-only references)
+- **Edge cases and constraints** — parameter validation rules, size limits, behavioral notes
+
+Do NOT repeat Tier 1's name/purpose/key-params table format in Tier 2. Tier 2 is a deep reference, not a reformatted summary. This distinction prevents conciseness scorers from flagging the two-tier design as redundancy.
+
+### Component Library Assembly Overrides
+
+When `scope.type: "component-library"` in the brief AND `component_catalog[]` is available in context, apply these overrides to the standard assembly. All other sections remain unchanged.
+
+**Section 2 (Quick Start) — CLI-first override:**
+
+Replace the standard function-based Quick Start with CLI installation:
+
+```markdown
+## Quick Start
+
+Install a component:
+`npx {cli-name} add {top-component-id}`
+
+{If provider wrapping detected in source:}
+Set up providers:
+\`\`\`tsx
+import { ThemeProvider, UILibraryProvider } from "{primary-package}";
+
+<ThemeProvider>
+  <UILibraryProvider>
+    <YourApp />
+  </UILibraryProvider>
+</ThemeProvider>
+\`\`\`
+```
+
+Detect CLI name from: `package.json` `bin` field, README usage examples, or `registry_path` context. If no CLI detected, fall back to standard import-based Quick Start.
+
+**Section 4 (Key API Summary) — Component Catalog override:**
+
+Replace the function table with a Component Catalog organized by category:
+
+```markdown
+## Component Catalog
+
+| Category | Count | Key Components |
+|----------|-------|---------------|
+| {category} | {count} | {top 3-5 component names, comma-separated} |
+
+**Design system variants:** {variant list with primary marked}
+**Total components:** {unique count} | {Per variant: **With {name}:** {count}}
+```
+
+Source: `component_catalog[]` from step 3d. Group by `category` field. Provenance: cite the registry file.
+
+**Section 5 (Key Types) — Props-focused override:**
+
+Replace generic types with the top 5 most-used Props interfaces (by component count or prominence):
+
+```markdown
+## Key Types
+
+### {ComponentName}Props
+| Prop | Type | Default | Required |
+|------|------|---------|----------|
+| {prop} | {type} | {default or —} | {yes/no} |
+```
+
+Show only the 5 most important Props interfaces inline. Full Props details go in Tier 2.
+
+**Tier 2 (Full API Reference) — Props Reference override:**
+
+Organize by component (not by function). Per component:
+
+```markdown
+### {ComponentName}
+
+**Install:** `npx {cli} add {component-id}`
+**Available in:** {variant list}
+**Props:** `{ComponentName}Props`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| {prop} | {type} | {default} | {JSDoc description or —} |
+```
+
+**context-snippet.md — Component Library format:**
+
+```markdown
+[{name} v{version}]|root: skills/{name}/
+|IMPORTANT: {name} v{version} — read SKILL.md before writing {name} code. Do NOT rely on training data.
+|install: npx {cli} add <component-id>
+|catalog:{SKILL.md#component-catalog} — {N} components: {category(count), ...}
+|variants: {variant list} — {provider wrapping note if applicable}
+|key-props:{SKILL.md#key-types} — {top props interfaces with key fields}
+|gotchas: {detected gotchas}
+```
+
+**metadata.json — Component Library stats:**
+
+When `scope.type: "component-library"`, add these fields to `stats`:
+
+```json
+{
+  "stats": {
+    "components_registered": 0,
+    "components_documented": 0,
+    "props_interfaces_extracted": 0,
+    "components_unique": 0,
+    "demo_files_excluded": 0,
+    "design_variants": {}
+  }
+}
+```
+
+These are in addition to the standard stats fields (exports_documented, etc.).
+
+### Reference-App Assembly Overrides
+
+When `scope.type: "reference-app"` in the brief, apply these overrides to the standard assembly. The skill's value is an integration pattern (wiring), not a library surface — the default library-export template would force assemblers to remap wiring onto export slots and produce fuzzy counts. These overrides give that value a first-class home.
+
+**Section 4 (Key API Summary) — Pattern Surface override:**
+
+Replace the per-function table with an ordered list of wiring steps. Each step names a file, a surface (decorator, build field, lifecycle hook, config key), and a one-line description of what the user does there — not a function signature. The goal is that a reader copying the pattern can follow the list in order.
+
+```markdown
+## Pattern Surface
+
+| # | File | Surface | Purpose |
+|---|------|---------|---------|
+| 1 | {src/main.py} | {@app.startup decorator} | {brief wiring purpose} |
+| 2 | {electron.vite.config.ts} | {build.copy field} | {brief wiring purpose} |
+| … | … | … | … |
+```
+
+Source: the authored pattern surface from extraction + brief `scope.tier_a_include` (when present) or the curated provenance-map entries (when absent). Provenance: cite the originating source files.
+
+**Section 3 (Common Workflows) — Adoption Steps override:**
+
+Replace the function-call-chain format with copy-this-wiring narrative. Prefer numbered imperative steps that the user can execute in order, not an API-call sequence. Keep each step's code snippet minimal (5–15 lines) — full wiring lives in Tier 2.
+
+```markdown
+## Adoption Steps
+
+1. **{Step name}** — {one-line description}
+   ```{language}
+   {minimal wiring snippet}
+   ```
+2. **{Step name}** — {one-line description}
+   …
+```
+
+**Tier 2 (Full API Reference) — pattern-oriented override:**
+
+Replace per-function subsections with `references/pattern-*.md` groupings: one reference file per coherent wiring concern (e.g. `pattern-lifecycle.md`, `pattern-build-config.md`, `pattern-ipc.md`). Each reference file covers every file/surface touched by that concern with full code snippets, gotchas, and provenance. Tier 1 (Pattern Surface) stays index-like; Tier 2 carries the copy-paste-able depth.
+
+**metadata.json — Reference-App stats semantics:**
+
+`stats.exports_documented` is a **library concept** and does not carry over cleanly. When `scope.type: "reference-app"`:
+
+- `stats.exports_documented` MAY be set to the Pattern Surface row count as a proxy, but its semantics change: it counts authored pattern surfaces, not public exports. Emit an adjacent `stats.pattern_surfaces_documented` with the same integer so downstream consumers (test-skill, feasibility, discovery) can discriminate.
+- `exports_public_api` / `exports_internal` / `exports_total` are not meaningful for a reference app — omit them, or set all three to the Pattern Surface count with a note in `stats.notes`: `"reference-app: export counts are pattern-surface proxies, not library exports"`.
+- Do NOT fabricate signature / type-coverage data from pattern surfaces. skf-test-skill will skip those categories when metadata flags a reference-app (same skip path as `stackSkill` once that flag is wired — see scoring-rules.md).
+- Do NOT emit `effective_denominator` for reference-app scope, even when the source is a monorepo. `effective_denominator` counts public exports from the authoring-surface barrel — a library concept that `pattern_surfaces_documented` already replaces here. A reference-app-in-monorepo literally satisfies `compile.md` §4's emit-conditions (monorepo + non-`full-library` + stratified `scope.notes`), so this carve-out takes precedence: pattern-surface coverage is the reference-app basis, and skf-test-skill skips library-export coverage for it.
+
+**Language / spec-reference sub-shape:** A reference app that documents an engine- or spec-versioned **language** — a query language, grammar, or DSL (e.g. SurrealQL @ SurrealDB) whose value is construct idioms rather than wiring or exports — is a recognized reference-app sub-shape. Keep `scope.type: "reference-app"` (there is no separate enum value), so every carve-out above applies unchanged (`pattern_surfaces_documented` proxy, no `effective_denominator`, test-skill signature/type skip). Adapt the three overrides to the language's surface instead of app wiring:
+
+- **Section 4 (Pattern Surface)** becomes a **construct-area map**, not a wiring list. Each row is a language construct area, where it lives in the source, and what the user writes there:
+
+  ```markdown
+  ## Pattern Surface
+
+  | # | Construct Area | Where in Source | Purpose |
+  |---|----------------|-----------------|---------|
+  | 1 | {statements / DDL} | {sql::statements} | {what the user writes} |
+  | 2 | {operators} | {sql::operator} | {…} |
+  | … | … | … | … |
+  ```
+
+- **Section 3 (Adoption Steps)** becomes **production-task workflows** — ordered tasks a user performs *in the language* (define a schema, write a query, call a built-in function), each with a minimal snippet — not a copy-this-wiring narrative.
+- **Tier 2** groups `references/*.md` by **language concern** (e.g. `statements.md`, `functions.md`, `types.md`) — one file per construct family — instead of `pattern-*.md` wiring concerns.
+- **metadata.json:** `pattern_surfaces_documented` counts the documented construct areas; the no-`effective_denominator` carve-out applies (a language has no export barrel). The brief's `language` field records the **documented** language (e.g. `surrealql`), which may differ from the source language it was extracted from (e.g. `rust`) — see `skf-analyze-source/assets/skill-brief-schema.md`.
+
+**When this clause does NOT apply:** `full-library`, `specific-modules`, `public-api`, `component-library`, or `docs-only`. Those scope types have their own assembly semantics and export-count conventions — do not mix.
+
+### Whole-Language Reference Assembly Overrides
+
+A **whole-language reference** is a compiler/interpreter repo (rustc, CPython, the Go toolchain, TypeScript) enriched with the language's canonical prose — the guide/Book and the standard/library docs. It maps to `scope.type: full-library`, but its value to a skill consumer is the **language**, not the compiler's internal exports. The standard library-export layout above would foreground compiler-internal signatures and bury the prose; these overrides invert that.
+
+**GATE — apply ONLY when this is a whole-language reference.** The brief carries ≥1 `doc_urls` entry with `source: language-registry` (equivalently, `skf-derive-assembly-shape.py` returns `assembly_shape: "whole-language-reference"`). This is a structured, schema-validated signal — NOT a `scope.notes` substring — so an ordinary `full-library` library, a parser *library* (pest/lalrpop — its code IS the product, so §6b seeds no corpora), a component-library, a reference-app (including the language/spec-reference DSL sub-shape, which stays `scope.type: reference-app` and is handled by the reference-app override above), and a docs-only brief all fail the gate. When the gate does NOT fire, **skip this entire section** — the standard Tier 1 (sections 1–8) and Tier 2 (9–11) layout and the signature-fidelity rule run unchanged, so non-whole-language skills assemble byte-identically.
+
+When the gate fires, the assembler has a `language_guide[]` artifact from step 3c §4a (the retained corpora prose, carved out of the T3-vs-T1 conflict rule). Apply these overrides:
+
+**Empty-guide guard (check first):** If `language_guide[]` is absent or every entry's `prose` is null (all registry corpora failed to fetch), do NOT emit a thin Language Guide above a full internals section — fall back to the standard layout and record a warning in `evidence-report.md`: "Whole-language reference gated but no Language-Guide prose was retained — assembled as a standard library skill." This prevents the inverse-value outcome (prose section empty, compiler internals dominant).
+
+**New Section 1b — Language Guide (Tier 1, foregrounded):** Immediately after Section 1 (Overview) and BEFORE Quick Start, emit the skill's primary content from `language_guide[]`. One subsection per corpus (`{label}`), carrying the retained prose — language concepts, idioms, and usage examples — each block cited `[EXT:{url}]`. This is the section an agent reads to learn the language; it survives split-body as Tier 1.
+
+**Section 2 (Quick Start) — language-usage override:** Build the runnable examples from the Language-Guide prose (writing and running code *in* the language — a minimal program, a common idiom), cited `[EXT:{url}]`, NOT from compiler-internal export call chains. Fall back to the standard signature-only Quick Start only if the guide yields no examples.
+
+**Section 3 (Common Workflows) — "Writing {language}" override:** Replace function-call-chain workflows over compiler exports with common language tasks (define a type, handle errors, organize a module), each a short idiom from the guide.
+
+**Section 4 (Key API Summary) — demote compiler internals:** Replace the top-of-body compiler-export function table with a one-paragraph "Standard Library & Language Surface" pointer into the Language Guide. Move the AST/compiler-internal exports into a late-ordered Tier 2 subsection `### Compiler Internals (reference only)` with a one-line note: "Internal implementation surface of the {language} toolchain — most consumers want the Language Guide above, not these."
+
+**Signature fidelity is preserved (NOT relaxed):** this is an ordering/prominence change only. Any compiler signatures that DO appear (in Compiler Internals) keep their T1/AST-authoritative params and return types per Section 1b of `compile.md` and rule 7 below. The override never substitutes prose-derived signatures for AST-extracted ones; it changes which content leads, not which tier wins a per-export signature conflict.
+
+**metadata.json:** the skill stays `scope.type: full-library`; export-count stats are still emitted. (A whole-language skill's low public-API coverage versus the full compiler surface is expected — coverage-gate semantics for this shape are tracked separately and out of scope here.)
+
+### Assembly Rules
+
+1. Assemble all Tier 1 sections first — these form the essential standalone body
+2. Assemble all Tier 2 sections after — these are progressive disclosure detail
+3. Tier 1 content MUST be under 300 lines (excluding frontmatter)
+4. If Tier 1 alone exceeds 300 lines, reduce Key API Summary and Architecture at a Glance
+5. Tier 1 sections are kept short enough that `split-body` targets the larger Tier 2 sections (`## Full ...` headings) instead
+6. After split-body, SKILL.md must still contain all Tier 1 sections with actionable content
+7. **Signature fidelity:** When populating function entries from the extraction inventory, always use the `params` and `return_type` fields from the provenance-map entry (T1/AST-backed). Do not substitute parameter names, types, or return types from documentation, README examples, or enrichment annotations. T2/T3 sources may enrich descriptions and add usage notes, but structural signature data from AST extraction is authoritative.
+
+### Reference File Rules
+
+- **Table of contents required** for any reference file exceeding 100 lines — include a `## Contents` section at the top listing all sub-sections. This ensures agents can see the full scope even when previewing with partial reads.
+- One file per major function group or type — group by module, file, or functional area
+- Name files descriptively: `form_validation_rules.md`, not `doc2.md`
+
+### Content Quality Rules
+
+These rules apply to all content assembled in SKILL.md and reference files.
+
+**Degrees of freedom:** Match instruction specificity to the task's fragility and variability:
+- **High freedom** (text guidance): When multiple approaches are valid and context determines the best one. Example: code review patterns, architecture suggestions.
+- **Medium freedom** (pseudocode/parameterized scripts): When a preferred pattern exists but variation is acceptable. Example: configuration templates, report generation.
+- **Low freedom** (exact scripts, no parameters): When operations are fragile and consistency is critical. Example: database migrations, deployment sequences. Use "Run exactly this" language.
+
+**Consistent terminology:** Choose one term per concept and use it throughout the skill. Do not mix synonyms (e.g., "API endpoint" vs "URL" vs "route", or "field" vs "box" vs "element"). Consistency helps agents understand and follow instructions deterministically.
+
+**Avoid time-sensitive information:** Do not include date-conditional instructions ("If before August 2025, use the old API"). Instead, document the current method and place deprecated patterns in a collapsible "Old patterns" section with the deprecation date.
+
+**Template and examples patterns:**
+- **For strict requirements** (API responses, data formats): Provide an exact template with "ALWAYS use this exact structure" language.
+- **For flexible guidance** (reports, analysis): Provide a sensible default template with "Adjust sections as needed" language.
+- **Input/output examples:** When output quality depends on seeing examples and concrete pairs exist in source tests or official docs, include 2-3 input/output pairs sourced from those tests or docs. Examples help agents understand desired style and detail more clearly than descriptions alone. If no examples exist in source, note the gap rather than fabricating pairs — zero hallucination applies.
+
+**Generic-plus-signature code spans:** When documenting a generic class constructor or factory signature, do NOT place the generic brackets and the parameter list inside a single inline code span. `skill-check`'s `links.local_markdown_resolves` validator parses `` `ClassName[T](key: str)` `` as a broken markdown link (`[T]` becomes the link text, `(key: str)` becomes the URL) and emits a `broken local link` warning on the Links axis, regardless of the surrounding backticks. This applies to Tier 1 Key Types, Tier 2 Full API Reference, and reference files. Safe alternatives:
+- Split into two code spans: `` `ClassName[T]` — dataclass with fields `(key: str, value: int)` ``
+- Drop the explicit constructor and describe fields in prose: `` `ClassName[T]` — generic container parameterized by `T`, with field `key: str` ``
+- Use the curly-brace substitution used for frontmatter: `` `ClassName{T}(key: str)` `` (readable, avoids both markdown-link and angle-bracket parsing)
+
+**Workflow checklist pattern:** When a skill includes multi-step workflows, provide a copy-paste checklist that agents can track progress against:
+```markdown
+Copy this checklist and track your progress:
+- [ ] Step 1: {action}
+- [ ] Step 2: {action}
+```
+
+**Verifiable intermediate outputs:** For skills involving batch operations, destructive changes, or complex validation, recommend the plan-validate-execute pattern: create a structured plan file (e.g., `changes.json`), validate it with a script, then execute. This catches errors before changes are applied.

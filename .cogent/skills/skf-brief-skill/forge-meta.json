@@ -1,0 +1,25 @@
+{
+  "name": "skf-brief-skill",
+  "description": "Design a skill scope through guided discovery. Use when the user requests to \"create a skill brief\" or \"brief a skill\".",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/analyze-target.md",
+    "references/confirm-brief.md",
+    "references/draft-checkpoint.md",
+    "references/gather-intent.md",
+    "references/headless-args.md",
+    "references/headless-source-authority-detection.md",
+    "references/health-check.md",
+    "references/portfolio-similarity-check.md",
+    "references/qmd-collection-registration.md",
+    "references/scope-definition.md",
+    "references/step-auto-brief.md",
+    "references/step-auto-validate.md",
+    "references/version-resolution.md",
+    "references/write-brief.md",
+    "assets/description-voice-examples.md",
+    "assets/scope-templates.md",
+    "assets/skill-brief-schema.md"
+  ]
+}

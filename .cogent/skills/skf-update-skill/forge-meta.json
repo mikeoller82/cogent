@@ -1,0 +1,19 @@
+{
+  "name": "skf-update-skill",
+  "description": "Smart regeneration preserving [MANUAL] sections after source changes. Use when the user requests to \"update a skill\" or \"regenerate a skill.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/detect-changes.md",
+    "references/health-check.md",
+    "references/init.md",
+    "references/manual-section-rules.md",
+    "references/merge-conflict-rules.md",
+    "references/merge.md",
+    "references/re-extract.md",
+    "references/remote-source-resolution.md",
+    "references/report.md",
+    "references/validate.md",
+    "references/write.md"
+  ]
+}

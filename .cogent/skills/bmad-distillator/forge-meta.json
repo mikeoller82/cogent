@@ -1,0 +1,10 @@
+{
+  "name": "bmad-distillator",
+  "description": "Lossless LLM-optimized compression of source documents. Use when the user requests to 'distill documents' or 'create a distillate'.",
+  "imported_at": "2026-06-15T23:19:31Z",
+  "metadata": {},
+  "resources": [
+    "scripts/analyze_sources.py",
+    "scripts/tests/test_analyze_sources.py"
+  ]
+}

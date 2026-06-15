@@ -1,0 +1,7 @@
+{
+  "name": "bmad-shard-doc",
+  "description": "Splits large markdown documents into smaller, organized files based on level 2 (default) sections. Use if the user says perform shard document",
+  "imported_at": "2026-06-15T23:19:31Z",
+  "metadata": {},
+  "resources": []
+}

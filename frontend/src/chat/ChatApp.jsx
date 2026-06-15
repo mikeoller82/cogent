@@ -4,6 +4,7 @@ import Sidebar from "./Sidebar";
 import ChatThread from "./ChatThread";
 import MemoryPanel from "./MemoryPanel";
 import TasksPanel from "./TasksPanel";
+import SkillsPanel from "./SkillsPanel";
 import { listSessions, createSession, deleteSession } from "./apiClient";
 import { toast } from "sonner";
 
@@ -95,6 +96,7 @@ export default function ChatApp() {
           <Route path="c/:id" element={<ChatRoute sessions={sessions} refresh={refresh} />} />
           <Route path="memory" element={<MemoryPanel />} />
           <Route path="tasks" element={<TasksPanel />} />
+          <Route path="skills" element={<SkillsPanel />} />
         </Routes>
       </main>
     </div>

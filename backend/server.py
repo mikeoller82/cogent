@@ -20,6 +20,8 @@ from llm_service import run_turn, run_turn_stream
 from tools import ARTIFACTS_DIR
 from file_extract import extract_text_from_file
 import scheduler as sched
+import skill_forge as skf
+import loop_engine as le
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger("cogent")
@@ -400,6 +402,110 @@ async def _legacy_render(artifact_id: str):
     return await get_artifact(artifact_id, 0)
 
 
+
+# ---------------- Skill Forge (import/forge skills from GitHub) ----------------
+class ImportSkillBody(BaseModel):
+    repo_url: str
+    force: bool = False
+
+
+class ForgeSkillBody(BaseModel):
+    repo_url: str
+    force: bool = False
+
+
+@api.post("/skills/import", summary="Import existing skills from a GitHub repo")
+async def import_skills(body: ImportSkillBody):
+    """Scan a GitHub repo for SKILL.md files and install any found into Cogent's skill directory."""
+    try:
+        result = await skf.import_from_url(body.repo_url, force=body.force)
+        if result["errors"]:
+            logger.warning("Skill import had errors: %s", result["errors"])
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=f"Git operation failed: {e}")
+    except Exception as e:
+        logger.exception("Skill import failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api.post("/skills/forge", summary="Forge a new skill from a code repo using LLM analysis")
+async def forge_skill(body: ForgeSkillBody):
+    """Analyse a GitHub repo (with or without existing skills) and generate a Cogent skill via LLM."""
+    try:
+        async def _llm_complete(prompt: str) -> str:
+            """Call the backend LLM for skill generation."""
+            msg = await run_turn(
+                db, session_id="__forge__", workspace_id=DEFAULT_WORKSPACE,
+                user_text=prompt,
+                history=[],
+            )
+            return msg.get("text", "")
+
+        result = await skf.forge_skill(body.repo_url, _llm_complete, force=body.force)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=f"Git or LLM operation failed: {e}")
+    except Exception as e:
+        logger.exception("Skill forge failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api.get("/skills", summary="List installed skills")
+async def list_skills():
+    return skf.list_installed_skills()
+
+
+@api.get("/skills/{name}", summary="Get skill detail")
+async def skill_detail(name: str):
+    detail = skf.get_skill_detail(name)
+    if detail is None:
+        raise HTTPException(status_code=404, detail=f"Skill '{name}' not found")
+    return detail
+
+
+@api.delete("/skills/{name}", summary="Delete an installed skill")
+async def delete_skill(name: str):
+    if not skf.delete_skill(name):
+        raise HTTPException(status_code=404, detail=f"Skill '{name}' not found")
+    return {"ok": True, "name": name}
+
+
+
+# ---------------- Loop Engineering state ----------------
+@api.get("/sessions/{session_id}/loop", summary="Get loop state for a session")
+async def get_loop_state(session_id: str):
+    state = le.load_state(session_id)
+    return {
+        "session_id": state.session_id,
+        "phase": state.phase,
+        "iteration": state.iteration,
+        "task_description": state.task_description[:200] if state.task_description else "",
+        "verification_result": state.verification_result,
+        "verification_notes": state.verification_notes[:200] if state.verification_notes else "",
+        "attempts": len(state.attempts),
+        "tokens_estimated": state.tokens_estimated,
+        "budget_max": state.budget_max,
+        "errors": state.errors,
+        "started_at": state.started_at,
+        "completed_at": state.completed_at,
+        "updated_at": state.updated_at,
+    }
+
+
+@api.delete("/sessions/{session_id}/loop", summary="Reset loop state for a session")
+async def reset_loop_state(session_id: str):
+    le.delete_state(session_id)
+    return {"ok": True}
+
+
+@api.get("/loops", summary="List all active loop states")
+async def list_loop_states():
+    return le.get_all_loop_states()
 app.include_router(api)
 app.add_middleware(
     CORSMiddleware,

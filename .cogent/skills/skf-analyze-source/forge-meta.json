@@ -1,0 +1,20 @@
+{
+  "name": "skf-analyze-source",
+  "description": "Discover what to skill in a large repo and produce recommended skill briefs. Use when the user requests to \"analyze source for skills\" or \"discover skill opportunities.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/continue.md",
+    "references/generate-briefs.md",
+    "references/health-check.md",
+    "references/identify-units.md",
+    "references/init.md",
+    "references/map-and-detect.md",
+    "references/recommend.md",
+    "references/scan-project.md",
+    "references/step-auto-scope.md",
+    "references/step-shape-detect.md",
+    "references/unit-detection-heuristics.md",
+    "assets/skill-brief-schema.md"
+  ]
+}

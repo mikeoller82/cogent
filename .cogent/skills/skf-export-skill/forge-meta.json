@@ -1,0 +1,22 @@
+{
+  "name": "skf-export-skill",
+  "description": "Package for distribution and inject context into CLAUDE.md/AGENTS.md/.cursorrules. Use when the user requests to \"export\" or \"package a skill.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/generate-snippet.md",
+    "references/health-check.md",
+    "references/load-skill.md",
+    "references/manifest-rebuild.md",
+    "references/multi-skill-mode.md",
+    "references/orphan-context-detection.md",
+    "references/orphan-row-detection.md",
+    "references/package.md",
+    "references/preflight-snippet-root-probe.md",
+    "references/summary.md",
+    "references/token-report.md",
+    "references/update-context.md",
+    "assets/managed-section-format.md",
+    "assets/snippet-format.md"
+  ]
+}

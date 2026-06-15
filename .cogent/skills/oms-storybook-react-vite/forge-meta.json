@@ -1,0 +1,14 @@
+{
+  "name": "oms-storybook-react-vite",
+  "description": ">",
+  "imported_at": "2026-06-15T23:19:31Z",
+  "metadata": {},
+  "resources": [
+    "references/addons.md",
+    "references/core-api.md",
+    "references/csf3-patterns.md",
+    "references/doc-blocks.md",
+    "references/framework-config.md",
+    "references/story-types.md"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "skf-refine-architecture",
+  "description": "Improve architecture doc using verified skill data and VS feasibility findings. Use when the user requests to \"refine skill architecture\" or \"improve architecture doc.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/compile.md",
+    "references/gap-analysis.md",
+    "references/health-check.md",
+    "references/improvements.md",
+    "references/init.md",
+    "references/issue-detection.md",
+    "references/refinement-rules.md",
+    "references/report.md"
+  ]
+}

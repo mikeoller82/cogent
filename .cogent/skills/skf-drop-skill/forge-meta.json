@@ -1,0 +1,12 @@
+{
+  "name": "skf-drop-skill",
+  "description": "Drop a specific skill version or an entire skill \u2014 soft (deprecate) or hard (purge) with platform context rebuild. Use when the user requests to \"drop\" or \"remove a skill.",
+  "imported_at": "2026-06-15T23:19:18Z",
+  "metadata": {},
+  "resources": [
+    "references/execute.md",
+    "references/health-check.md",
+    "references/report.md",
+    "references/select.md"
+  ]
+}

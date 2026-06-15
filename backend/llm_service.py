@@ -14,15 +14,17 @@ from dotenv import load_dotenv
 
 import agent_skills
 import tools as tool_impls
+import loop_engine as le
 
 load_dotenv()
 KILOCODE_MODEL_NAME = "nex-agi/nex-n2-pro:free"
 KILOCODE_CHAT_COMPLETIONS_URL = "https://api.kilo.ai/api/gateway/chat/completions"
 MAX_TOOL_TURNS = 6
 
-
-def build_system_prompt(workspace_name: str = "your team", memory_facts: str = "") -> str:
+def build_system_prompt(workspace_name: str = "your team", memory_facts: str = "",
+                        loop_state=None) -> str:
     mem_block = f"\n\n## Known facts about the user (from memory)\n{memory_facts}\n" if memory_facts else ""
+    loop_block = le.build_loop_system_block(loop_state)
     return f"""You are Cogent — an AI coworker. Not a chatbot. A colleague who ships real work.
 
 You don't describe what to do; you do it. Asked for an audit? Hand over the PDF. Asked for a dashboard? Build and deploy it. Told a fact about the business? Remember it.{mem_block}
@@ -75,8 +77,8 @@ Plain unstyled HTML is a failure. Every web app you ship MUST have:
 - Keep it single-file — inline `<style>` + inline `<script>`.
 
 If the user attached files, the extracted content is in their message. Reference it directly.
-
 Today's date: {datetime.utcnow().strftime('%Y-%m-%d')}.
+{loop_block}
 """
 
 
@@ -162,6 +164,11 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
             return await tool_impls.activate_skill(args.get("name", ""))
         if name == "read_skill_resource":
             return await tool_impls.read_skill_resource(args.get("skill_name", ""), args.get("path", ""))
+        if name == "import_skill":
+            return await tool_impls.import_skill(
+                args.get("repo_url", ""),
+                force=bool(args.get("force", False)),
+            )
         return {"result": f"Unknown tool: {name}"}
     except Exception as e:
         return {"result": f"Tool error: {e}"}
@@ -194,52 +201,148 @@ async def run_turn(db, session_id: str, workspace_id: str, user_text: str, histo
 
 
 async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str, history: List[Dict[str, str]]) -> AsyncGenerator[Dict[str, Any], None]:
-    """Streaming run. Yields events: status, tool, tool_result, artifact, final, error."""
+    """Streaming run wrapped in a Plan→Execute→Verify loop.
+
+    Yields events: status, tool, tool_result, artifact, final, error, loop.
+    """
+    # ── Load loop state ──────────────────────────────────────────────
+    loop_state = le.load_state(session_id)
+    is_new_task = loop_state.phase in (le.PHASE_IDLE, le.PHASE_DONE, le.PHASE_ERROR)
+    if is_new_task:
+        le.begin_task(loop_state, user_text)
+    else:
+        loop_state.task_description = user_text or loop_state.task_description
+        le.save_state(loop_state)
+
+    yield {"type": "loop", "data": {"phase": loop_state.phase, "iteration": loop_state.iteration}}
+
     memory_facts = await _load_memory_facts(db, workspace_id)
-    system_prompt = build_system_prompt(memory_facts=memory_facts)
+    system_prompt = build_system_prompt(memory_facts=memory_facts, loop_state=loop_state)
     initial_messages = [{"role": "system", "content": system_prompt}]
     for h in history:
         initial_messages.append({"role": h["role"], "content": h["content"]})
 
     current_user_text = user_text
     final_text = ""
+    tool_loop_error = False
 
-    yield {"type": "status", "content": "thinking"}
-
-    for turn in range(MAX_TOOL_TURNS):
-        messages = initial_messages.copy()
-        messages.append({"role": "user", "content": current_user_text})
-        try:
-            response_text = await _send_kilocode_chat(messages)
-        except Exception as e:
-            yield {"type": "error", "content": f"LLM error: {e}"}
-            final_text = f"(LLM error: {e})"
-            break
-
-        initial_messages.append({"role": "user", "content": current_user_text})
-        initial_messages.append({"role": "assistant", "content": response_text})
-
-        call, _ = _parse_tool_call(response_text)
-        if not call:
-            final_text = response_text.strip()
+    # ── Main refinement loop ─────────────────────────────────────────
+    while loop_state.iteration < le.MAX_ITERATIONS:
+        if loop_state.budget_exhausted:
+            yield {"type": "loop", "data": {"phase": le.PHASE_ERROR, "message": "Budget exhausted"}}
+            final_text = "(stopped — token budget exceeded)"
             yield {"type": "final", "content": final_text}
+            le.fail_task(loop_state, "Budget exhausted")
             break
 
-        tool_name = call.get("name", "")
-        args = call.get("args", {})
-        yield {"type": "tool", "data": {"tool": tool_name, "args": args, "summary": ""}}
-        yield {"type": "status", "content": f"running {tool_name}"}
-
-        tool_result = await _execute_tool(db, workspace_id, call)
-        summary = tool_result.get("result", "")[:300]
-        yield {"type": "tool_result", "data": {"tool": tool_name, "summary": summary}}
-
-        if "artifact" in tool_result:
-            yield {"type": "artifact", "data": tool_result["artifact"]}
-
-        current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue."
+        le.transition(loop_state, le.PHASE_EXECUTE, "Starting execution turn")
+        yield {"type": "loop", "data": {"phase": le.PHASE_EXECUTE, "iteration": loop_state.iteration}}
         yield {"type": "status", "content": "thinking"}
 
-    if not final_text:
-        final_text = "(stopped after max tool turns)"
-        yield {"type": "final", "content": final_text}
+        # ── Tool-calling loop ────────────────────────────────────────
+        tool_loop_error = False
+        for turn in range(MAX_TOOL_TURNS):
+            messages = initial_messages.copy()
+            messages.append({"role": "user", "content": current_user_text})
+            try:
+                response_text = await _send_kilocode_chat(messages)
+            except Exception as e:
+                yield {"type": "error", "content": f"LLM error: {e}"}
+                final_text = f"(LLM error: {e})"
+                le.fail_task(loop_state, f"LLM error: {e}")
+                tool_loop_error = True
+                break
+
+            initial_messages.append({"role": "user", "content": current_user_text})
+            initial_messages.append({"role": "assistant", "content": response_text})
+
+            call, _ = _parse_tool_call(response_text)
+            if not call:
+                final_text = response_text.strip()
+                yield {"type": "final", "content": final_text}
+                break
+
+            tool_name = call.get("name", "")
+            yield {"type": "tool", "data": {"tool": tool_name, "args": call.get("args", {}), "summary": ""}}
+            yield {"type": "status", "content": f"running {tool_name}"}
+
+            tool_result = await _execute_tool(db, workspace_id, call)
+            summary = tool_result.get("result", "")[:300]
+            yield {"type": "tool_result", "data": {"tool": tool_name, "summary": summary}}
+
+            if "artifact" in tool_result:
+                yield {"type": "artifact", "data": tool_result["artifact"]}
+
+            loop_state.tokens_estimated += (len(response_text) + len(summary)) // 4
+            current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue."
+            yield {"type": "status", "content": "thinking"}
+
+        if tool_loop_error:
+            break
+
+        le.record_attempt(loop_state, le.PHASE_EXECUTE, final_text[:200])
+
+        # ── Verification (maker/checker split) ───────────────────────
+        if final_text:
+            if not loop_state.verification_criteria:
+                loop_state.verification_criteria = [f"Addresses: {user_text[:100]}"]
+                le.save_state(loop_state)
+
+            le.transition(loop_state, le.PHASE_VERIFY, "Running verification pass")
+            yield {"type": "loop", "data": {"phase": le.PHASE_VERIFY}}
+            yield {"type": "status", "content": "verifying output"}
+
+            verdict, notes = await le.run_verification(
+                task=loop_state.task_description,
+                output=final_text,
+                criteria=loop_state.verification_criteria,
+                llm_complete_fn=lambda p: _send_kilocode_chat([
+                    {"role": "system", "content": "You are a strict quality verifier."},
+                    {"role": "user", "content": p},
+                ]),
+            )
+
+            loop_state.verification_result = verdict
+            loop_state.verification_notes = notes
+            le.save_state(loop_state)
+
+            yield {"type": "loop", "data": {
+                "phase": le.PHASE_VERIFY,
+                "verdict": verdict,
+                "notes": notes[:300],
+                "iteration": loop_state.iteration,
+            }}
+
+            if verdict == "PASS":
+                le.complete_task(loop_state, final_text[:200])
+                yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+                break
+
+            if loop_state.iteration >= le.MAX_ITERATIONS:
+                le.complete_task(loop_state, final_text[:200])
+                yield {"type": "loop", "data": {"phase": le.PHASE_DONE, "message": "Max iterations reached"}}
+                break
+
+            # Feed verification back and loop for refinement
+            le.transition(loop_state, le.PHASE_PLAN, f"Refining after {verdict}")
+            yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": f"Refining after {verdict}"}}
+            current_user_text = (
+                f"Your previous output was verified as **{verdict}**.\n"
+                f"Verifier notes: {notes}\n\n"
+                f"Refine the output to address these issues. "
+                f"This is iteration {loop_state.iteration}.\n\n"
+                f"Original task: {user_text}"
+            )
+            continue
+
+        # No output to verify — done
+        le.complete_task(loop_state, final_text[:200])
+        yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+        break
+
+    else:
+        if not final_text:
+            final_text = "(stopped after max iterations)"
+            yield {"type": "final", "content": final_text}
+
+    yield {"type": "status", "content": ""}

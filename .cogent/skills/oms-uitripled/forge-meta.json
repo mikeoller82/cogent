@@ -1,0 +1,13 @@
+{
+  "name": "oms-uitripled",
+  "description": ">",
+  "imported_at": "2026-06-15T23:19:31Z",
+  "metadata": {},
+  "resources": [
+    "references/catalog.md",
+    "references/integration.md",
+    "references/setup.md",
+    "references/types.md",
+    "references/utils.md"
+  ]
+}

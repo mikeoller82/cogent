@@ -37,6 +37,14 @@ export const uploadFile = (file) => {
     .then((r) => r.data);
 };
 
+
+export const importSkills = (repoUrl, force = false) =>
+  api.post("/skills/import", { repo_url: repoUrl, force }).then((r) => r.data);
+export const forgeSkill = (repoUrl, force = false) =>
+  api.post("/skills/forge", { repo_url: repoUrl, force }).then((r) => r.data);
+export const listSkills = () => api.get("/skills").then((r) => r.data);
+export const skillDetail = (name) => api.get(`/skills/${encodeURIComponent(name)}`).then((r) => r.data);
+export const deleteSkill = (name) => api.delete(`/skills/${encodeURIComponent(name)}`).then((r) => r.data);
 export const artifactUrl = (path) => `${API.replace(/\/api$/, "")}${path}`;
 
 /**

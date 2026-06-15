@@ -1,0 +1,18 @@
+{
+  "name": "skf-verify-stack",
+  "description": "Pre-code stack feasibility verification against architecture and PRD documents. Use when the user requests to \"verify a tech stack\" or \"verify stack.",
+  "imported_at": "2026-06-15T23:19:26Z",
+  "metadata": {},
+  "resources": [
+    "references/coverage-patterns.md",
+    "references/coverage.md",
+    "references/health-check.md",
+    "references/init.md",
+    "references/integration-verification-rules.md",
+    "references/integrations.md",
+    "references/report.md",
+    "references/requirements.md",
+    "references/synthesize.md",
+    "assets/feasibility-report-template.md"
+  ]
+}
