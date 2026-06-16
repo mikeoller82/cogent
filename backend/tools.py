@@ -13,6 +13,7 @@ import agent_skills
 import skill_forge
 import loop_engine
 import firecrawl_service as fc
+import agent_reach_tools as art
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -129,6 +130,51 @@ TOOL_SPECS = [
             "and verification results. Helps avoid repeating failed approaches."
         ),
         "args": {},
+    },
+    {
+        "name": "agent_reach_doctor",
+        "description": "Check which agent-reach channels (YouTube, GitHub, V2EX, RSS, Bilibili) are installed and healthy. Run this first to verify you have the tools you need.",
+        "args": {},
+    },
+    {
+        "name": "youtube_transcript",
+        "description": "Extract subtitles/transcript from a YouTube video (via yt-dlp). Falls back to video metadata if no subtitles available.",
+        "args": {"url": "string - full YouTube URL (e.g. https://www.youtube.com/watch?v=...)"},
+    },
+    {
+        "name": "github_repo_info",
+        "description": "Get detailed information about a GitHub repository: stars, forks, description, language, license, topics, recent activity, and README.",
+        "args": {"repo": "string - repository in 'owner/repo' format (e.g. 'Panniantong/Agent-Reach')"},
+    },
+    {
+        "name": "github_search",
+        "description": "Search GitHub repositories by keyword, sorted by stars. Good for finding popular tools, libraries, and frameworks.",
+        "args": {"query": "string - search keywords", "limit": "integer, optional (default 5, max 20)"},
+    },
+    {
+        "name": "github_search_code",
+        "description": "Search GitHub code by keyword. Returns matching files with repository and path. Requires 'gh' CLI to be installed.",
+        "args": {"query": "string - code search query", "limit": "integer, optional (default 5, max 20)"},
+    },
+    {
+        "name": "v2ex_hot_topics",
+        "description": "Get current hot topics from V2EX (tech community). Shows titles, reply counts, and node categories.",
+        "args": {"limit": "integer, optional (default 20, max 50)"},
+    },
+    {
+        "name": "v2ex_topic_detail",
+        "description": "Get full details of a V2EX topic including the post content and all replies.",
+        "args": {"topic_id": "integer - V2EX topic ID from the URL"},
+    },
+    {
+        "name": "rss_read",
+        "description": "Parse and read an RSS/Atom feed. Returns recent entries with titles, dates, summaries, and links.",
+        "args": {"url": "string - RSS/Atom feed URL", "limit": "integer, optional (default 10, max 50)"},
+    },
+    {
+        "name": "bilibili_search",
+        "description": "Search Bilibili videos by keyword. Returns video titles, authors, play counts, and URLs.",
+        "args": {"query": "string - search keyword", "limit": "integer, optional (default 5, max 20)"},
     },
 ]
 

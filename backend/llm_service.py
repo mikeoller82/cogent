@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 import agent_skills
 import tools as tool_impls
+import agent_reach_tools as art
 import loop_engine as le
 
 load_dotenv()
@@ -49,7 +50,8 @@ Issue ONE tool call per turn. You may chain multiple turns.
 - Lead with your conclusion or answer, then explain if needed.
 - Use markdown formatting in every chat response: **bold** for key terms, `code` for filenames/commands/API calls, bullet lists for multiple items, and the occasional heading for structure.
 - When the user shares a preference, fact, or recurring need, silently call save_memory.
-- For research tasks, web_search first.
+- For research tasks, use web_search for general web searches, plus the agent-reach tools for platform-specific searches (GitHub, YouTube, V2EX, RSS, Bilibili).
+- When researching a topic: combine multiple channels — GitHub for open-source tools, YouTube for video walkthroughs, V2EX for community opinions, RSS for ongoing coverage.
 
 ## Design quality (CRITICAL — your work must look designed, not generic)
 
@@ -172,6 +174,24 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
                 args.get("repo_url", ""),
                 force=bool(args.get("force", False)),
             )
+        if name == "agent_reach_doctor":
+            return await art.agent_reach_doctor()
+        if name == "youtube_transcript":
+            return await art.youtube_transcript(args.get("url", ""))
+        if name == "github_repo_info":
+            return await art.github_repo_info(args.get("repo", ""))
+        if name == "github_search":
+            return await art.github_search(args.get("query", ""), int(args.get("limit", 5)))
+        if name == "github_search_code":
+            return await art.github_search_code(args.get("query", ""), int(args.get("limit", 5)))
+        if name == "v2ex_hot_topics":
+            return await art.v2ex_hot_topics(int(args.get("limit", 20)))
+        if name == "v2ex_topic_detail":
+            return await art.v2ex_topic_detail(int(args.get("topic_id", 0)))
+        if name == "rss_read":
+            return await art.rss_read(args.get("url", ""), int(args.get("limit", 10)))
+        if name == "bilibili_search":
+            return await art.bilibili_search(args.get("query", ""), int(args.get("limit", 5)))
         return {"result": f"Unknown tool: {name}"}
     except Exception as e:
         return {"result": f"Tool error: {e}"}
