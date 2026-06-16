@@ -1,0 +1,29 @@
+{
+  "name": "@cogent/tui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cogent terminal UI — OpenTUI-powered interactive CLI for the AI co-worker",
+  "bin": {
+    "cogent": "./bin/cogent"
+  },
+  "scripts": {
+    "build": "bun build ./src/cli.tsx --outdir ./dist --target bun --external @opentui/core-darwin-x64 --external @opentui/core-darwin-arm64 --external @opentui/core-linux-arm64 --external @opentui/core-linux-arm64-musl --external @opentui/core-win32-x64 --external @opentui/core-win32-arm64",
+    "dev": "bun build ./src/cli.tsx --outdir ./dist --target bun --external @opentui/core-darwin-x64 --external @opentui/core-darwin-arm64 --external @opentui/core-linux-arm64 --external @opentui/core-linux-arm64-musl --external @opentui/core-win32-x64 --external @opentui/core-win32-arm64 --watch",
+    "start": "bun run dist/cli.js",
+    "link": "bun link",
+    "postinstall": "bun run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@opentui/core": "^0.4.1",
+    "@opentui/core-linux-x64": "^0.4.1",
+    "@opentui/react": "^0.4.1",
+    "react": "19",
+    "react-reconciler": "0.33.0"
+  },
+  "devDependencies": {
+    "@types/react": "19",
+    "typescript": "^5.5.0"
+  }
+}

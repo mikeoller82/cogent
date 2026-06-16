@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Cogent TUI — global launcher
+#
+# Resolves through bun-link / symlink chains to find the actual project root.
+# Install via `bun link @cogent/tui` in tui/ directory.
+#
+# Usage:
+#   cogent [options]
+
+# Resolve $0 through symlinks to find the real script location
+SCRIPT_SRC="$(realpath "$0" 2>/dev/null || readlink -f "$0" 2>/dev/null || echo "$0")"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_SRC")" && pwd)"
+TUI_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Use the built bundle, or fall back to bun source
+if [ -f "$TUI_DIR/dist/cli.js" ]; then
+  exec bun "$TUI_DIR/dist/cli.js" "$@"
+elif [ -f "$TUI_DIR/src/cli.tsx" ]; then
+  echo "Cogent TUI: building..." >&2
+  cd "$TUI_DIR" && bun run build >/dev/null 2>&1
+  exec bun "$TUI_DIR/dist/cli.js" "$@"
+else
+  echo "Error: Cogent TUI not found. Run setup from the cogent project root." >&2
+  exit 1
+fi

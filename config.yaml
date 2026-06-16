@@ -11,13 +11,13 @@ model:
   # Default LLM — OpenAI-compatible chat completions
   provider: kilocode
   base_url: https://api.kilo.ai/api/gateway/chat/completions
-  default: nex-agi/nex-n2-pro:free
+  default: nvidia/nemotron-3-ultra-550b-a55b:free
   # api_key: read from KILOCODE_API_KEY env var
 
 agent:
   max_turns: 50               # max tool-using turns per message
-  max_iterations: 50          # max Plan→Execute→Verify cycles
-  verbose: false              # when true, narrate every tool call
+  max_iterations: 90          # max Plan→Execute→Verify cycles
+  verbose: true              # when true, narrate every tool call
   reasoning_effort: medium    # minimal | low | medium | high
 
 database:

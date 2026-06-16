@@ -173,10 +173,10 @@ TOOL_SPECS = [
     },
     {
         "name": "run_shell",
-        "description": "Run a shell command (non-interactive, 30s timeout). Use for file ops, git, system tasks, Python one-liners, npm/bun/pip. NOT for interactive programs or long-running servers.",
+        "description": "Run a shell command (non-interactive). Up to 600s timeout for rendering, compilation, and batch operations. Use for file ops, git, npm/npx/bun, hyperframes render, system tasks.",
         "args": {
             "command": "string - shell command to execute",
-            "timeout": "integer, optional - timeout in seconds (default 30, max 120)",
+            "timeout": "integer, optional - timeout in seconds (default 30, max 600)",
         },
     },
     {
@@ -707,9 +707,11 @@ async def schedule_task(db, workspace_id: str, name: str, cadence: str, time: st
 
 
 async def run_shell(command: str, timeout: int = 30) -> dict:
-    """Run a shell command with timeout. Returns stdout, stderr, exit code."""
+    """Run a shell command with timeout. Returns stdout, stderr, exit code.
+    Default timeout is 30s; max is 600s (10 min) for rendering/processing.
+    """
     import subprocess as sp
-    timeout = min(timeout, 120)
+    timeout = min(timeout, 600)
     try:
         proc = await asyncio.create_subprocess_shell(
             command,

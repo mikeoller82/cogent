@@ -378,3 +378,79 @@ Each session's loop operates independently with:
 | PDF | ReportLab |
 | Web search | DuckDuckGo (via duckduckgo_search) |
 | File extract | pypdf, openpyxl |
+
+---
+
+## Terminal UI (OpenTUI)
+
+Cogent includes a terminal-based user interface powered by [OpenTUI](https://opentui.com) — a TypeScript library on a native Zig core. Use it as an alternative to the React web UI when working in the terminal.
+
+### Quick start
+
+```bash
+# From the project root
+cd tui && bun install && bun run build
+
+# Run the TUI (server must be running separately)
+./bin/cogent
+# or
+bun run start
+
+# Start with an explicit server URL
+./bin/cogent --url http://localhost:8000
+
+# Global install via bun link
+cd tui && bun run link
+# Now `cogent` is available anywhere
+```
+
+### Usage
+
+```
+cogent [options]
+
+  -u, --url <url>     Server URL (default: http://localhost:8000)
+  -s, --server        Auto-start the Cogent backend server
+  -h, --help          Show this help message
+  -v, --version       Show version
+```
+
+### TUI commands
+
+| Command | Action |
+|---|---|
+| `/help` | Show available commands |
+| `/clear` | Clear the conversation |
+| `/connect` | Reconnect to server |
+| `/quit` | Exit Cogent |
+
+| Key | Action |
+|---|---|
+| `Ctrl+C` | Exit Cogent |
+
+### Architecture
+
+The TUI is a standalone bundle in `tui/`:
+
+```
+tui/
+├── bin/cogent              # Global launcher script
+├── src/
+│   ├── cli.tsx             # Thin entrypoint (--help/--version before OpenTUI)
+│   ├── runner/main.tsx     # Main runner (creates renderer, renders App)
+│   ├── App.tsx             # Root layout component
+│   ├── theme.ts            # Color palette
+│   ├── types.ts            # Message type definitions
+│   ├── client/gateway.ts   # SSE gateway client
+│   ├── hooks/useConversation.ts  # Stateful conversation management
+│   └── components/
+│       ├── Header.tsx      # ASCII logo + branding
+│       ├── ChatArea.tsx    # Scrollable message list
+│       ├── InputBar.tsx    # Prompt input
+│       └── StatusBar.tsx   # Connection info, counters
+├── dist/                   # Built output (cli.js + native .so)
+├── package.json
+└── tsconfig.json
+```
+
+The TUI connects to the Cogent backend via SSE streaming at `/api/sessions/{id}/messages/stream`. It renders chat messages, tool calls, status updates, and loop-engineering events into a scrollable terminal interface.

@@ -66,3 +66,127 @@
  {'/etc/localtime is a symlink to': 'America/Chicago'}
 2026-06-16 02:46:10,441 INFO cogent.scheduler: Scheduler started
 2026-06-16 02:46:10,445 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 02:47:14,541 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:48:20,180 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:48:29,513 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after PARTIAL
+2026-06-16 02:48:29,513 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:48:36,164 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:48:43,998 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:48:43,998 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:49:40,021 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:51:38,733 INFO [589de3b0-fe8] cogent.scheduler: Scheduler stopped
+2026-06-16 02:51:39,674 DEBUG tzlocal: /etc/localtime found
+2026-06-16 02:51:39,675 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 02:51:39,675 INFO cogent.scheduler: Scheduler started
+2026-06-16 02:51:39,679 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 02:51:52,206 INFO cogent.scheduler: Scheduler stopped
+2026-06-16 02:51:53,310 DEBUG tzlocal: /etc/localtime found
+2026-06-16 02:51:53,310 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 02:51:53,311 INFO cogent.scheduler: Scheduler started
+2026-06-16 02:51:53,315 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 02:52:33,575 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:53:52,367 INFO [589de3b0-fe8] cogent.scheduler: Scheduler stopped
+2026-06-16 02:54:18,003 DEBUG tzlocal: /etc/localtime found
+2026-06-16 02:54:18,003 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 02:54:18,003 INFO cogent.scheduler: Scheduler started
+2026-06-16 02:54:18,007 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 02:55:18,904 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:56:01,821 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:56:11,425 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after PARTIAL
+2026-06-16 02:56:11,425 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:56:21,876 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:56:44,012 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after PARTIAL
+2026-06-16 02:56:44,012 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:57:40,093 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 03:48:59,567 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 03:49:30,325 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 03:49:35,028 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 03:49:35,028 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 03:49:59,170 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 03:50:05,786 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 03:50:05,787 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 03:52:18,083 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 03:53:05,259 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 03:53:05,259 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 03:53:34,869 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 03:53:37,822 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 03:53:37,822 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 03:55:14,586 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 03:55:25,362 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after PARTIAL
+2026-06-16 03:55:25,362 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 03:58:23,425 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 03:58:52,082 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 03:58:52,082 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 04:01:40,982 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 04:01:57,200 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 04:01:57,201 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 04:02:33,387 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 04:02:40,016 INFO [589de3b0-fe8] cogent.scheduler: Scheduler stopped
+2026-06-16 04:21:30,427 DEBUG tzlocal: /etc/localtime found
+2026-06-16 04:21:30,427 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 04:21:30,428 INFO cogent.scheduler: Scheduler started
+2026-06-16 04:21:30,432 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 04:22:21,070 DEBUG [f851fc64-fe4] cogent.loop_engine: Loop f851fc64-fe4e-4ed1-81d4-fb20c3c5e66b: plan → execute — Starting execution turn
+2026-06-16 04:36:09,827 DEBUG [f851fc64-fe4] cogent.loop_engine: Loop f851fc64-fe4e-4ed1-81d4-fb20c3c5e66b: plan → execute — Starting execution turn
+2026-06-16 04:37:49,706 DEBUG [f851fc64-fe4] cogent.loop_engine: Loop f851fc64-fe4e-4ed1-81d4-fb20c3c5e66b: execute → verify — Running verification pass
+2026-06-16 04:38:32,662 DEBUG [f851fc64-fe4] cogent.loop_engine: Loop f851fc64-fe4e-4ed1-81d4-fb20c3c5e66b: verify → plan — Refining after PARTIAL
+2026-06-16 04:38:32,662 DEBUG [f851fc64-fe4] cogent.loop_engine: Loop f851fc64-fe4e-4ed1-81d4-fb20c3c5e66b: plan → execute — Starting execution turn
+2026-06-16 09:10:53,455 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:10:53,456 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:10:53,456 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:19:52,649 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:19:52,650 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:19:52,650 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:27:51,210 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:27:51,211 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:27:51,211 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:31:41,925 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:31:41,926 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:31:41,926 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:35:27,333 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:35:27,333 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:35:27,333 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:37:18,449 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:37:18,449 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:37:18,449 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:37:18,454 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 09:37:18,454 INFO cogent.scheduler: Scheduler stopped
+2026-06-16 09:37:41,294 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:37:41,295 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:37:41,295 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:37:41,299 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 09:37:41,300 INFO cogent.scheduler: Scheduler stopped
+2026-06-16 09:39:02,528 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:39:02,528 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:39:02,528 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:39:02,533 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 09:39:02,533 INFO cogent.scheduler: Scheduler stopped
+2026-06-16 09:40:06,920 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:40:06,921 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:40:06,921 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:40:06,926 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 09:40:06,926 INFO cogent.scheduler: Scheduler stopped
+2026-06-16 09:40:42,626 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:40:42,627 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:40:42,627 INFO cogent.scheduler: Scheduler started
+2026-06-16 09:40:42,632 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 09:42:45,017 DEBUG [39c03b5a-58c] cogent.loop_engine: Loop 39c03b5a-58c0-46cc-b679-9285b76bde42: plan → execute — Starting execution turn
+2026-06-16 09:45:40,086 INFO [39c03b5a-58c] cogent.scheduler: Scheduler stopped
+2026-06-16 09:46:08,738 DEBUG tzlocal: /etc/localtime found
+2026-06-16 09:46:08,739 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 09:46:08,739 INFO cogent.scheduler: Scheduler started

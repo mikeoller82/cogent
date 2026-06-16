@@ -27,10 +27,10 @@ BACKEND_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BACKEND_DIR.parent
 LOOP_STATE_DIR = PROJECT_ROOT / "memory" / "loops"
 
-MAX_ITERATIONS = 50         # max Plan→Execute→Verify cycles per task
+MAX_ITERATIONS = 90        # max Plan→Execute→Verify cycles per task
 MAX_TOKENS_PER_TASK = 200_000  # rough budget ceiling
 WARN_TOKEN_PCT = 0.75       # warn at 75% of budget
-CONTINUE_MAX = 50          # max auto-continuation re-prompts per session
+CONTINUE_MAX = 90          # max auto-continuation re-prompts per session
 
 # ── Phase enum ───────────────────────────────────────────────────────────
 PHASE_IDLE = "idle"
