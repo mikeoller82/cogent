@@ -1,0 +1,10 @@
+{
+  "name": "clone-website",
+  "description": "Reverse-engineer and clone one or more websites in one shot \u2014 extracts assets, CSS, and content section-by-section and proactively dispatches parallel builder agents in worktrees as it goes. Use this whenever the user wants to clone, replicate, rebuild, reverse-engineer, or copy any website. Also triggers on phrases like \"make a copy of this site\", \"rebuild this page\", \"pixel-perfect clone\". Provide one or more target URLs as arguments.",
+  "imported_at": "2026-06-16T05:32:05Z",
+  "metadata": {
+    "argument-hint": "<url1> [<url2> ...]",
+    "user-invocable": true
+  },
+  "resources": []
+}
