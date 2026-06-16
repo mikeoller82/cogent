@@ -424,6 +424,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               liveIteration={liveIteration}
               liveVerdict={liveVerdict}
               isStreaming
+            />
           )}
         </div>
       </div>

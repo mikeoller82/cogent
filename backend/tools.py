@@ -22,7 +22,7 @@ from reportlab.platypus import (
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.lib import colors
 
-ARTIFACTS_DIR = Path("/app/backend/artifacts")
+ARTIFACTS_DIR = Path("artifacts")
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------------- Theme ----------------
@@ -234,24 +234,6 @@ async def get_loop_state(session_id: str = "") -> dict:
         for d in state.decisions[-3:]:
             lines.append(f"  - {d}")
     return {"result": "\n".join(lines)}
-        try:
-            with DDGS() as ddg:
-                return list(ddg.text(query, max_results=max_results))
-        except Exception as e:
-            return {"_error": str(e)}
-
-    results = await asyncio.to_thread(_run)
-    if isinstance(results, dict) and "_error" in results:
-        return {"result": f"Search failed: {results['_error']}"}
-    if not results:
-        return {"result": "No results found."}
-    lines = []
-    for i, r in enumerate(results[:max_results], 1):
-        title = r.get("title", "(no title)")
-        href = r.get("href") or r.get("url", "")
-        body = r.get("body", "")
-        lines.append(f"[{i}] {title}\n    {href}\n    {body}")
-    return {"result": "\n\n".join(lines)}
 
 
 # ---------------- PDF Generation ----------------
