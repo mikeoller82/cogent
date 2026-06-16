@@ -271,13 +271,14 @@ function MarkdownRenderer({ content }) {
   }), []);
 
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      components={components}
-      className="prose-content"
-    >
-      {content}
-    </ReactMarkdown>
+    <div className="prose-content">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={components}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }
 

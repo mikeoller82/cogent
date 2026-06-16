@@ -1,0 +1,7 @@
+{
+  "name": "full-output-enforcement",
+  "description": "Overrides default LLM truncation behavior. Enforces complete code generation, bans placeholder patterns, and handles token-limit splits cleanly. Apply to any task requiring exhaustive, unabridged output.",
+  "imported_at": "2026-06-16T01:17:47Z",
+  "metadata": {},
+  "resources": []
+}
