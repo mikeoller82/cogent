@@ -85,6 +85,90 @@ Today's date: {datetime.utcnow().strftime('%Y-%m-%d')}.
 """
 
 
+
+def _tool_action_label(name: str, args: dict) -> str:
+    """Generate a human-readable label for what a tool is doing."""
+    if name == "web_search":
+        q = (args.get("query") or "").strip()
+        return f'searching web for "{q}"' if q else "searching the web"
+    elif name == "web_scrape":
+        url = (args.get("url") or "").strip()
+        return f"reading {url}" if url else "reading a webpage"
+    elif name == "activate_skill":
+        skill = (args.get("name") or "").strip()
+        return f"loading skill: {skill}" if skill else "activating a skill"
+    elif name == "read_skill_resource":
+        path = (args.get("path") or "").strip()
+        return f"reading {path} from skill" if path else "reading skill resource"
+    elif name == "generate_pdf":
+        title = (args.get("title") or "").strip()
+        return f'generating PDF: "{title}"' if title else "generating PDF"
+    elif name == "generate_webapp":
+        title = (args.get("title") or "").strip()
+        return f'building web app: "{title}"' if title else "building web app"
+    elif name == "save_memory":
+        key = (args.get("key") or "").strip()
+        return f"saving: {key}" if key else "saving to memory"
+    elif name == "schedule_task":
+        task_name = (args.get("name") or "").strip()
+        return f'scheduling: "{task_name}"' if task_name else "scheduling a task"
+    elif name == "import_skill":
+        repo = (args.get("repo_url") or "").strip()
+        return f"importing skills from {repo}" if repo else "importing skills"
+    elif name == "youtube_transcript":
+        url = (args.get("url") or "").strip()
+        return f"fetching transcript from {url}" if url else "fetching YouTube transcript"
+    elif name == "github_repo_info":
+        repo = (args.get("repo") or "").strip()
+        return f"looking up repo: {repo}" if repo else "looking up GitHub repo"
+    elif name == "github_search":
+        q = (args.get("query") or "").strip()
+        return f'searching GitHub for "{q}"' if q else "searching GitHub"
+    elif name == "rss_read":
+        url = (args.get("url") or "").strip()
+        return f"reading feed from {url}" if url else "reading RSS feed"
+    elif name == "v2ex_hot_topics":
+        return "fetching V2EX hot topics"
+    elif name == "bilibili_search":
+        q = (args.get("query") or "").strip()
+        return f'searching Bilibili for "{q}"' if q else "searching Bilibili"
+    elif name == "get_loop_state":
+        return "checking loop state"
+    return name.replace("_", " ")
+
+
+def _tool_display_summary(name: str, args: dict, raw_summary: str) -> str:
+    """Generate a one-line summary of what a tool returned, for the frontend status bar."""
+    if name == "web_search":
+        q = (args.get("query") or "").strip()
+        count = raw_summary.count("\n[") + (1 if raw_summary.startswith("[") else 0)
+        return f'found {count} results for "{q}"' if count else "search completed"
+    elif name == "web_scrape":
+        return "page content extracted"
+    elif name == "activate_skill":
+        skill = (args.get("name") or "").strip()
+        return f'skill "{skill}" ready' if skill else "skill activated"
+    elif name == "generate_pdf":
+        return "PDF generated"
+    elif name == "generate_webapp":
+        return "web app deployed"
+    elif name == "save_memory":
+        return "saved"
+    elif name == "schedule_task":
+        return "task scheduled"
+    elif name == "import_skill":
+        return "skills imported"
+    elif name == "youtube_transcript":
+        return "transcript fetched"
+    elif name == "github_repo_info":
+        return "repo info retrieved"
+    elif name == "github_search":
+        q = (args.get("query") or "").strip()
+        return f'GitHub results for "{q}"' if q else "GitHub search done"
+    elif name in ("rss_read", "v2ex_hot_topics", "bilibili_search"):
+        return "results retrieved"
+    return f"{name.replace('_', ' ')} complete"
+
 TOOL_RE = re.compile(r"<tool>\s*(\{.*?\})\s*</tool>", re.DOTALL)
 
 
@@ -260,8 +344,8 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
         le.transition(loop_state, le.PHASE_EXECUTE, "Starting execution turn")
         yield {"type": "loop", "data": {"phase": le.PHASE_EXECUTE, "iteration": loop_state.iteration}}
-        yield {"type": "status", "content": "thinking"}
-
+        yield {"type": "status", "content": "analyzing request and planning approach"}
+        
         # ── Tool-calling loop ────────────────────────────────────────
         tool_loop_error = False
         for turn in range(MAX_TOOL_TURNS):
@@ -286,20 +370,22 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 break
 
             tool_name = call.get("name", "")
-            yield {"type": "tool", "data": {"tool": tool_name, "args": call.get("args", {}), "summary": ""}}
-            yield {"type": "status", "content": f"running {tool_name}"}
-
+            args = call.get("args", {})
+            label = _tool_action_label(tool_name, args)
+            yield {"type": "tool", "data": {"tool": tool_name, "args": args, "label": label}}
+            yield {"type": "status", "content": label}
+            
             tool_result = await _execute_tool(db, workspace_id, call)
-            summary = tool_result.get("result", "")[:300]
-            yield {"type": "tool_result", "data": {"tool": tool_name, "summary": summary}}
+            summary = tool_result.get("result", "")[:500]
+            display = _tool_display_summary(tool_name, args, summary)
+            yield {"type": "tool_result", "data": {"tool": tool_name, "summary": summary, "display": display}}
 
             if "artifact" in tool_result:
                 yield {"type": "artifact", "data": tool_result["artifact"]}
 
             loop_state.tokens_estimated += (len(response_text) + len(summary)) // 4
             current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue."
-            yield {"type": "status", "content": "thinking"}
-
+            yield {"type": "status", "content": "processing results and continuing work"}
         if tool_loop_error:
             break
 
@@ -313,7 +399,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
             le.transition(loop_state, le.PHASE_VERIFY, "Running verification pass")
             yield {"type": "loop", "data": {"phase": le.PHASE_VERIFY}}
-            yield {"type": "status", "content": "verifying output"}
+            yield {"type": "status", "content": "verifying output quality against criteria"}
 
             verdict, notes = await le.run_verification(
                 task=loop_state.task_description,
@@ -347,6 +433,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 break
 
             # Feed verification back and loop for refinement
+            yield {"type": "status", "content": f"refining output after {verdict.lower()} — reworking based on feedback"}
             le.transition(loop_state, le.PHASE_PLAN, f"Refining after {verdict}")
             yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": f"Refining after {verdict}"}}
             current_user_text = (

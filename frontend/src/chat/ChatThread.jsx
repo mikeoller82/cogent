@@ -33,8 +33,16 @@ const toolActiveLabel = {
   save_memory: "saving to memory",
   recall_memory: "recalling memory",
   schedule_task: "scheduling task",
+  activate_skill: "loading a skill",
+  web_scrape: "reading a web page",
+  import_skill: "importing skills",
+  youtube_transcript: "fetching transcript",
+  github_repo_info: "looking up repo",
+  github_search: "searching GitHub",
+  rss_read: "reading feed",
+  v2ex_hot_topics: "fetching V2EX topics",
+  bilibili_search: "searching Bilibili",
 };
-
 const SUGGESTIONS = [
   { icon: Search, text: "Research the top 5 AI agent startups in 2026 and summarize them." },
   { icon: FileText, text: "Make me a 1-page PDF brief on prompt-engineering best practices." },
@@ -326,7 +334,37 @@ function UserBubble({ m }) {
   );
 }
 
-function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, liveIteration, liveVerdict, isStreaming }) {
+
+function ActivityLog({ entries }) {
+  if (!entries || entries.length === 0) return null;
+  return (
+    <div className="activity-log space-y-1 py-2">
+      {entries.map((entry) => (
+        <div key={entry.id} className="flex items-center gap-2 text-[12px] leading-[1.5]">
+          {entry.type === "phase" && (
+            <span className={`w-1.5 h-1.5 rounded-full loop-dot--${entry.phase}`} />
+          )}
+          {entry.type === "tool" && (
+            <span className="w-1.5 h-1.5 rounded-full bg-[#b5a8f5] pulse-soft flex-shrink-0" />
+          )}
+          {entry.type === "tool_result" && (
+            <span className="flex-shrink-0 w-3 h-3 rounded-full bg-[#22c55e]/30 flex items-center justify-center">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            </span>
+          )}
+          {entry.type === "think" && (
+            <span className="flex-shrink-0 text-[#8a8278]">&#9654;</span>
+          )}
+          <span className={entry.type === "tool_result" ? "text-[#8a8278]" : "text-[#a8a092]"}>
+            {entry.text}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, liveIteration, liveVerdict, isStreaming, activityLog }) {
   const tools = isStreaming ? liveTools : (m.tool_uses || []);
   const arts = isStreaming ? liveArtifacts : (m.artifacts || []);
   return (
@@ -362,6 +400,11 @@ function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, l
             <span className="italic">{liveStatus}…</span>
           </div>
         )}
+        {isStreaming && activityLog && activityLog.length > 0 && (
+          <div className="border-l-2 border-[#f5ede0]/10 pl-3 ml-1">
+            <ActivityLog entries={activityLog} />
+          </div>
+        )}
         {m.content && (
           <div className="cogent-markdown">
             <MarkdownRenderer content={m.content} />
@@ -384,7 +427,6 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   const [loading, setLoading] = useState(true);
   const [attachments, setAttachments] = useState([]); // staged uploads
   const [uploading, setUploading] = useState(false);
-
   // loop engineering live state
   const [livePhase, setLivePhase] = useState("");
   const [liveIteration, setLiveIteration] = useState(0);
@@ -393,15 +435,22 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   const [liveStatus, setLiveStatus] = useState("");
   const [liveTools, setLiveTools] = useState([]);
   const [liveArtifacts, setLiveArtifacts] = useState([]);
-
+  // activity log — list of recent actions with detailed labels
+  const [activityLog, setActivityLog] = useState([]);
+  const activityIdRef = useRef(0);
   const scrollerRef = useRef(null);
   const fileInputRef = useRef(null);
-
+  
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
       const el = scrollerRef.current;
       if (el) el.scrollTop = el.scrollHeight;
     });
+  };
+
+  const pushActivity = (entry) => {
+    const id = ++activityIdRef.current;
+    setActivityLog((prev) => [...prev.slice(-9), { ...entry, id }]);
   };
 
   useEffect(() => {
@@ -455,7 +504,8 @@ export default function ChatThread({ sessionId, refreshSessions }) {
     setLiveStatus("thinking");
     setLiveTools([]);
     setLiveArtifacts([]);
-
+    setActivityLog([]);
+    activityIdRef.current = 0;
     const optimistic = {
       id: `tmp-${Date.now()}`,
       role: "user",
@@ -471,8 +521,11 @@ export default function ChatThread({ sessionId, refreshSessions }) {
     try {
       await streamMessage(sessionId, text, sentAttachments, (evt) => {
         if (evt.type === "status") {
-          if (evt.content === "thinking") setLiveStatus("thinking");
-          else setLiveStatus(evt.content);
+          const statusText = evt.content || "";
+          setLiveStatus(statusText);
+          if (statusText && statusText !== "thinking") {
+            pushActivity({ type: "think", text: statusText });
+          }
         } else if (evt.type === "loop") {
           const d = evt.data || {};
           if (d.phase) setLivePhase(d.phase);
@@ -480,23 +533,34 @@ export default function ChatThread({ sessionId, refreshSessions }) {
           if (d.verdict !== undefined) {
             setLiveVerdict(d.verdict);
             setLiveVerdictNotes(d.notes || "");
+            pushActivity({ type: "tool_result", text: `verdict: ${d.verdict}${d.notes ? " — " + d.notes.slice(0, 120) : ""}` });
+          }
+          if (d.phase && d.phase !== "done" && d.phase !== "error") {
+            pushActivity({ type: "phase", phase: d.phase, text: `phase: ${d.phase}` });
           }
           if (d.phase === "done" || d.phase === "error") {
             // keep final phase visible until stream ends
           }
         } else if (evt.type === "tool") {
-          setLiveStatus(toolActiveLabel[evt.data.tool] || `using ${evt.data.tool}`);
+          const label = evt.data.label || toolActiveLabel[evt.data.tool] || `using ${evt.data.tool}`;
+          setLiveStatus(label);
           setLiveTools((prev) => [...prev, evt.data]);
+          pushActivity({ type: "tool", tool: evt.data.tool, text: label });
         } else if (evt.type === "tool_result") {
-          // no-op visually
+          const display = evt.data.display || "completed";
+          if (display) {
+            pushActivity({ type: "tool_result", text: display });
+          }
         } else if (evt.type === "artifact") {
           setLiveArtifacts((prev) => [...prev, evt.data]);
         } else if (evt.type === "final") {
           setLiveStatus("");
+          pushActivity({ type: "tool_result", text: "generating final response" });
         } else if (evt.type === "done") {
           // final assistant message will be appended via refresh below
         } else if (evt.type === "error") {
           toast.error(evt.content);
+          pushActivity({ type: "tool_result", text: `error: ${evt.content}` });
         }
         scrollToBottom();
       });
@@ -571,6 +635,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               liveIteration={liveIteration}
               liveVerdict={liveVerdict}
               isStreaming
+              activityLog={activityLog}
             />
           )}
         </div>

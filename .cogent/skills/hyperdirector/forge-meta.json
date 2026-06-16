@@ -1,0 +1,16 @@
+{
+  "name": "hyperdirector",
+  "description": "Hermes video director enhancement pack powered by HyperFrames. Turns articles, product pages, PRDs, README files, data charts, and brand materials into editable HyperFrames video projects and rendered MP4/WebM outputs. Use this skill when the user asks to create a video, make a short video, turn content into video, generate a video for WeChat / TikTok / YouTube, or mentions HyperDirector, video script, storyboard, or video template. User-facing video content (scripts, captions, CTA, on-screen copy) follows brief.language; default to zh-CN for Chinese users.",
+  "imported_at": "2026-06-16T02:17:10Z",
+  "metadata": {},
+  "resources": [
+    "scripts/check-composition-hazards.js",
+    "scripts/check-env.js",
+    "scripts/check-hyperframes-env.js",
+    "scripts/check-output-contract.js",
+    "scripts/leak-scan.js",
+    "scripts/validate-brand-kit.js",
+    "scripts/validate-brief.js",
+    "scripts/validate-storyboard.js"
+  ]
+}

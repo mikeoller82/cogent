@@ -8,6 +8,12 @@ import os
 import asyncio
 from typing import Optional
 
+import warnings
+# firecrawl-py 4.28.3 defines json fields that shadow BaseModel.json() — harmless
+# but noisy. This is the module that imports firecrawl, so suppress before the
+# import triggers the warning.
+warnings.filterwarnings("ignore", message='Field name "json" in "MonitorPageDiff" shadows')
+warnings.filterwarnings("ignore", message='Field name "json" in "MonitorPageSnapshot" shadows')
 from firecrawl import FirecrawlApp
 
 # Env var names
