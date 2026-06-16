@@ -1,0 +1,26 @@
+# Cogent trajectory compression config (adapted from Hermes)
+tokenizer:
+  name: cl100k_base  # OpenAI tokenizer — matches Cogent's KiloCode API
+
+compression:
+  target_max_tokens: 16000
+  summary_target_tokens: 500
+
+protected_turns:
+  keep_first: 1      # Always keep system prompt
+  keep_last: 4        # Always keep last 4 turns
+
+summarization:
+  model: cogent-default  # Use Cogent's configured model
+  temperature: 0.3
+  max_retries: 2
+
+output:
+  add_summary_notice: true
+  output_suffix: _compressed
+
+processing:
+  max_workers: 2
+  timeout_per_trajectory: 120
+  skip_under_target: true
+  save_over_limit: true

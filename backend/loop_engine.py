@@ -27,9 +27,10 @@ BACKEND_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BACKEND_DIR.parent
 LOOP_STATE_DIR = PROJECT_ROOT / "memory" / "loops"
 
-MAX_ITERATIONS = 5          # max Plan→Execute→Verify cycles per task
+MAX_ITERATIONS = 50         # max Plan→Execute→Verify cycles per task
 MAX_TOKENS_PER_TASK = 200_000  # rough budget ceiling
 WARN_TOKEN_PCT = 0.75       # warn at 75% of budget
+CONTINUE_MAX = 50          # max auto-continuation re-prompts per session
 
 # ── Phase enum ───────────────────────────────────────────────────────────
 PHASE_IDLE = "idle"
@@ -55,6 +56,8 @@ class LoopState:
     iteration: int = 0
     task_description: str = ""
     verification_criteria: List[str] = field(default_factory=list)
+    continue_count: int = 0  # times auto-continue was triggered
+    last_plan_text: str = ""  # last detected plan-like text
 
     # Tracking
     attempts: List[Dict[str, Any]] = field(default_factory=list)  # {phase, summary, timestamp}
@@ -142,6 +145,8 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.iteration = 0
     state.task_description = task
     state.verification_criteria = criteria or []
+    state.continue_count = 0
+    state.last_plan_text = ""
     state.attempts = []
     state.errors = []
     state.decisions = []
@@ -164,7 +169,6 @@ def record_attempt(state: LoopState, phase: str, summary: str) -> None:
         "timestamp": datetime.utcnow().isoformat() + "Z",
     })
     save_state(state)
-
 
 def complete_task(state: LoopState, summary: str = "") -> None:
     state.phase = PHASE_DONE
@@ -192,7 +196,7 @@ def escalate_task(state: LoopState, reason: str) -> None:
 LOOP_SYSTEM_PROMPT = """
 ## Loop Engineering Protocol
 
-Every task follows Plan → Execute → Verify → (refine or done). You manage this cycle yourself.
+Every task follows Plan → Execute → Verify → Iterate until Goal Success(You do not stop untilthe user task is complete). You manage this cycle yourself by being proactive.
 
 ### Protocol
 
@@ -208,15 +212,15 @@ Every task follows Plan → Execute → Verify → (refine or done). You manage 
    - Are there errors, edge cases, or missing pieces?
    - Rate your confidence: HIGH / MEDIUM / LOW
 
-4. **Iterate or done**:
+4. **Iterate until Goal Success**:
    - If verification passes → signal completion.
    - If verification fails or is LOW confidence → refine and loop back to EXECUTE.
-   - If stuck after multiple attempts → escalate by explaining what's blocking.
+   - If stuck after multiple attempts → escalate by iterating again until the task is complete and GOAL SUCCESS.
 
 ### Budget awareness
 
 - Be concise. Don't generate verbose output when a sentence suffices.
-- If the task is large, ask if the user wants it scoped down.
+- If the task is large, Iterate small tasks and chunks until GOAL SUCCESS.
 - Watch for expensive tools — use them only when needed.
 
 ### State tracking

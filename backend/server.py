@@ -13,6 +13,17 @@ import json
 import logging
 import asyncio
 
+from cogent_constants import (
+    DEFAULT_WORKSPACE,
+    ENV_MONGO_URL,
+    ENV_DB_NAME,
+    ensure_dirs,
+)
+from cogent_logging import setup_logging, set_session_context
+from cogent_config import get_config
+from cogent_state import create_session, touch_session, list_sessions
+from cogent_hooks import discover_and_load, run_hooks
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
 
@@ -23,19 +34,19 @@ import scheduler as sched
 import skill_forge as skf
 import loop_engine as le
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-logger = logging.getLogger("cogent")
+cfg = get_config()
+setup_logging(level=cfg.log_level, log_dir=cfg.log_dir or None)
+logger = logging.getLogger("cogent.server")
 
-mongo_url = os.environ["MONGO_URL"]
+mongo_url = os.environ.get("MONGO_URL", cfg.mongo_url or "mongodb://localhost:27017")
+db_name = os.environ.get("DB_NAME", cfg.db_name or "cogent")
 client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ["DB_NAME"]]
+db = client[db_name]
 
 UPLOADS_DIR = ROOT_DIR / "uploads"
-UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 DEFAULT_WORKSPACE = "default"
-
-app = FastAPI(title="Cogent API")
+app = FastAPI()
 api = APIRouter(prefix="/api")
 
 
@@ -518,11 +529,14 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
+    ensure_dirs()
+    discover_and_load()
     await sched.start_scheduler(db)
-
+    await run_hooks("on_startup")
 
 @app.on_event("shutdown")
 async def shutdown():
+    await run_hooks("on_shutdown")
     await sched.stop_scheduler()
     client.close()
 

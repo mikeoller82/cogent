@@ -364,7 +364,58 @@ function ActivityLog({ entries }) {
   );
 }
 
-function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, liveIteration, liveVerdict, isStreaming, activityLog }) {
+function ThinkingLog({ entries, isOpen, onToggle }) {
+  if (!entries || entries.length === 0) return null;
+  const lastEntry = entries[entries.length - 1];
+  const preview = lastEntry && lastEntry.type === "reasoning"
+    ? lastEntry.text.slice(0, 120).replace(/\n/g, " ")
+    : `${entries.length} log entries`;
+  return (
+    <div className="mt-3 border border-[#f5ede0]/10 rounded-lg overflow-hidden bg-[#0d0a08]/50">
+      <button
+        onClick={onToggle}
+        className="flex items-center gap-2 w-full px-3 py-2 text-[11px] font-mono text-[#8a8278] hover:text-[#a8a092] hover:bg-[#f5ede0]/5 transition-colors"
+      >
+        <svg
+          className={`w-3 h-3 transition-transform ${isOpen ? "rotate-90" : ""}`}
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+          strokeLinecap="round" strokeLinejoin="round"
+        >
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+        <span className="uppercase tracking-wider">Thinking Log</span>
+        <span className="text-[10px] text-[#6e6760]">({entries.length})</span>
+        {!isOpen && preview && (
+          <span className="ml-auto truncate max-w-[300px] text-[10px] text-[#6e6760] italic">
+            {preview}
+          </span>
+        )}
+      </button>
+      {isOpen && (
+        <div className="max-h-[400px] overflow-y-auto border-t border-[#f5ede0]/10">
+          {entries.map((entry, i) => (
+            <div key={i} className="px-3 py-2 border-b border-[#f5ede0]/5 last:border-b-0">
+              <div className="flex items-start gap-2">
+                <span className="text-[10px] font-mono text-[#6e6760] mt-0.5 flex-shrink-0 w-8 text-right">
+                  {i + 1}
+                </span>
+                {entry.type === "reasoning" && entry.text.startsWith("[auto-continue") ? (
+                  <span className="text-[11px] font-mono text-[#d97706]">{entry.text}</span>
+                ) : (
+                  <pre className="text-[11px] font-mono leading-[1.5] text-[#a8a092] whitespace-pre-wrap break-words flex-1 min-w-0">
+                    {entry.text}
+                  </pre>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, liveIteration, liveVerdict, isStreaming, activityLog, thinkingLog, showThinkingLog, onToggleThinkingLog }) {
   const tools = isStreaming ? liveTools : (m.tool_uses || []);
   const arts = isStreaming ? liveArtifacts : (m.artifacts || []);
   return (
@@ -405,6 +456,13 @@ function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, l
             <ActivityLog entries={activityLog} />
           </div>
         )}
+        {isStreaming && thinkingLog && thinkingLog.length > 0 && (
+          <ThinkingLog
+            entries={thinkingLog}
+            isOpen={showThinkingLog}
+            onToggle={onToggleThinkingLog}
+          />
+        )}
         {m.content && (
           <div className="cogent-markdown">
             <MarkdownRenderer content={m.content} />
@@ -437,6 +495,9 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   const [liveArtifacts, setLiveArtifacts] = useState([]);
   // activity log — list of recent actions with detailed labels
   const [activityLog, setActivityLog] = useState([]);
+  // thinking log — raw reasoning text from the LLM
+  const [thinkingLog, setThinkingLog] = useState([]);
+  const [showThinkingLog, setShowThinkingLog] = useState(false);
   const activityIdRef = useRef(0);
   const scrollerRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -504,8 +565,9 @@ export default function ChatThread({ sessionId, refreshSessions }) {
     setLiveStatus("thinking");
     setLiveTools([]);
     setLiveArtifacts([]);
+    setThinkingLog([]);
+    setShowThinkingLog(false);
     setActivityLog([]);
-    activityIdRef.current = 0;
     const optimistic = {
       id: `tmp-${Date.now()}`,
       role: "user",
@@ -550,6 +612,13 @@ export default function ChatThread({ sessionId, refreshSessions }) {
           const display = evt.data.display || "completed";
           if (display) {
             pushActivity({ type: "tool_result", text: display });
+          }
+        } else if (evt.type === "reasoning") {
+          const text = evt.content || "";
+          setThinkingLog((prev) => [...prev, { type: "reasoning", text, ts: Date.now() }]);
+          // Auto-show thinking log on first reasoning event or auto-continue marker
+          if (text.includes("[auto-continue") || text.includes("[plan detected")) {
+            setShowThinkingLog(true);
           }
         } else if (evt.type === "artifact") {
           setLiveArtifacts((prev) => [...prev, evt.data]);
@@ -636,6 +705,9 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               liveVerdict={liveVerdict}
               isStreaming
               activityLog={activityLog}
+              thinkingLog={thinkingLog}
+              showThinkingLog={showThinkingLog}
+              onToggleThinkingLog={() => setShowThinkingLog((p) => !p)}
             />
           )}
         </div>

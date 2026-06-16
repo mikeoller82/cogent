@@ -1,0 +1,15 @@
+name: n8n
+version: 1.0.0
+description: n8n workflow automation via MCP
+transport: stdio
+command: n8n
+args:
+  - execute
+auth:
+  type: api_key
+  env_var: N8N_API_KEY
+tools:
+  - name: n8n_execute_workflow
+    description: Execute an n8n workflow by ID
+  - name: n8n_list_workflows
+    description: List available workflows

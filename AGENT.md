@@ -12,55 +12,114 @@ Cogent is an AI coworker — a production-grade system that ships real work via 
 
 ```
 cogent/
+├── AGENT.md                    # Project instructions (this file)
+├── AGENTS.md                   # Agent topology & delegation protocols
+├── SOUL.md                     # Agent personality definition
+├── config.yaml                 # Central configuration (model, agent, gateway, ACP, MCP, datagen)
+│
 ├── backend/                    # FastAPI Python backend
-│   ├── server.py               # Routes, CORS, middleware
-│   ├── llm_service.py          # LLM chat loop, SSE streaming, tool parsing
-│   ├── tools.py                # All tool implementations
+│   ├── server.py               # Routes, CORS, middleware, startup/shutdown hooks
+│   ├── llm_service.py          # LLM chat loop, streaming, tool parsing, memory loading
+│   ├── tools.py                # All tool implementations (18 tools)
 │   ├── loop_engine.py          # Plan→Execute→Verify state machine
-│   ├── skill_forge.py          # Import/forge skills from GitHub
+│   ├── skill_forge.py          # Import skills from GitHub
 │   ├── agent_skills.py         # Skill discovery & catalog
 │   ├── scheduler.py            # APScheduler recurring tasks
-│   ├── file_extract.py         # Document text extraction
 │   ├── firecrawl_service.py    # Web scraping service
-│   ├── agent_reach_tools.py    # Multi-agent tool dispatch
-│   ├── requirements.txt
-│   ├── .env                    # Backend config (gitignored)
-│   ├── artifacts/              # Generated PDFs/web apps
-│   └── uploads/                # Uploaded files
+│   ├── agent_reach_tools.py    # YouTube, GitHub, RSS, V2EX, Bilibili
+│   ├── file_extract.py         # Document text extraction
+│   │
+│   ├── cogent_config.py        # Config loader (YAML + env + overrides)
+│   ├── cogent_constants.py     # Well-known paths & constants
+│   ├── cogent_logging.py       # Structured logging with rotation
+│   ├── cogent_state.py         # Session state (JSON file-backed)
+│   ├── cogent_memory.py        # File-based long-term memory
+│   ├── cogent_kanban.py        # Task board with columns & priorities
+│   ├── cogent_auth.py          # Credential token store
+│   ├── cogent_cache.py         # TTL-based file cache
+│   ├── cogent_processes.py     # Background process registry
+│   ├── cogent_checkpoints.py   # State snapshots & restore
+│   ├── cogent_cron.py          # Cron job storage & output history
+│   ├── cogent_providers.py     # LLM provider abstraction & registry
+│   ├── cogent_budget.py        # Iteration & token budget tracker
+│   ├── cogent_services.py      # Auxiliary service router
+│   ├── cogent_hooks.py         # Lifecycle hook infrastructure
+│   ├── cogent_gateway.py       # SSE delivery router for React UI
+│   ├── cogent_acp.py           # Minimal Agent Communication Protocol adapter
+│   ├── tools_registry.py       # Hermes-style tool registry
+│   ├── skills_catalog.py       # Skill discovery from installed + optional dirs
+│   ├── blueprint_catalog.py    # 8 task blueprint templates
+│   │
+│   ├── agent/                  # Agent core subsystem (Hermes agent/ analog)
+│   │   ├── __init__.py         # Exports: TurnContext, ContextCompressor, etc.
+│   │   ├── turn_context.py     # Per-turn context dataclass
+│   │   ├── context_compressor.py  # Token-aware context compression
+│   │   ├── conversation_compression.py  # Full-session summarization
+│   │   └── agent_init.py       # Agent bootstrap (session, logging, memory)
+│   │
+│   ├── cli/                    # Cogent CLI (Hermes hermes_cli/ analog)
+│   │   ├── __init__.py
+│   │   ├── __main__.py
+│   │   └── main.py             # Commands: server, tools, auth, cron, kanban, cache,
+│   │                           #           processes, status, config, logs, memory,
+│   │                           #           checkpoints, blueprints, skills
+│   │
+│   ├── hooks/                  # Hook scripts (auto-discovered *.py)
+│   ├── artifacts/              # Generated PDFs / web apps
+│   ├── uploads/                # Uploaded files
+│   └── logs/                   # Rotating log files
+│
 ├── frontend/                   # React SPA
 │   ├── src/
 │   │   ├── chat/               # Chat UI components
 │   │   ├── components/         # Shared UI components
 │   │   ├── hooks/              # React hooks
-│   │   └── lib/                # Utilities
+│   │   └── lib/
+│   │       └── gateway.ts      # SSE gateway client (Hermes apps/shared/ analog)
 │   ├── public/
 │   ├── package.json
 │   └── craco.config.js
+│
 ├── .cogent/
 │   └── skills/                 # Installed agent skill definitions
+│
 ├── memory/
-│   └── loops/                  # Loop state persistence (per-session JSON)
+│   ├── loops/                  # Loop state (per-session JSON)
+│   ├── sessions/               # Session index & metadata
+│   ├── memories/               # File-based memory (MEMORY.md, USER.md)
+│   ├── kanban.json             # Task board data
+│   ├── auth.json               # Stored credentials
+│   ├── processes.json          # Process registry
+│   ├── cron/                   # Job definitions + output history
+│   │   ├── jobs.json
+│   │   └── output/
+│   ├── cache/                  # TTL-based file cache
+│   └── snapshots/              # State snapshots
+│
+├── optional-skills/            # Curated skill catalog (17+ categories)
+│   ├── DESCRIPTION.md
+│   ├── security/
+│   ├── devops/
+│   └── research/
+│
+├── optional-mcps/              # MCP server catalog entries
+│   ├── linear/manifest.yaml
+│   └── n8n/manifest.yaml
+│
+├── datagen/                    # Batch generation configs (Hermes datagen-config-examples/ analog)
+│   ├── browser_tasks.jsonl
+│   ├── trajectory_compression.yaml
+│   └── web_research.yaml
+│
+├── scripts/                    # Utility scripts (Hermes scripts/ analog)
+│   ├── install.sh
+│   ├── setup.sh
+│   ├── run_tests.sh
+│   └── build_skills_index.py
+│
+├── sandboxes/                  # Container sandbox staging
 ├── tests/                      # Python test suite
-├── SOUL.md                     # Agent personality definition
-└── AGENT.md                    # This file
-```
-
-## Setup & development
-
-### Backend
-
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-Configure `.env`:
-```env
-KILOCODE_API_KEY=sk-...
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=cogent
+└── test_reports/               # Test output reports
 ```
 
 Run:

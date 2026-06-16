@@ -1,0 +1,68 @@
+2026-06-16 02:32:23,032 DEBUG tzlocal: /etc/localtime found
+2026-06-16 02:32:23,032 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 02:32:23,032 INFO cogent.scheduler: Scheduler started
+2026-06-16 02:32:23,036 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 02:32:53,320 INFO cogent.scheduler: Scheduler stopped
+2026-06-16 02:32:56,739 DEBUG tzlocal: /etc/localtime found
+2026-06-16 02:32:56,740 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 02:32:56,740 INFO cogent.scheduler: Scheduler started
+2026-06-16 02:32:56,745 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-16 02:34:58,046 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:35:34,722 DEBUG firecrawl: Initialized V1FirecrawlApp with API URL: https://api.firecrawl.dev
+2026-06-16 02:36:35,307 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:36:43,393 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:36:43,393 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:37:20,407 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:37:23,778 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:37:23,787 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:37:59,422 DEBUG firecrawl: Initialized V1FirecrawlApp with API URL: https://api.firecrawl.dev
+2026-06-16 02:38:58,484 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:39:04,631 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:39:04,632 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:39:49,493 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:39:54,409 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after PARTIAL
+2026-06-16 02:39:54,409 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:40:12,425 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:40:18,823 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:40:18,823 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:40:24,266 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:40:28,301 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:40:28,301 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:40:35,481 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:40:41,910 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after PARTIAL
+2026-06-16 02:40:41,910 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:41:23,654 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:41:28,438 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:41:28,438 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:41:41,702 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:41:47,727 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:41:47,728 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:41:55,958 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:42:00,487 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:42:00,487 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:42:08,182 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:42:33,370 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:42:33,370 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:42:54,252 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:43:00,446 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:43:00,446 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:43:16,618 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:43:26,767 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:43:26,767 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:43:35,322 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:43:49,967 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:43:49,967 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:44:13,812 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:44:20,376 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:44:20,376 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:45:00,247 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: execute → verify — Running verification pass
+2026-06-16 02:45:11,231 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: verify → plan — Refining after FAIL
+2026-06-16 02:45:11,231 DEBUG [589de3b0-fe8] cogent.loop_engine: Loop 589de3b0-fe81-415e-93c5-758ea4c28065: plan → execute — Starting execution turn
+2026-06-16 02:46:01,582 INFO [589de3b0-fe8] cogent.scheduler: Scheduler stopped
+2026-06-16 02:46:10,440 DEBUG tzlocal: /etc/localtime found
+2026-06-16 02:46:10,441 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-16 02:46:10,441 INFO cogent.scheduler: Scheduler started
+2026-06-16 02:46:10,445 INFO cogent.scheduler: Loaded 0 scheduled tasks

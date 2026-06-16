@@ -4,6 +4,8 @@
   "iteration": 0,
   "task_description": "Hello",
   "verification_criteria": [],
+  "continue_count": 0,
+  "last_plan_text": "",
   "attempts": [],
   "tokens_estimated": 0,
   "errors": [
@@ -18,7 +20,7 @@
   "verification_notes": "",
   "budget_max": 200000,
   "budget_warn_pct": 0.75,
-  "started_at": "2026-06-16T01:14:59.060196Z",
-  "updated_at": "2026-06-16T01:14:59.063920Z",
-  "completed_at": "2026-06-16T01:14:59.063917Z"
+  "started_at": "2026-06-16T07:46:25.623718Z",
+  "updated_at": "2026-06-16T07:46:25.629817Z",
+  "completed_at": "2026-06-16T07:46:25.629811Z"
 }

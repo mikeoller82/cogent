@@ -1,0 +1,18 @@
+name: linear
+version: 1.0.0
+description: Linear issue tracking via MCP
+transport: http
+url: https://api.linear.app
+base_url: https://api.linear.app/graphql
+auth:
+  type: oauth2
+  authorization_url: https://linear.app/oauth/authorize
+  token_url: https://api.linear.app/oauth/token
+  scopes:
+    - read
+    - write
+tools:
+  - name: linear_search_issues
+    description: Search Linear issues by query
+  - name: linear_get_issue
+    description: Get issue details by ID

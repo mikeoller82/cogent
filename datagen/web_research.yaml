@@ -1,0 +1,15 @@
+# Cogent batch web research config
+environment: web-research
+toolsets:
+  - web
+  - file
+batch_size: 10
+max_items: 100
+model: cogent-default
+ephemeral_system_prompt: |
+  Research the given topic thoroughly. Cite 2+ sources.
+  Be concise and factual.
+output_dir: memory/research/
+compression:
+  enabled: true
+  target_max_tokens: 16000

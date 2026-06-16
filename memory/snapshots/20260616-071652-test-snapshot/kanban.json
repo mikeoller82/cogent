@@ -1,0 +1,45 @@
+{
+  "tasks": {
+    "35598819-822a-4ee7-b823-adb6bab27f21": {
+      "id": "35598819-822a-4ee7-b823-adb6bab27f21",
+      "title": "Test task",
+      "description": "",
+      "column": "in_progress",
+      "priority": "high",
+      "tags": [
+        "test"
+      ],
+      "assignee": "",
+      "parent_id": null,
+      "created_at": 1781594212.6705487,
+      "updated_at": 1781594212.6707754,
+      "completed_at": null,
+      "comments": [],
+      "events": [
+        {
+          "type": "created",
+          "field": "",
+          "old_value": "",
+          "new_value": "Test task",
+          "timestamp": 1781594212.6705487
+        },
+        {
+          "type": "moved",
+          "field": "column",
+          "old_value": "backlog",
+          "new_value": "in_progress",
+          "timestamp": 1781594212.6707754
+        }
+      ]
+    }
+  },
+  "columns": [
+    "backlog",
+    "ready",
+    "in_progress",
+    "review",
+    "done",
+    "archived"
+  ],
+  "updated_at": 1781594212.6708255
+}

@@ -17,10 +17,15 @@ import tools as tool_impls
 import agent_reach_tools as art
 import loop_engine as le
 
+from cogent_config import get_config
+from cogent_logging import set_session_context
+from cogent_memory import memory_summary
+
 load_dotenv()
-KILOCODE_MODEL_NAME = "nex-agi/nex-n2-pro:free"
-KILOCODE_CHAT_COMPLETIONS_URL = "https://api.kilo.ai/api/gateway/chat/completions"
-MAX_TOOL_TURNS = 6
+_cfg = get_config()
+KILOCODE_MODEL_NAME = _cfg.model_name
+KILOCODE_CHAT_COMPLETIONS_URL = _cfg.model_base_url
+MAX_TOOL_TURNS = _cfg.max_turns
 
 def build_system_prompt(workspace_name: str = "your team", memory_facts: str = "",
                         loop_state=None) -> str:
@@ -168,7 +173,22 @@ def _tool_display_summary(name: str, args: dict, raw_summary: str) -> str:
     elif name in ("rss_read", "v2ex_hot_topics", "bilibili_search"):
         return "results retrieved"
     return f"{name.replace('_', ' ')} complete"
-
+def _looks_like_plan(text: str) -> bool:
+    """Detect if LLM response describes a plan/promise without executing it.
+    Only triggers on explicit future-tense promises using tools.
+    Safe: short final answers, status updates, simple confirmations.
+    """
+    plan_phrases = [
+        "i will", "i'll", "i'm going to", "let me",
+        "my plan is", "the plan is", "here is my plan", "here's my plan",
+        "first, i'll", "first i'll",
+    ]
+    lower = text.lower().strip()
+    # Must be reasonably short (plans are brief, deliverables are long)
+    # AND contain explicit plan language
+    if len(text) < 200 and any(p in lower for p in plan_phrases):
+        return True
+    return False
 TOOL_RE = re.compile(r"<tool>\s*(\{.*?\})\s*</tool>", re.DOTALL)
 
 
@@ -276,17 +296,51 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
             return await art.rss_read(args.get("url", ""), int(args.get("limit", 10)))
         if name == "bilibili_search":
             return await art.bilibili_search(args.get("query", ""), int(args.get("limit", 5)))
+        if name == "run_shell":
+            return await tool_impls.run_shell(args.get("command", ""), int(args.get("timeout", 30)))
+        if name == "process_media":
+            return await tool_impls.process_media(
+                args.get("action", "info"),
+                args.get("input", ""),
+                output=args.get("output", ""),
+                start=args.get("start", ""),
+                duration=args.get("duration", ""),
+                format=args.get("format", ""),
+                quality=int(args.get("quality", 80)),
+            )
+        if name == "capture_screenshot":
+            return await tool_impls.capture_screenshot(
+                output=args.get("output", ""),
+                delay=int(args.get("delay", 1)),
+            )
+        if name == "file_write":
+            return await tool_impls.file_write(
+                args.get("path", ""),
+                args.get("content", ""),
+                mode=args.get("mode", "w"),
+            )
         return {"result": f"Unknown tool: {name}"}
     except Exception as e:
         return {"result": f"Tool error: {e}"}
 
 
 async def _load_memory_facts(db, workspace_id: str) -> str:
+    """Load memory facts from both DB and file-based stores."""
+    parts = []
+
+    # DB memory (MongoDB)
     cursor = db.memories.find({"workspace_id": workspace_id}, {"_id": 0, "key": 1, "value": 1})
     items = await cursor.to_list(length=100)
-    if not items:
-        return ""
-    return "\n".join(f"- {m['key']}: {m['value']}" for m in items)
+    if items:
+        parts.append("# Database Memory")
+        parts.extend(f"- {m['key']}: {m['value']}" for m in items)
+
+    # File-based memory (MEMORY.md + USER.md)
+    file_memory = memory_summary()
+    if file_memory:
+        parts.append(file_memory)
+
+    return "\n".join(parts)
 
 
 async def run_turn(db, session_id: str, workspace_id: str, user_text: str, history: List[Dict[str, str]]) -> Dict[str, Any]:
@@ -310,8 +364,12 @@ async def run_turn(db, session_id: str, workspace_id: str, user_text: str, histo
 async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str, history: List[Dict[str, str]]) -> AsyncGenerator[Dict[str, Any], None]:
     """Streaming run wrapped in a Plan→Execute→Verify loop.
 
-    Yields events: status, tool, tool_result, artifact, final, error, loop.
+    Yields events: status, tool, tool_result, artifact, final, error, loop, reasoning.
+    - reasoning: raw LLM response text for display in thinking log
+    - auto-continue: when LLM plans without executing or tool turns exhausted,
+      automatically re-prompts to keep working (up to CONTINUE_MAX times)
     """
+    set_session_context(session_id)
     # ── Load loop state ──────────────────────────────────────────────
     loop_state = le.load_state(session_id)
     is_new_task = loop_state.phase in (le.PHASE_IDLE, le.PHASE_DONE, le.PHASE_ERROR)
@@ -348,7 +406,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
         
         # ── Tool-calling loop ────────────────────────────────────────
         tool_loop_error = False
-        for turn in range(MAX_TOOL_TURNS):
+        made_tool_calls = False
+        max_turns = MAX_TOOL_TURNS + le.CONTINUE_MAX  # extra budget for auto-continue
+        for turn in range(max_turns):
             messages = initial_messages.copy()
             messages.append({"role": "user", "content": current_user_text})
             try:
@@ -360,15 +420,38 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 tool_loop_error = True
                 break
 
+            # ── Emit reasoning event with raw LLM output ─────────────
+            yield {"type": "reasoning", "content": response_text}
+
             initial_messages.append({"role": "user", "content": current_user_text})
             initial_messages.append({"role": "assistant", "content": response_text})
 
             call, _ = _parse_tool_call(response_text)
             if not call:
+                # ── Auto-continue: if LLM plans without executing, re-prompt ──
+                if (loop_state.continue_count < le.CONTINUE_MAX
+                        and _looks_like_plan(response_text)):
+                    loop_state.continue_count += 1
+                    loop_state.last_plan_text = response_text[:200]
+                    le.save_state(loop_state)
+                    yield {"type": "reasoning", "content": (
+                        f"[auto-continue: plan detected, re-prompting to execute "
+                        f"({loop_state.continue_count}/{le.CONTINUE_MAX})]"
+                    )}
+                    yield {"type": "status", "content": "re-prompting to execute instead of plan"}
+                    current_user_text = (
+                        "You described a plan but did not execute it using tools. "
+                        "You MUST actually call the tool functions to do the work now. "
+                        "Do not describe what you will do — execute.\n\n"
+                        f"Original task: {user_text}"
+                    )
+                    continue
+                # ── No tool call and not a plan — treat as final ──────
                 final_text = response_text.strip()
                 yield {"type": "final", "content": final_text}
                 break
 
+            made_tool_calls = True
             tool_name = call.get("name", "")
             args = call.get("args", {})
             label = _tool_action_label(tool_name, args)
@@ -386,10 +469,25 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             loop_state.tokens_estimated += (len(response_text) + len(summary)) // 4
             current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue."
             yield {"type": "status", "content": "processing results and continuing work"}
+
         if tool_loop_error:
             break
 
-        le.record_attempt(loop_state, le.PHASE_EXECUTE, final_text[:200])
+        # ── Auto-continue after tool loop exhausts ───────────────────
+        if not final_text and loop_state.continue_count < le.CONTINUE_MAX:
+            loop_state.continue_count += 1
+            le.save_state(loop_state)
+            note = f"[auto-continue: tool turns exhausted, continuing ({loop_state.continue_count}/{le.CONTINUE_MAX})]"
+            yield {"type": "reasoning", "content": note}
+            yield {"type": "status", "content": "continuing execution"}
+            current_user_text = (
+                "Your tool calls completed but the task is not finished. "
+                "Continue working — make more tool calls to complete the task.\n\n"
+                f"Original task: {user_text}"
+            )
+            continue  # Re-enter tool loop (next outer iteration)
+
+        le.record_attempt(loop_state, le.PHASE_EXECUTE, (final_text or "")[:200])
 
         # ── Verification (maker/checker split) ───────────────────────
         if final_text:
@@ -446,7 +544,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             continue
 
         # No output to verify — done
-        le.complete_task(loop_state, final_text[:200])
+        le.complete_task(loop_state, (final_text or "")[:200])
         yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
         break
 

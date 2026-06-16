@@ -1,0 +1,73 @@
+# Cogent configuration — centralised settings for the AI coworker.
+#
+# Layers (later overrides earlier):
+#   1. This file
+#   2. Environment variables (COGENT_* / backend/.env keys)
+#   3. Runtime overrides (cogent_config.set_override)
+#
+# See cogent/backend/cogent_config.py for the loader.
+
+model:
+  # Default LLM — OpenAI-compatible chat completions
+  provider: kilocode
+  base_url: https://api.kilo.ai/api/gateway/chat/completions
+  default: nex-agi/nex-n2-pro:free
+  # api_key: read from KILOCODE_API_KEY env var
+
+agent:
+  max_turns: 50               # max tool-using turns per message
+  max_iterations: 50          # max Plan→Execute→Verify cycles
+  verbose: false              # when true, narrate every tool call
+  reasoning_effort: medium    # minimal | low | medium | high
+
+database:
+  mongo_url: mongodb://localhost:27017   # or COGENT_MONGO_URL env
+  db_name: cogent                        # or COGENT_DB_NAME env
+
+workspace:
+  default: default
+
+logging:
+  level: INFO                 # DEBUG | INFO | WARNING | ERROR
+  dir: ""                     # empty = backend/logs/; override via COGENT_LOG_DIR
+
+web:
+  search_backend: firecrawl
+  scrape_backend: firecrawl
+  # firecrawl_api_key: read from FIRECRAWL_API_KEY env var
+  # firecrawl_base_url: read from FIRECRAWL_BASE_URL env var
+
+checkpoints:
+  enabled: true
+  max_snapshots: 10
+
+hooks:
+  auto_discover: true         # scan backend/hooks/*.py on startup
+
+gateway:
+  enabled: true
+  delivery_targets: [sse]      # sse | webhook | log
+  heartbeat_interval: 30        # seconds
+
+acp:
+  enabled: true
+  port: 7999                    # ACP listener port (future)
+
+skills:
+  auto_discover: true           # scan .cogent/skills/ on startup
+  optional_dir: optional-skills # path relative to project root
+
+datagen:
+  enabled: false
+  output_dir: memory/research/
+  max_items: 100
+
+agent:
+  context_compression: true
+  max_context_tokens: 32000
+  protected_turns: 4
+  compression_model: cogent-default
+
+mcp:
+  enabled: false
+  servers_dir: optional-mcps/

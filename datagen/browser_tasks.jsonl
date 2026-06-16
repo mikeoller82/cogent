@@ -1,0 +1,3 @@
+{"prompt": "Go to Hacker News and find the top 3 stories, get their URLs and point counts"}
+{"prompt": "Find the Wikipedia page for the Python programming language and extract the infobox"}
+{"prompt": "Browse GitHub trending repositories and summarize the top 5"}

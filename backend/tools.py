@@ -172,9 +172,42 @@ TOOL_SPECS = [
         "args": {"url": "string - RSS/Atom feed URL", "limit": "integer, optional (default 10, max 50)"},
     },
     {
-        "name": "bilibili_search",
-        "description": "Search Bilibili videos by keyword. Returns video titles, authors, play counts, and URLs.",
-        "args": {"query": "string - search keyword", "limit": "integer, optional (default 5, max 20)"},
+        "name": "run_shell",
+        "description": "Run a shell command (non-interactive, 30s timeout). Use for file ops, git, system tasks, Python one-liners, npm/bun/pip. NOT for interactive programs or long-running servers.",
+        "args": {
+            "command": "string - shell command to execute",
+            "timeout": "integer, optional - timeout in seconds (default 30, max 120)",
+        },
+    },
+    {
+        "name": "process_media",
+        "description": "Process audio/video/image via ffmpeg. Actions: info (get file metadata), convert (change format), compress (reduce size), extract_audio (pull audio track), trim (clip segment), screenshot (capture frame at timestamp), gif (make animated GIF from video).",
+        "args": {
+            "action": "string - one of: info, convert, compress, extract_audio, trim, screenshot, gif",
+            "input": "string - path to input file (absolute or relative to cogent root)",
+            "output": "string, optional - output path (default: auto-generated in artifacts/)",
+            "start": "string, optional - start timestamp for trim/screenshot/gif (e.g. 00:01:30)",
+            "duration": "string, optional - duration for trim/gif (e.g. 00:00:10)",
+            "format": "string, optional - target format for convert (e.g. mp4, webm, mp3, wav, jpg, png)",
+            "quality": "integer, optional - compression quality 1-100 (default 80)",
+        },
+    },
+    {
+        "name": "capture_screenshot",
+        "description": "Capture a screenshot of the screen or a specific window. Uses scrot or import (ImageMagick). Returns the image path.",
+        "args": {
+            "output": "string, optional - output path (default: artifacts/screenshot_<timestamp>.png)",
+            "delay": "integer, optional - delay in seconds before capture (default 1)",
+        },
+    },
+    {
+        "name": "file_write",
+        "description": "Write text content to a file. Creates directories as needed. Use for saving code, configs, markdown, data files. Will overwrite existing files.",
+        "args": {
+            "path": "string - relative path from cogent root (e.g. 'output/report.md', 'data/config.json')",
+            "content": "string - text content to write to the file",
+            "mode": "string, optional - 'w' to overwrite (default) or 'a' to append",
+        },
     },
 ]
 
@@ -671,3 +704,226 @@ async def schedule_task(db, workspace_id: str, name: str, cadence: str, time: st
             "time": time,
         },
     }
+
+
+async def run_shell(command: str, timeout: int = 30) -> dict:
+    """Run a shell command with timeout. Returns stdout, stderr, exit code."""
+    import subprocess as sp
+    timeout = min(timeout, 120)
+    try:
+        proc = await asyncio.create_subprocess_shell(
+            command,
+            stdout=sp.PIPE,
+            stderr=sp.PIPE,
+            cwd=str(Path(__file__).parent.parent),
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+        stdout = stdout.decode("utf-8", errors="replace")[-25000:]
+        stderr = stderr.decode("utf-8", errors="replace")[-10000:]
+        return {
+            "result": (
+                f"Exit code: {proc.returncode}\n"
+                f"{'[stdout]\\n' + stdout if stdout else ''}"
+                f"{'[stderr]\\n' + stderr if stderr else ''}"
+            ).strip(),
+        }
+    except asyncio.TimeoutError:
+        try:
+            proc.kill()
+        except Exception:
+            pass
+        return {"result": f"Command timed out after {timeout}s and was killed:\n{command[:200]}"}
+    except Exception as e:
+        return {"result": f"Shell error: {e}"}
+
+async def process_media(action: str, input: str, output: str = "",
+                        start: str = "", duration: str = "",
+                        format: str = "", quality: int = 80) -> dict:
+    """Process media files via ffmpeg."""
+    import subprocess as sp
+    from pathlib import Path as PPath
+
+    inp = PPath(input)
+    if not inp.is_file():
+        return {"result": f"Input not found: {input}"}
+
+    # Default output in artifacts/
+    arts_dir = PPath(__file__).parent / "artifacts"
+    arts_dir.mkdir(exist_ok=True)
+    if not output:
+        stem = inp.stem
+        # Derive extension from action
+        ext_map = {
+            "convert": f".{format or inp.suffix.strip('.') or 'mp4'}",
+            "compress": inp.suffix or ".mp4",
+            "extract_audio": ".mp3",
+            "trim": inp.suffix or ".mp4",
+            "screenshot": ".png",
+            "gif": ".gif",
+        }
+        out_ext = ext_map.get(action, inp.suffix or ".mp4")
+        output = str(arts_dir / f"{stem}_{action}{out_ext}")
+
+    try:
+        if action == "info":
+            # Use ffprobe for metadata
+            cmd = ["ffprobe", "-v", "quiet", "-print_format", "json",
+                   "-show_format", "-show_streams", str(inp)]
+            proc = await asyncio.create_subprocess_exec(
+                *cmd, stdout=sp.PIPE, stderr=sp.PIPE,
+            )
+            stdout, stderr = await proc.communicate()
+            if proc.returncode != 0:
+                return {"result": f"ffprobe failed: {stderr.decode()[:500]}"}
+            return {"result": f"Media info:\n{stdout.decode()[:5000]}"}
+
+        elif action == "convert":
+            out_fmt = format or inp.suffix.strip(".") or "mp4"
+            cmd = ["ffmpeg", "-y", "-i", str(inp), "-c:v", "libx264" if out_fmt in ("mp4", "mov") else "copy",
+                   "-c:a", "aac" if out_fmt in ("mp4", "mov", "m4a") else "copy",
+                   str(output)]
+
+        elif action == "compress":
+            crf = max(0, min(51, int(51 - quality * 0.5)))
+            cmd = ["ffmpeg", "-y", "-i", str(inp), "-c:v", "libx264",
+                   "-crf", str(crf), "-preset", "medium",
+                   "-c:a", "aac", "-b:a", "128k", str(output)]
+
+        elif action == "extract_audio":
+            out_fmt = format or "mp3"
+            cmd = ["ffmpeg", "-y", "-i", str(inp), "-vn",
+                   "-c:a", "libmp3lame" if out_fmt == "mp3" else "aac",
+                   "-q:a", "2" if out_fmt == "mp3" else "", str(output)]
+            cmd = [c for c in cmd if c]
+
+        elif action == "trim":
+            if not start:
+                return {"result": "start timestamp required for trim"}
+            cmd = ["ffmpeg", "-y", "-i", str(inp), "-ss", start]
+            if duration:
+                cmd += ["-t", duration]
+            cmd += ["-c", "copy", str(output)]
+
+        elif action == "screenshot":
+            ts = start or "00:00:01"
+            cmd = ["ffmpeg", "-y", "-i", str(inp), "-ss", ts,
+                   "-vframes", "1", str(output)]
+
+        elif action == "gif":
+            if not start:
+                start = "00:00:00"
+            palette = arts_dir / f"{inp.stem}_palette.png"
+            # Generate palette
+            cmd1 = ["ffmpeg", "-y", "-i", str(inp), "-ss", start]
+            if duration:
+                cmd1 += ["-t", duration]
+            cmd1 += ["-vf", "fps=10,scale=640:-1:flags=lanczos,palettegen",
+                     str(palette)]
+            proc1 = await asyncio.create_subprocess_exec(*cmd1)
+            await proc1.wait()
+            # Generate GIF with palette
+            cmd2 = ["ffmpeg", "-y", "-i", str(inp), "-i", str(palette),
+                    "-ss", start]
+            if duration:
+                cmd2 += ["-t", duration]
+            cmd2 += ["-lavfi", "fps=10,scale=640:-1:flags=lanczos[x];[x][1:v]paletteuse",
+                     str(output)]
+            proc2 = await asyncio.create_subprocess_exec(*cmd2)
+            await proc2.wait()
+
+            # Cleanup palette
+            PPath(palette).unlink(missing_ok=True)
+            if PPath(output).is_file():
+                return {"result": f"GIF created: {output}",
+                        "artifact": {"id": f"media_{inp.stem}", "type": "media",
+                                     "title": f"{inp.stem}.gif", "path": output}}
+            return {"result": "GIF creation failed"}
+
+        else:
+            return {"result": f"Unknown action: {action}. Use: info, convert, compress, extract_audio, trim, screenshot, or gif."}
+
+        # Execute single-command actions (not gif, which handles itself)
+        if action != "gif":
+            proc = await asyncio.create_subprocess_exec(
+                *cmd, stdout=sp.PIPE, stderr=sp.PIPE,
+            )
+            stdout, stderr = await proc.communicate()
+            if proc.returncode != 0:
+                err = stderr.decode()[:1000]
+                return {"result": f"ffmpeg failed (code {proc.returncode}): {err}"}
+
+            out_path = str(output)
+            if PPath(output).is_file():
+                size_kb = PPath(output).stat().st_size / 1024
+                return {
+                    "result": f"Media saved: {out_path} ({size_kb:.0f} KB)",
+                    "artifact": {"id": f"media_{inp.stem}", "type": "media",
+                                 "title": PPath(output).name, "path": out_path},
+                }
+        return {"result": f"Media processed: {output}"}
+
+    except FileNotFoundError:
+        return {"result": "ffmpeg not found. Install ffmpeg to use media tools."}
+    except Exception as e:
+        return {"result": f"Media processing error: {e}"}
+
+
+async def capture_screenshot(output: str = "", delay: int = 1) -> dict:
+    """Capture a screenshot using scrot or ImageMagick import."""
+    import subprocess as sp
+    arts_dir = Path(__file__).parent / "artifacts"
+    arts_dir.mkdir(exist_ok=True)
+    if not output:
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output = str(arts_dir / f"screenshot_{ts}.png")
+
+    # Prefer scrot, fallback to ImageMagick import, then xdg-desktop-portal
+    cmds = [
+        ["scrot", "-d", str(delay), output],
+        ["import", "-window", "root", "-delay", str(delay * 100), output],
+        ["xdg-desktop-portal", "--screenshot", output],
+    ]
+
+    for cmd in cmds:
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                *[c for c in cmd if c],
+                stdout=sp.PIPE, stderr=sp.PIPE,
+            )
+            await asyncio.wait_for(proc.communicate(), timeout=15)
+            if proc.returncode == 0 and Path(output).is_file():
+                size_kb = Path(output).stat().st_size / 1024
+                return {
+                    "result": f"Screenshot saved: {output} ({size_kb:.0f} KB)",
+                    "artifact": {"id": "screenshot", "type": "image",
+                                 "title": Path(output).name, "path": output},
+                }
+        except (FileNotFoundError, asyncio.TimeoutError):
+            continue
+
+    return {"result": "No screenshot tool found (scrot, import, or xdg-desktop-portal required)"}
+
+
+async def file_write(path: str, content: str, mode: str = "w") -> dict:
+    """Write text content to a file. Creates parent directories as needed."""
+    root = Path(__file__).parent.parent   # cogent root
+    target = root / path
+
+    # Security: prevent path traversal outside project root
+    try:
+        target.resolve().relative_to(root.resolve())
+    except ValueError:
+        return {"result": f"Access denied: path must be inside {root}"}
+
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with open(target, mode=mode, encoding="utf-8") as f:
+            f.write(content)
+        size = target.stat().st_size
+        return {
+            "result": f"Written {size} bytes to {path}",
+            "artifact": {"id": f"file_{target.stem}", "type": "file",
+                         "title": target.name, "path": str(target)},
+        }
+    except Exception as e:
+        return {"result": f"Write error: {e}"}
