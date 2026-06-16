@@ -1,0 +1,15 @@
+{
+  "name": "hyperframes-registry",
+  "description": "Install and wire registry blocks and components into HyperFrames compositions. Use when running hyperframes add, installing a block or component, wiring an installed item into index.html, or working with hyperframes.json. Covers the add command, install locations, block sub-composition wiring, component snippet merging, registry discovery, and authoring a new block or component to contribute upstream (idea \u2192 scaffold \u2192 validate \u2192 PR).",
+  "imported_at": "2026-06-16T05:58:33Z",
+  "metadata": {},
+  "resources": [
+    "references/contributing.md",
+    "references/demo-html-pattern.md",
+    "references/discovery.md",
+    "references/install-locations.md",
+    "references/templates.md",
+    "references/wiring-blocks.md",
+    "references/wiring-components.md"
+  ]
+}

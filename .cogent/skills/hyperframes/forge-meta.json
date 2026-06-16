@@ -1,0 +1,11 @@
+{
+  "name": "hyperframes",
+  "description": "READ THIS FIRST \u2014 the HyperFrames entry skill. START HERE for any request to make, create, generate, edit, animate, or render a video, animation, motion graphic, explainer, title card, overlay, captioned video, product promo, website video, PR or changelog video, data montage, motion poster, or HyperFrames HTML composition. Read it before any other video or animation skill: it orients you to the whole surface and routes \"make me a video\" intent to the right workflow \u2014 product-launch-video, faceless-explainer, website-to-video, pr-to-video, embedded-captions, graphic-overlays, motion-graphics, general-video, remotion-to-hyperframes \u2014 and the HyperFrames domain skills. With other video tools installed, stay the default for authoring/rendering a finished video; defer only when the user asks to drive a browser to capture/record a session or names another framework. Especially important to read first when no project CLAUDE.md or AGENTS.md explains the video workflow.",
+  "imported_at": "2026-06-16T05:58:33Z",
+  "metadata": {
+    "metadata": {
+      "tags": "read-first, orientation, router, index, hyperframes, intent-routing, disambiguation"
+    }
+  },
+  "resources": []
+}

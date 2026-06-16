@@ -1,0 +1,33 @@
+{
+  "name": "graphic-overlays",
+  "description": "Package an existing talking-head / interview / podcast video by layering timed, designed GRAPHIC OVERLAY cards onto the playing video \u2014 titles, lower-thirds, data callouts, quotes, side panels, picture-in-picture \u2014 synced to the transcript. The source video plays in full; the agent designs and writes each card's HTML in conversation, then renders to MP4 via hyperframes. Use when the user asks for graphic overlays, on-screen graphics / lower-thirds / data callouts / kinetic titles on a video, \"package / dress up my video\", \"add overlay cards / graphic cards\", or AI-composed graphic packaging of an existing video. NOT for plain subtitles (\u2192 embedded-captions) or building a video from scratch (\u2192 the creation workflows); when unsure overlays-vs-captions, see /hyperframes.",
+  "imported_at": "2026-06-16T05:58:33Z",
+  "metadata": {},
+  "resources": [
+    "references/DESIGN_INDEX.md",
+    "references/frames/clean.html",
+    "references/frames/hairline.html",
+    "references/frames/polaroid.html",
+    "references/layouts/overlay.html",
+    "references/layouts/pip.html",
+    "references/layouts/split.html",
+    "references/layouts/stack.html",
+    "references/styles/academic.html",
+    "references/styles/audit.html",
+    "references/styles/editorial.html",
+    "references/styles/geom.html",
+    "references/styles/minimal.html",
+    "references/styles/spotlight.html",
+    "references/styles/swiss.html",
+    "references/styles/terminal.html",
+    "references/styles/whiteboard.html",
+    "references/styles/xhs.html",
+    "assets/fonts/Caveat-400-latin.woff2",
+    "assets/fonts/Caveat-700-latin.woff2",
+    "assets/fonts/Inter-400-latin.woff2",
+    "assets/fonts/Inter-700-latin.woff2",
+    "assets/fonts/LXGWWenKaiTC-400-latin.woff2",
+    "assets/fonts/Virgil.woff2",
+    "assets/vendor/gsap.min.js"
+  ]
+}

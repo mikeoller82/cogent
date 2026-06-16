@@ -1,0 +1,18 @@
+{
+  "name": "hyperframes-core",
+  "description": "HyperFrames HTML composition contract. Use for composition structure, data attributes, clips, tracks, sub-compositions, variables, media playback, deterministic render rules, and validation of minimal renderable projects.",
+  "imported_at": "2026-06-16T05:58:33Z",
+  "metadata": {},
+  "resources": [
+    "references/composition-patterns.md",
+    "references/data-attributes.md",
+    "references/determinism-rules.md",
+    "references/full-screen-motion.md",
+    "references/minimal-composition.md",
+    "references/sub-compositions.md",
+    "references/subagent-dispatch.md",
+    "references/tailwind.md",
+    "references/tracks-and-clips.md",
+    "references/variables-and-media.md"
+  ]
+}

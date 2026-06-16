@@ -1,0 +1,18 @@
+{
+  "name": "hyperframes-media",
+  "description": "Asset preprocessing for HyperFrames compositions \u2014 multi-provider TTS (HeyGen / ElevenLabs / Kokoro local), multi-provider BGM (Google Lyria / local MusicGen), Whisper transcription, background removal, and caption authoring. Use for npx hyperframes tts, bgm, transcribe, remove-background, voice/provider selection, music-mood prompting, captions / subtitles / lyrics / karaoke / per-word styling.",
+  "imported_at": "2026-06-16T05:58:33Z",
+  "metadata": {},
+  "resources": [
+    "scripts/heygen-tts.mjs",
+    "references/bgm.md",
+    "references/captions/authoring.md",
+    "references/captions/motion.md",
+    "references/captions/transcript-handling.md",
+    "references/remove-background.md",
+    "references/requirements.md",
+    "references/transcribe.md",
+    "references/tts-to-captions.md",
+    "references/tts.md"
+  ]
+}

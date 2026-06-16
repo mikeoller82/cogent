@@ -1,0 +1,11 @@
+{
+  "name": "general-video",
+  "description": "Use as the fallback for custom HyperFrames HTML video composition authoring when no specialized workflow fits. Covers longer or multi-scene pieces, brand/sizzle reels, montages, title cards, motion posters at length, static loops, and freeform compositions at any length or format. Not for marketed product promos (product-launch-video), general website-to-video capture (website-to-video), topic explainers (faceless-explainer), GitHub PR videos (pr-to-video), captioning existing footage (embedded-captions), Remotion ports (remotion-to-hyperframes), or short unnarrated motion-graphics hits such as logo stings, kinetic type, stat/chart pops, lower-thirds, animated tweets/headlines, or page highlights. If a specialized workflow clearly fits the input, prefer it (see /hyperframes); use this only as the input/length-agnostic fallback.",
+  "imported_at": "2026-06-16T05:58:33Z",
+  "metadata": {
+    "metadata": {
+      "tags": "orchestrator, general-video, fallback, freeform, composition-authoring"
+    }
+  },
+  "resources": []
+}
