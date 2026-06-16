@@ -1,0 +1,7 @@
+{
+  "name": "mindmap",
+  "description": "Create hierarchical mind maps using PlantUML @startmindmap syntax. Best for brainstorming, topic decomposition, study notes, and decision trees with automatic radial layout, left/right branches, and per-node styling.",
+  "imported_at": "2026-06-16T00:42:21Z",
+  "metadata": {},
+  "resources": []
+}

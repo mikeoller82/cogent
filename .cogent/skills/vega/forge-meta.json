@@ -1,0 +1,9 @@
+{
+  "name": "vega",
+  "description": "Create data-driven charts with Vega-Lite (declarative) and Vega (programmatic). Best for statistical visualization of numeric data \u2014 bar, line, scatter, heatmap, area, radar charts, and word clouds.",
+  "imported_at": "2026-06-16T00:42:22Z",
+  "metadata": {},
+  "resources": [
+    "references/examples.md"
+  ]
+}

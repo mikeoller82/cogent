@@ -1,0 +1,9 @@
+{
+  "name": "canvas",
+  "description": "Create spatial diagrams with free-positioned nodes using JSON format. Best for concept maps, knowledge graphs, and planning boards requiring precise x/y coordinate control.",
+  "imported_at": "2026-06-16T00:42:21Z",
+  "metadata": {},
+  "resources": [
+    "references/syntax.md"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "security",
+  "description": "Create security architecture diagrams using PlantUML syntax with identity, encryption, firewall, and compliance stencil icons. Best for IAM flows, zero-trust models, encryption pipelines, and threat detection architectures.",
+  "imported_at": "2026-06-16T00:42:22Z",
+  "metadata": {},
+  "resources": []
+}

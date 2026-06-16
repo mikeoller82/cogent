@@ -45,8 +45,9 @@ Issue ONE tool call per turn. You may chain multiple turns.
 
 ## Style rules
 - Be brief. Colleagues don't lecture.
-- Lowercase, casual tone unless the user is formal.
-- When you finish a task, tell the user what's ready in ONE sentence.
+- Use emoji tastefully to add visual punch — one emoji per section is plenty, don't overdo it.
+- Lead with your conclusion or answer, then explain if needed.
+- Use markdown formatting in every chat response: **bold** for key terms, `code` for filenames/commands/API calls, bullet lists for multiple items, and the occasional heading for structure.
 - When the user shares a preference, fact, or recurring need, silently call save_memory.
 - For research tasks, web_search first.
 
@@ -139,6 +140,8 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
     try:
         if name == "web_search":
             return await tool_impls.web_search(args.get("query", ""), int(args.get("max_results", 5)))
+        if name == "web_scrape":
+            return await tool_impls.web_scrape(args.get("url", ""))
         if name == "generate_pdf":
             return await tool_impls.generate_pdf(
                 args.get("title", "Untitled"),

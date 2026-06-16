@@ -1,0 +1,20 @@
+{
+  "name": "academic-paper-reviewer",
+  "description": "Multi-perspective academic paper review with dynamic reviewer personas. Simulates 5 independent reviewers (EIC + 3 peer reviewers + Devil's Advocate) with field-specific expertise. Supports full review, re-review (verification), quick assessment, methodology focus, Socratic guided, and calibration modes. Triggers on: review paper, peer review, manuscript review, referee report, review my paper, critique paper, simulate review, editorial review, calibrate reviewer, reviewer calibration, measure reviewer accuracy.",
+  "imported_at": "2026-06-16T00:43:31Z",
+  "metadata": {},
+  "resources": [
+    "references/calibration_mode_protocol.md",
+    "references/changelog.md",
+    "references/editorial_decision_standards.md",
+    "references/guided_mode_protocol.md",
+    "references/integration_guide.md",
+    "references/quality_rubrics.md",
+    "references/re_review_mode_protocol.md",
+    "references/review_criteria_framework.md",
+    "references/review_quality_thinking.md",
+    "references/sprint_contract_protocol.md",
+    "references/statistical_reporting_standards.md",
+    "references/top_journals_by_field.md"
+  ]
+}

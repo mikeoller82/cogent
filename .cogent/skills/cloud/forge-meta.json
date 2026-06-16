@@ -1,0 +1,7 @@
+{
+  "name": "cloud",
+  "description": "Create cloud provider architecture diagrams using PlantUML syntax with official AWS, Azure, GCP, and Alibaba Cloud service icons. Best for multi-service cloud topologies and migration blueprints.",
+  "imported_at": "2026-06-16T00:42:21Z",
+  "metadata": {},
+  "resources": []
+}

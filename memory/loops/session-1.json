@@ -1,0 +1,24 @@
+{
+  "session_id": "session-1",
+  "phase": "error",
+  "iteration": 0,
+  "task_description": "Hello",
+  "verification_criteria": [],
+  "attempts": [],
+  "tokens_estimated": 0,
+  "errors": [
+    "LLM error: Missing KILOCODE_API_KEY"
+  ],
+  "decisions": [
+    "Task started: Hello",
+    "[plan\u2192execute] Starting execution turn"
+  ],
+  "last_output_summary": "",
+  "verification_result": null,
+  "verification_notes": "",
+  "budget_max": 200000,
+  "budget_warn_pct": 0.75,
+  "started_at": "2026-06-16T01:08:13.674545Z",
+  "updated_at": "2026-06-16T01:08:13.678585Z",
+  "completed_at": "2026-06-16T01:08:13.678580Z"
+}

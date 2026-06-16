@@ -12,6 +12,7 @@ from datetime import datetime
 import agent_skills
 import skill_forge
 import loop_engine
+import firecrawl_service as fc
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -43,8 +44,13 @@ DANGER = colors.HexColor("#dc2626")
 TOOL_SPECS = [
     {
         "name": "web_search",
-        "description": "Search the live internet via DuckDuckGo. Use for current news, facts, competitor research, anything time-sensitive.",
-        "args": {"query": "string", "max_results": "integer, optional (default 5)"},
+        "description": "Search the live internet via Firecrawl. Returns result titles, URLs, descriptions, and full page content. Use for current news, facts, research, anything time-sensitive.",
+        "args": {"query": "string - what to search for", "max_results": "integer, optional (default 5)"},
+    },
+    {
+        "name": "web_scrape",
+        "description": "Extract clean readable content (markdown) from a URL via Firecrawl. Use to read articles, docs, blog posts, or any web page the user references.",
+        "args": {"url": "string - the full URL to extract content from"},
     },
     {
         "name": "generate_pdf",
@@ -179,29 +185,46 @@ async def import_skill(repo_url: str, force: bool = False) -> dict:
         return {"result": f"Import failed: {e}"}
 
 
-# ---------------- Web search ----------------
+# ---------------- Web search (Firecrawl) ----------------
 async def web_search(query: str, max_results: int = 5) -> dict:
-    def _run():
-        from ddgs import DDGS
-        try:
-            with DDGS() as ddg:
-                return list(ddg.text(query, max_results=max_results))
-        except Exception as e:
-            return {"_error": str(e)}
-
-    results = await asyncio.to_thread(_run)
-    if isinstance(results, dict) and "_error" in results:
-        return {"result": f"Search failed: {results['_error']}"}
+    """Search the web via Firecrawl. Returns formatted results with content."""
+    try:
+        results = await fc.web_search(query, max_results)
+    except Exception as e:
+        return {"result": f"Search failed: {e}"}
     if not results:
         return {"result": "No results found."}
     lines = []
     for i, r in enumerate(results[:max_results], 1):
-        title = r.get("title", "(no title)")
-        href = r.get("href") or r.get("url", "")
-        body = r.get("body", "")
-        lines.append(f"[{i}] {title}\n    {href}\n    {body}")
-    return {"result": "\n\n".join(lines)}
+        title = r.get("title", "") or "(no title)"
+        url = r.get("url", "")
+        desc = r.get("description", "") or ""
+        content = r.get("content", "") or ""
+        lines.append(f"[{i}] {title}")
+        lines.append(f"    URL: {url}")
+        if desc:
+            lines.append(f"    About: {desc}")
+        if content:
+            lines.append(f"    Content: {content[:500]}"
+                         f"{'…' if len(content) > 500 else ''}")
+    return {"result": "\n".join(lines)}
 
+
+# ---------------- Web scrape (content extraction via Firecrawl) ----------------
+async def web_scrape(url: str) -> dict:
+    """Extract clean content from a URL via Firecrawl."""
+    try:
+        doc = await fc.web_scrape(url)
+    except Exception as e:
+        return {"result": f"Scrape failed: {e}"}
+    title = doc.get("title", "") or "(no title)"
+    md = doc.get("markdown", "")
+    if not md:
+        return {"result": f"**{title}**\n\n(No extractable content at {url})"}
+    max_chars = 15_000
+    truncated = len(md) > max_chars
+    body = md[:max_chars] + ("\n\n…(content truncated)" if truncated else "")
+    return {"result": f"# {title}\n\n{body}"}
 
 # ---------------- Loop state tool ----------------
 async def get_loop_state(session_id: str = "") -> dict:

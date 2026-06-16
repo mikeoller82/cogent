@@ -85,38 +85,51 @@ def test_kilocode_request_payload_includes_model_and_ordered_messages(monkeypatc
 
 
 def test_final_stream_event_uses_ordered_messages(monkeypatch):
-    captured = {}
+    calls = []
 
     async def fake_send(messages):
-        captured["messages"] = messages
-        return "Final answer"
+        calls.append(messages)
+        if len(calls) == 1:
+            return "Final answer"  # main execution call
+        return "PASS Verified correctly."  # verification call — must pass to stop the loop
 
     monkeypatch.setattr(llm_service, "_send_kilocode_chat", fake_send)
 
     events = run_async(collect_stream_events())
 
-    assert captured["messages"][0]["role"] == "system"
-    assert captured["messages"][1] == {"role": "assistant", "content": "Previous answer"}
-    assert captured["messages"][2] == {"role": "user", "content": "Hello"}
-    assert events[-1] == {"type": "final", "content": "Final answer"}
+    # Check message ordering from the *first* call (main execute, not verification)
+    assert calls[0][0]["role"] == "system"
+    assert calls[0][1] == {"role": "assistant", "content": "Previous answer"}
+    assert calls[0][2] == {"role": "user", "content": "Hello"}
+
+    # At least one 'final' event with the expected content
+    finals = [e for e in events if e["type"] == "final"]
+    assert len(finals) >= 1
+    assert finals[0] == {"type": "final", "content": "Final answer"}
 
 
 def test_tool_loop_still_executes_local_tool_and_continues(monkeypatch):
-    responses = [
-        '<tool>{"name": "recall_memory", "args": {}}</tool>',
-        "Done after tool",
-    ]
-    sent_payloads = []
+    call_count = [0]
 
     async def fake_send(messages):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            return '<tool>{"name": "recall_memory", "args": {}}</tool>'
+        if call_count[0] == 2:
+            return "Done after tool"
+        return "PASS Verified correctly."
+
+    sent_payloads = []
+
+    async def fake_record_send(messages):
         sent_payloads.append({"messages": messages})
-        return responses.pop(0)
+        return await fake_send(messages)
 
     async def fake_execute_tool(db, workspace_id, call):
         assert call == {"name": "recall_memory", "args": {}}
         return {"result": "remembered fact"}
 
-    monkeypatch.setattr(llm_service, "_send_kilocode_chat", fake_send)
+    monkeypatch.setattr(llm_service, "_send_kilocode_chat", fake_record_send)
     monkeypatch.setattr(llm_service, "_execute_tool", fake_execute_tool)
 
     events = run_async(collect_stream_events())
@@ -124,7 +137,11 @@ def test_tool_loop_still_executes_local_tool_and_continues(monkeypatch):
 
     assert "tool" in event_types
     assert "tool_result" in event_types
-    assert events[-1] == {"type": "final", "content": "Done after tool"}
+
+    finals = [e for e in events if e["type"] == "final"]
+    assert len(finals) >= 1
+    assert finals[0] == {"type": "final", "content": "Done after tool"}
+
     assert sent_payloads[1]["messages"][-1] == {
         "role": "user",
         "content": "<tool_result>\nremembered fact\n</tool_result>\n\nContinue.",
@@ -145,11 +162,12 @@ def test_stream_send_error_yields_useful_error(monkeypatch):
     monkeypatch.setattr(llm_service, "_send_kilocode_chat", fake_send)
 
     events = run_async(collect_stream_events())
+    event_types = [e["type"] for e in events]
 
-    assert events[0] == {"type": "status", "content": "thinking"}
-    assert events[1]["type"] == "error"
-    assert "Missing KILOCODE_API_KEY" in events[1]["content"]
-    assert len(events) == 2
+    assert "error" in event_types
+    error_events = [e for e in events if e["type"] == "error"]
+    assert len(error_events) == 1
+    assert "Missing KILOCODE_API_KEY" in error_events[0]["content"]
 
 
 def test_bad_kilocode_response_shape_yields_error(monkeypatch):

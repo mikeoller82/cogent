@@ -1,0 +1,11 @@
+{
+  "name": "infographic",
+  "description": "Create template-based infographics with space-separated key-value syntax (NOT YAML). Best for KPI dashboards, timelines, roadmaps, SWOT analysis, funnels, comparisons, and org charts with quick visual impact.",
+  "imported_at": "2026-06-16T00:42:21Z",
+  "metadata": {},
+  "resources": [
+    "references/examples.md",
+    "references/syntax.md",
+    "references/templates.md"
+  ]
+}

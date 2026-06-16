@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { listMessages, streamMessage, uploadFile, artifactUrl } from "./apiClient";
 import {
   Send, Loader2, FileText, Globe, Brain, Search, Calendar, Sparkles,
-  Paperclip, X, FileSpreadsheet, FileType, Download,
+  Paperclip, X, FileSpreadsheet, FileType, Download, Check, Copy,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -140,6 +142,145 @@ function Artifact({ a }) {
   return null;
 }
 
+function CodeBlock({ language, value }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <div className="group relative my-3 rounded-xl overflow-hidden border border-[#f5ede0]/10 bg-[#0d0a08]">
+      {language && (
+        <div className="flex items-center justify-between px-4 py-1.5 bg-[#1a1510] border-b border-[#f5ede0]/8">
+          <span className="text-[11px] font-mono text-[#8a8278] uppercase tracking-wider">{language}</span>
+          <button
+            onClick={handleCopy}
+            className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 px-2 py-1 rounded text-[11px] text-[#a8a092] hover:text-[#f5ede0] hover:bg-[#f5ede0]/8"
+          >
+            {copied ? <Check className="w-3 h-3 text-[#22c55e]" /> : <Copy className="w-3 h-3" />}
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+      )}
+      <pre className="overflow-x-auto p-4 text-[13px] leading-[1.6]">
+        <code className="font-mono text-[#e2dcd0]">{value}</code>
+      </pre>
+    </div>
+  );
+}
+
+function MarkdownRenderer({ content }) {
+  const components = useMemo(() => ({
+    h1: ({ children, ...props }) => (
+      <h1 className="text-[22px] font-semibold tracking-[-0.02em] text-[#f5ede0] mt-8 mb-3 pb-2 border-b border-[#f5ede0]/10" {...props}>
+        {children}
+      </h1>
+    ),
+    h2: ({ children, ...props }) => (
+      <h2 className="text-[18px] font-semibold tracking-[-0.01em] text-[#f5ede0] mt-6 mb-2.5" {...props}>
+        {children}
+      </h2>
+    ),
+    h3: ({ children, ...props }) => (
+      <h3 className="text-[16px] font-semibold text-[#d8d0c2] mt-5 mb-2" {...props}>
+        {children}
+      </h3>
+    ),
+    h4: ({ children, ...props }) => (
+      <h4 className="text-[14.5px] font-semibold text-[#c8c0b2] mt-4 mb-1.5" {...props}>
+        {children}
+      </h4>
+    ),
+    p: ({ children, ...props }) => {
+      if (typeof children === "string" && /^[:\-*•✅🔹🔸✨💡📌📍🎯🔥⭐💪🚀📊📈📉🔍🎉👏👍🙌💯]+/.test(children.trim().charAt(0))) {
+        return <p className="text-[14.5px] leading-[1.65] text-[#d8d0c2] my-1.5" {...props}>{children}</p>;
+      }
+      return <p className="text-[14.5px] leading-[1.65] text-[#d8d0c2] my-1.5" {...props}>{children}</p>;
+    },
+    ul: ({ children, ...props }) => (
+      <ul className="list-none my-2 space-y-1" {...props}>
+        {children}
+      </ul>
+    ),
+    ol: ({ children, ...props }) => (
+      <ol className="list-decimal list-inside my-2 space-y-1 text-[14.5px] text-[#d8d0c2]" {...props}>
+        {children}
+      </ol>
+    ),
+    li: ({ children, ...props }) => {
+      return (
+        <li className="flex items-start gap-2.5 text-[14.5px] leading-[1.6] text-[#d8d0c2]" {...props}>
+          <span className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[#b5a8f5]/60 flex-shrink-0" />
+          <span className="flex-1">{children}</span>
+        </li>
+      );
+    },
+    code: ({ inline, className, children, ...props }) => {
+      const match = /language-(\w+)/.exec(className || "");
+      if (!inline && match) {
+        return <CodeBlock language={match[1]} value={String(children).replace(/\n$/, "")} />;
+      }
+      if (!inline) {
+        return <CodeBlock language="" value={String(children).replace(/\n$/, "")} />;
+      }
+      return (
+        <code className="px-1.5 py-0.5 rounded-md bg-[#1d1813] border border-[#f5ede0]/10 text-[13px] font-mono text-[#b5a8f5]" {...props}>
+          {children}
+        </code>
+      );
+    },
+    blockquote: ({ children, ...props }) => (
+      <blockquote className="relative my-4 pl-4 py-2 text-[14px] italic text-[#a8a092] border-l-[3px] border-[#b5a8f5]/50 bg-[#b5a8f5]/5 rounded-r-lg" {...props}>
+        {children}
+      </blockquote>
+    ),
+    table: ({ children, ...props }) => (
+      <div className="my-3 overflow-x-auto rounded-xl border border-[#f5ede0]/10">
+        <table className="w-full text-[13px] border-collapse" {...props}>
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children, ...props }) => (
+      <thead className="bg-[#1a1510]" {...props}>{children}</thead>
+    ),
+    th: ({ children, ...props }) => (
+      <th className="px-4 py-2.5 text-left font-semibold text-[#f5ede0] border-b border-[#f5ede0]/10" {...props}>
+        {children}
+      </th>
+    ),
+    td: ({ children, ...props }) => (
+      <td className="px-4 py-2.5 text-[#d8d0c2] border-b border-[#f5ede0]/8" {...props}>
+        {children}
+      </td>
+    ),
+    a: ({ children, href, ...props }) => (
+      <a href={href} target="_blank" rel="noreferrer" className="text-[#b5a8f5] underline decoration-[#b5a8f5]/30 hover:decoration-[#b5a8f5] underline-offset-2 transition-all" {...props}>
+        {children}
+      </a>
+    ),
+    hr: () => <hr className="my-6 border-t border-[#f5ede0]/10" />,
+    strong: ({ children, ...props }) => <strong className="font-semibold text-[#f5ede0]" {...props}>{children}</strong>,
+    em: ({ children, ...props }) => <em className="italic text-[#e2dcd0]" {...props}>{children}</em>,
+    img: ({ src, alt, ...props }) => (
+      <img src={src} alt={alt || ""} className="max-w-full rounded-xl my-3 border border-[#f5ede0]/10" loading="lazy" {...props} />
+    ),
+    del: ({ children, ...props }) => <del className="line-through text-[#6e6760]" {...props}>{children}</del>,
+  }), []);
+
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={components}
+      className="prose-content"
+    >
+      {content}
+    </ReactMarkdown>
+  );
+}
+
 function ToolBadge({ use }) {
   const Icon = toolIconMap[use.tool] || Sparkles;
   const label = toolLabelMap[use.tool] || use.tool;
@@ -175,8 +316,8 @@ function UserBubble({ m }) {
           </div>
         )}
         {m.content && (
-          <div className="px-4 py-2.5 rounded-2xl bg-[#b5a8f5]/15 border border-[#b5a8f5]/20 text-[#f5ede0] text-[14.5px] leading-[1.55] whitespace-pre-wrap">
-            {m.content}
+          <div className="px-4 py-2.5 rounded-2xl bg-[#b5a8f5]/15 border border-[#b5a8f5]/20 text-[#f5ede0]">
+            <MarkdownRenderer content={m.content} />
           </div>
         )}
       </div>
@@ -221,7 +362,9 @@ function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, l
           </div>
         )}
         {m.content && (
-          <div className="text-[14.5px] leading-[1.6] text-[#d8d0c2] whitespace-pre-wrap">{m.content}</div>
+          <div className="cogent-markdown">
+            <MarkdownRenderer content={m.content} />
+          </div>
         )}
         {arts && arts.length > 0 && (
           <div className="space-y-2 max-w-[420px]">
@@ -246,6 +389,9 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   const [liveIteration, setLiveIteration] = useState(0);
   const [liveVerdict, setLiveVerdict] = useState("");
   const [liveVerdictNotes, setLiveVerdictNotes] = useState("");
+  const [liveStatus, setLiveStatus] = useState("");
+  const [liveTools, setLiveTools] = useState([]);
+  const [liveArtifacts, setLiveArtifacts] = useState([]);
 
   const scrollerRef = useRef(null);
   const fileInputRef = useRef(null);
