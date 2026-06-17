@@ -261,11 +261,10 @@ class VirtualProvider:
             raise RuntimeError(
                 f"Provider {entry.get('name')} response missing choices[0].message.content"
             )
-        if not isinstance(content, str):
+        if not isinstance(content, str) or not content.strip():
             raise RuntimeError(
-                f"Provider {entry.get('name')} response content was not text"
+                f"Provider {entry.get('name')} response had empty content"
             )
-        return content
 
 
 # ── Module-level singleton ──────────────────────────────────────────────
