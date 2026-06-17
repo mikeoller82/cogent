@@ -622,6 +622,8 @@ export default function ChatThread({ sessionId, refreshSessions }) {
           }
         } else if (evt.type === "artifact") {
           setLiveArtifacts((prev) => [...prev, evt.data]);
+        } else if (evt.type === "provider") {
+          pushActivity({ type: "tool_result", text: `⚡ ${evt.content || "provider fallback"}` });
         } else if (evt.type === "final") {
           setLiveStatus("");
           pushActivity({ type: "tool_result", text: "generating final response" });

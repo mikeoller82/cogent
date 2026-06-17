@@ -22,12 +22,16 @@ export interface LoopState {
   message?: string;
 }
 
+type MessageBase = { content: string };
+type MessageWithData<T> = { data: T };
+
 export type Message =
-  | { role: 'user'; content: string }
-  | { role: 'assistant'; content: string }
-  | { role: 'reasoning'; content: string }
-  | { role: 'status'; content: string }
-  | { role: 'tool_call'; data: ToolCall }
-  | { role: 'tool_result'; data: ToolResult }
-  | { role: 'loop'; data: LoopState }
-  | { role: 'error'; content: string };
+  | ({ role: 'user' } & MessageBase)
+  | ({ role: 'assistant' } & MessageBase)
+  | ({ role: 'reasoning' } & MessageBase)
+  | ({ role: 'system' } & MessageBase)
+  | ({ role: 'status' } & MessageBase)
+  | ({ role: 'tool_call' } & MessageWithData<ToolCall>)
+  | ({ role: 'tool_result' } & MessageWithData<ToolResult>)
+  | ({ role: 'loop' } & MessageWithData<LoopState>)
+  | ({ role: 'error' } & MessageBase);

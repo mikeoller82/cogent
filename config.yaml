@@ -11,8 +11,33 @@ model:
   # Default LLM — OpenAI-compatible chat completions
   provider: kilocode
   base_url: https://api.kilo.ai/api/gateway/chat/completions
-  default: nvidia/nemotron-3-ultra-550b-a55b:free
+  default: nex-agi/nex-n2-pro:free
   # api_key: read from KILOCODE_API_KEY env var
+
+rate_limit:
+  enabled: true
+  min_delay_ms: 5000          # Minimum gap between requests (5 s)
+  max_delay_ms: 7000          # Maximum gap (7 s) — randomized to avoid thundering herd
+
+# Virtual Provider — fallback chain when a provider returns 429 Rate Limited.
+# Providers are tried in priority order (lower = first). If one hits a 429,
+# Cogent automatically falls back to the next in the chain and reports the switch.
+providers:
+  - name: kilocode
+    base_url: https://api.kilo.ai/api/gateway/chat/completions
+    model: nvidia/nemotron-3-ultra-550b-a55b:free
+    api_key_env: KILOCODE_API_KEY
+    priority: 1
+  - name: kilocode
+    base_url: https://api.kilo.ai/api/gateway/chat/completions
+    model: nex-agi/nex-n2-pro:free
+    api_key_env: KILOCODE_API_KEY
+    priority: 2
+  - name: openrouter
+    base_url: https://openrouter.ai/api/v1/chat/completions
+    model: openrouter/owl-alpha
+    api_key_env: OPENROUTER_API_KEY
+    priority: 3
 
 agent:
   max_turns: 50               # max tool-using turns per message
@@ -62,11 +87,6 @@ datagen:
   output_dir: memory/research/
   max_items: 100
 
-agent:
-  context_compression: true
-  max_context_tokens: 32000
-  protected_turns: 4
-  compression_model: cogent-default
 
 mcp:
   enabled: false

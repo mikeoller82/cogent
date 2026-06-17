@@ -1,4 +1,5 @@
 /** @jsxImportSource @opentui/react */
+import { useState, useEffect } from 'react';
 import { theme } from '../theme';
 import type { Message, ToolCall, ToolResult, LoopState } from '../types';
 
@@ -7,11 +8,24 @@ interface ChatAreaProps {
   isProcessing: boolean;
 }
 
+/** Braille spinner — cycles frames while processing */
+function useSpinner(active: boolean, fps = 6): string {
+  const frames = ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷'];
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (!active) { setI(0); return; }
+    const id = setInterval(() => setI((p) => (p + 1) % frames.length), 1000 / fps);
+    return () => clearInterval(id);
+  }, [active, fps]);
+  return frames[i];
+}
+
 function ToolCallView({ data }: { data: ToolCall }) {
   return (
-    <box style={{ flexDirection: 'row', padding: { left: 2 } }}>
-      <text style={{ color: theme.warning }} content="⚡ " />
-      <text style={{ color: theme.accent }} content={data.tool} />
+    <box style={{ flexDirection: 'row', padding: { left: 2 }, marginTop: 1 }}>
+      <text style={{ color: theme.warning }} content="⚡" />
+      <text content=" " />
+      <text style={{ color: theme.accent, fontWeight: 'bold' }} content={data.tool} />
       <text style={{ color: theme.textMuted }} content={` ${data.label}`} />
     </box>
   );
@@ -19,9 +33,10 @@ function ToolCallView({ data }: { data: ToolCall }) {
 
 function ToolResultView({ data }: { data: ToolResult }) {
   return (
-    <box style={{ flexDirection: 'column', padding: { left: 2 } }}>
+    <box style={{ flexDirection: 'column', padding: { left: 2 }, marginTop: 1 }}>
       <box style={{ flexDirection: 'row' }}>
-        <text style={{ color: theme.success }} content="✓ " />
+        <text style={{ color: theme.success }} content="✓" />
+        <text content=" " />
         <text style={{ color: theme.textMuted }} content={data.display} />
       </box>
       {data.summary && (
@@ -45,21 +60,15 @@ function LoopStateView({ data }: { data: LoopState }) {
   const color = phaseColors[data.phase] || theme.textMuted;
 
   return (
-    <box style={{ flexDirection: 'row', padding: { left: 2 } }}>
-      <text style={{ color }} content={`◆ ${data.phase}`} />
+    <box style={{ flexDirection: 'row', padding: { left: 2 }, marginTop: 1 }}>
+      <text style={{ color }} content="◆" />
+      <text content=" " />
+      <text style={{ color }} content={data.phase} />
       {data.iteration !== undefined && (
-        <text
-          style={{ color: theme.textDim }}
-          content={` #${data.iteration}`}
-        />
+        <text style={{ color: theme.textDim }} content={` #${data.iteration}`} />
       )}
       {data.verdict && (
-        <text
-          style={{
-            color: data.verdict === 'PASS' ? theme.success : theme.warning,
-          }}
-          content={` ${data.verdict}`}
-        />
+        <text style={{ color: data.verdict === 'PASS' ? theme.success : theme.warning }} content={` ${data.verdict}`} />
       )}
       {data.message && (
         <text style={{ color: theme.textMuted }} content={` — ${data.message}`} />
@@ -70,8 +79,9 @@ function LoopStateView({ data }: { data: LoopState }) {
 
 function StatusMessage({ content }: { content: string }) {
   return (
-    <box style={{ flexDirection: 'row', padding: { left: 2 } }}>
-      <text style={{ color: theme.textDim }} content="⋯ " />
+    <box style={{ flexDirection: 'row', padding: { left: 2 }, marginTop: 1 }}>
+      <text style={{ color: theme.textDim }} content="⋯" />
+      <text content=" " />
       <text style={{ color: theme.textMuted }} content={content} />
     </box>
   );
@@ -79,14 +89,29 @@ function StatusMessage({ content }: { content: string }) {
 
 function ErrorMessage({ content }: { content: string }) {
   return (
-    <box
-      style={{
-        flexDirection: 'row',
-        padding: { left: 1, right: 1 },
-        backgroundColor: theme.error,
-      }}
-    >
-      <text style={{ color: '#ffffff' }} content={`✗ ${content}`} />
+    <box style={{ flexDirection: 'row', padding: { left: 1, right: 1 }, marginTop: 1 }}>
+      <text style={{ color: theme.error, fontWeight: 'bold' }} content="✗" />
+      <text content=" " />
+      <text style={{ color: theme.error }} content={content} />
+    </box>
+  );
+}
+function SystemMessage({ content }: { content: string }) {
+  return (
+    <box style={{ flexDirection: 'column', padding: { left: 2, right: 1 }, marginTop: 1 }}>
+      <box style={{ flexDirection: 'row' }}>
+        <text style={{ color: theme.accent }} content="◆" />
+        <text content=" " />
+        <text style={{ color: theme.accent, fontWeight: 'bold' }} content="system" />
+      </box>
+      <text
+        style={{
+          color: theme.textMuted,
+          padding: { left: 2 },
+          whiteSpace: 'pre-wrap',
+        }}
+        content={content}
+      />
     </box>
   );
 }
@@ -166,6 +191,9 @@ function MessageItem({ message }: { message: Message }) {
     case 'error':
       return <ErrorMessage content={message.content} />;
 
+    case 'system':
+      return <SystemMessage content={message.content} />;
+
     default:
       return null;
   }
@@ -173,6 +201,8 @@ function MessageItem({ message }: { message: Message }) {
 
 /** Scrolling message list */
 export function ChatArea({ messages, isProcessing }: ChatAreaProps) {
+  const spinner = useSpinner(isProcessing);
+
   return (
     <box
       style={{
@@ -200,28 +230,32 @@ export function ChatArea({ messages, isProcessing }: ChatAreaProps) {
             }}
           >
             <text
-              style={{ color: theme.textMuted }}
-              content="Welcome to Cogent — your AI co-worker"
+              style={{ color: theme.secondary, fontWeight: 'bold' }}
+              content="Welcome to Cogent"
             />
             <text
-              style={{ color: theme.textDim }}
-              content="Type a message below to get started."
+              style={{ color: theme.textMuted }}
+              content="Your AI co-worker — Plan · Execute · Verify"
             />
             <box style={{ height: 1 }} />
             <text
               style={{ color: theme.textDim }}
-              content="Commands: /help  /clear  /connect  /quit"
+              content="Type a message below to get started, or /help for commands"
             />
           </box>
         )}
 
         {messages.map((msg, i) => (
-          <MessageItem key={i} message={msg} />
+          <box key={i} style={{ flexDirection: 'column' }}>
+            {i > 0 && <box style={{ height: 1 }} />}
+            <MessageItem message={msg} />
+          </box>
         ))}
 
         {isProcessing && (
-          <box style={{ flexDirection: 'row', padding: { left: 1 }, marginTop: 1 }}>
-            <text style={{ color: theme.secondary }} content="● " />
+          <box style={{ flexDirection: 'row', padding: { left: 1 }, marginTop: 2 }}>
+            <text style={{ color: theme.secondary }} content={spinner} />
+            <text content=" " />
             <text style={{ color: theme.textMuted }} content="Cogent is thinking..." />
           </box>
         )}

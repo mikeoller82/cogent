@@ -4,26 +4,27 @@ import { theme } from '../theme';
 
 interface InputBarProps {
   onSend: (text: string) => void;
+  onCommand: (text: string) => Promise<boolean>;
   disabled: boolean;
   connected: boolean;
 }
 
-export function InputBar({ onSend, disabled, connected }: InputBarProps) {
+export function InputBar({ onSend, onCommand, disabled, connected }: InputBarProps) {
   const [value, setValue] = useState('');
   const inputRef = useRef<{ focus: () => void }>(null);
 
   const handleSubmit = useCallback(
-    (val: string) => {
+    async (val: string) => {
       const trimmed = val.trim();
       if (!trimmed || disabled) return;
 
-      // Handle commands
-      if (trimmed === '/clear') {
-        setValue('');
-        return;
-      }
-      if (trimmed === '/quit' || trimmed === '/exit') {
-        process.exit(0);
+      // Check if it's a command first
+      if (trimmed.startsWith('/')) {
+        const handled = await onCommand(trimmed);
+        if (handled) {
+          setValue('');
+          return;
+        }
       }
 
       onSend(trimmed);
@@ -31,7 +32,7 @@ export function InputBar({ onSend, disabled, connected }: InputBarProps) {
       // Refocus input after sending
       setTimeout(() => inputRef.current?.focus(), 0);
     },
-    [onSend, disabled]
+    [onSend, onCommand, disabled]
   );
 
   return (
@@ -83,7 +84,7 @@ export function InputBar({ onSend, disabled, connected }: InputBarProps) {
 
       {/* Hint bar */}
       <box style={{ flexDirection: 'row', padding: { left: 1, right: 1 } }}>
-        <text style={{ color: theme.textDim }} content="/clear  /quit  esc to cancel" />
+        <text style={{ color: theme.textDim }} content="/help  /skills  /clear  /quit" />
       </box>
     </box>
   );

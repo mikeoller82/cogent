@@ -35,6 +35,7 @@ export function App({ baseUrl = 'http://localhost:8000' }: AppProps) {
     sessionId,
     connect,
     sendMessage,
+    handleCommand,
   } = useConversation();
 
 
@@ -50,13 +51,24 @@ export function App({ baseUrl = 'http://localhost:8000' }: AppProps) {
   }, [baseUrl, connect]);
 
 
+  // Track the last baseUrl used so /connect can re-use it
+  const currentBaseUrl = baseUrl;
+
   const handleSend = (text: string) => {
-    // Reconnect if disconnected
     if (connectionStatus === 'disconnected' || connectionStatus === 'error') {
-      connect(baseUrl).then(() => sendMessage(text));
+      connect(currentBaseUrl).then(() => sendMessage(text));
     } else {
       sendMessage(text);
     }
+  };
+
+  const handleCommandWrapper = async (text: string): Promise<boolean> => {
+    const cmd = text.trim().toLowerCase();
+    if (cmd === '/connect') {
+      await connect(currentBaseUrl);
+      return true;
+    }
+    return handleCommand(text);
   };
 
   return (
@@ -77,10 +89,10 @@ export function App({ baseUrl = 'http://localhost:8000' }: AppProps) {
       {/* Input area */}
       <InputBar
         onSend={handleSend}
+        onCommand={handleCommandWrapper}
         disabled={isProcessing}
         connected={connectionStatus === 'connected'}
       />
-
       {/* Bottom status bar */}
       <StatusBar
         connectionStatus={connectionStatus}

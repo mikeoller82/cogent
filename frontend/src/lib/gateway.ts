@@ -188,12 +188,12 @@ export class GatewayClient {
 
   private processChunk(chunk: string): void {
     const lines = chunk.split('\n');
-    let eventType = '';
+    let sseEventType = '';
     let data = '';
 
     for (const line of lines) {
       if (line.startsWith('event: ')) {
-        eventType = line.slice(7).trim();
+        sseEventType = line.slice(7).trim();
       } else if (line.startsWith('data: ')) {
         data = line.slice(6).trim();
       }
@@ -208,24 +208,52 @@ export class GatewayClient {
       parsed = { raw: data };
     }
 
-    switch (eventType) {
+    // Backend sends data: {"type":"reasoning","content":"..."} without
+    // an SSE event: prefix. Fall back to parsed.type when empty.
+    const type = sseEventType || (parsed.type as string) || '';
+
+    switch (type) {
       case 'status':
         this.emit({ type: 'status', data: parsed });
         break;
+      case 'tool':
+        this.emit({ type: 'message', data: { type: 'tool_call', ...parsed } as any });
+        break;
       case 'tool_result':
-        this.emit({ type: 'message', data: { type: 'tool_result', ...parsed } });
+        this.emit({ type: 'message', data: { type: 'tool_result', ...parsed } as any });
         break;
       case 'artifact':
-        this.emit({ type: 'message', data: { type: 'artifact', ...parsed } });
+        this.emit({ type: 'message', data: { type: 'artifact', ...parsed } as any });
         break;
+      case 'loop':
+        this.emit({ type: 'message', data: { type: 'loop', ...parsed } as any });
+        break;
+      case 'reasoning':
+        this.emit({ type: 'message', data: { type: 'reasoning', ...parsed } as any });
+        break;
+      case 'provider':
+        this.emit({ type: 'message', data: { type: 'provider', ...parsed } as any });
+        break;
+
       case 'final':
         this.emit({ type: 'final', data: parsed });
         break;
       case 'error':
         this.emit({ type: 'error', data: parsed });
         break;
+      case 'user_saved':
+        // Backend bookkeeping — handled implicitly
+        break;
+      case 'done': {
+        // Backend sends the authoritative assistant message here.
+        // Extract content and emit as final for the hook.
+        const msg = (parsed.message as Record<string, unknown>) || {};
+        const content = (msg.content as string) || '(no response)';
+        this.emit({ type: 'final', data: { content } });
+        break;
+      }
       default:
-        this.emit({ type: 'message', data: { type: eventType, ...parsed } });
+        this.emit({ type: 'message', data: { type, ...parsed } as any });
     }
   }
 

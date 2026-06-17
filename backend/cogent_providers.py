@@ -1,184 +1,281 @@
-"""Provider abstraction for LLM backends.
+"""Virtual Provider — rate limiter + automatic fallback chain for LLM providers.
 
-Analogous to Hermes' ``providers/`` — declares a ``ProviderProfile``
-dataclass and a registry so Cogent can switch between LLM backends
-without changing call sites.
-
-Currently ships one built-in provider (KiloCode).  Additional providers
-can be registered at runtime via :func:`register_provider`.
+When the active provider returns 429 Rate Limited, Cogent automatically
+falls back to the next provider in the priority chain and reports the switch
+back to the UI.  A configurable delay (randomised in a range) is enforced
+between every request to stay within fair-use quotas.
 
 Usage::
 
-    from cogent_providers import get_provider, register_provider
+    from cogent_providers import VirtualProvider
+    vp = VirtualProvider()
+    content = vp.chat(messages)
 
-    # Built-in
-    provider = get_provider("kilocode")
-    response = provider.complete(messages)
+Config (``config.yaml``)::
 
-    # Register custom
-    register_provider(CustomProvider(name="my-llm", ...))
+    rate_limit:
+      enabled: true
+      min_delay_ms: 5000
+      max_delay_ms: 7000
+
+    providers:
+      - name: kilocode
+        base_url: https://.../chat/completions
+        model: nex-agi/nex-n2-pro:free
+        api_key_env: KILOCODE_API_KEY
+        priority: 1
+      - name: openrouter
+        base_url: https://.../chat/completions
+        model: google/gemini-2.0-flash-exp:free
+        api_key_env: OPENROUTER_API_KEY
+        priority: 2
+
+The provider list sorted by priority forms the fallback chain.
 """
 
 from __future__ import annotations
 
-import json
-import logging
 import os
-import threading
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+import time
+import random
+import logging
+from typing import List, Dict, Any, Optional
 
 import requests
 
 from cogent_config import get_config
-from cogent_constants import ENV_KILOCODE_API_KEY
 
 logger = logging.getLogger("cogent.providers")
 
 
-# ── Profile ────────────────────────────────────────────────────────────────
-
-@dataclass
-class ProviderProfile:
-    """Declarative description of an LLM provider's behaviour.
-
-    Does NOT own client construction or streaming — those are handled
-    by the transport layer (:meth:`Provider.complete`).
-    """
-    name: str
-    base_url: str = ""
-    default_model: str = ""
-    api_key_env: str = ""           # env var name for the API key
-    supports_streaming: bool = True
-    supports_vision: bool = False
-    max_tokens: int = 4096
-    extra_headers: Dict[str, str] = field(default_factory=dict)
-    extra_body: Dict[str, Any] = field(default_factory=dict)
+def _load_providers() -> List[Dict[str, Any]]:
+    """Read the provider list from config and sort by priority."""
+    cfg = get_config()
+    provs: list = cfg.providers
+    sorted_provs = sorted(provs, key=lambda p: p.get("priority", 99))
+    return sorted_provs
 
 
-# ── Base Provider ─────────────────────────────────────────────────────────
+def _pick_api_key(entry: Dict[str, Any]) -> Optional[str]:
+    """Read the API key for a provider entry from its env-var name."""
+    env_var = entry.get("api_key_env", "")
+    if not env_var:
+        return None
+    return os.environ.get(env_var)
 
-class Provider:
-    """Base class for an LLM provider transport.
 
-    Subclasses override :meth:`complete` and optionally :meth:`stream`.
+class RateLimiter:
+    """Simple token-bucket-inspired rate limiter.
+
+    Enforces a randomised delay between successive requests so that free-tier
+    quotas are not accidentally exceeded.
     """
 
-    def __init__(self, profile: ProviderProfile) -> None:
-        self.profile = profile
+    def __init__(self, enabled: bool = True,
+                 min_delay_ms: int = 5000,
+                 max_delay_ms: int = 7000) -> None:
+        self.enabled = enabled
+        self.min_delay = min_delay_ms / 1000.0
+        self.max_delay = max_delay_ms / 1000.0
+        self._last_ts: float = 0.0
 
-    def _resolve_api_key(self) -> str:
-        key = os.environ.get(self.profile.api_key_env, "")
-        if not key:
-            # Fall back to config
-            cfg = get_config()
-            key = cfg.model_api_key
-        return key
+    def wait_if_needed(self) -> float:
+        """Block until the minimum inter-request delay has elapsed.
 
-    def complete(self, messages: List[Dict[str, str]],
-                 model: Optional[str] = None,
-                 **kwargs: Any) -> str:
-        """Send a chat completion request.  Returns the response text."""
-        raise NotImplementedError
+        Returns the delay that was actually applied (seconds).
+        """
+        if not self.enabled:
+            return 0.0
+
+        now = time.monotonic()
+        elapsed = now - self._last_ts
+        target = random.uniform(self.min_delay, self.max_delay)
+
+        if elapsed < target:
+            sleep_for = target - elapsed
+            time.sleep(sleep_for)
+            self._last_ts = time.monotonic()
+            return sleep_for
+
+        self._last_ts = now
+        return 0.0
+
+    def reset(self) -> None:
+        self._last_ts = 0.0
+
+
+class VirtualProvider:
+    """Multi-provider chat completions with rate limiting and fallback.
+
+    Uses a priority-sorted provider chain.  When the current provider returns a
+    429 status, the next provider in the chain is tried automatically.
+    """
+
+    def __init__(self) -> None:
+        self._providers: List[Dict[str, Any]] = []
+        self._rate_limiter = RateLimiter()
+        self._current_idx: int = 0
+        self._fallback_log: List[str] = []
+        self.reload_config()
+
+    # ── Public API ──────────────────────────────────────────────────────
+
+    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+        """Send a chat-completion request through the provider chain.
+
+        Returns the response text.
+
+        Raises RuntimeError when every provider in the chain has been
+        exhausted.
+        """
+        last_error: Optional[str] = None
+
+        for attempt in range(len(self._providers)):
+            idx = (self._current_idx + attempt) % len(self._providers)
+            entry = self._providers[idx]
+
+            api_key = _pick_api_key(entry)
+            if not api_key:
+                logger.warning("Provider %s skipped — no API key", entry.get("name"))
+                if attempt == 0:
+                    # Try next provider immediately
+                    self._fallback(entry.get("name", "?"), "missing API key")
+                continue
+
+            # Rate limit before hitting this provider
+            self._rate_limiter.wait_if_needed()
+
+            try:
+                return self._post(entry, api_key, messages, **kwargs)
+            except requests.HTTPError as exc:
+                status = exc.response.status_code if exc.response is not None else 0
+                body = exc.response.text[:300] if exc.response is not None else ""
+                logger.warning(
+                    "Provider %s HTTP %d — %s",
+                    entry.get("name"), status, body,
+                )
+
+                if status == 429:
+                    # Rate limited — fall back to next provider
+                    reason = f"429 rate limited: {body}"
+                    last_error = f"{entry.get('name', '?')}: {reason}"
+                    self._fallback(entry.get("name", "?"), reason)
+                    continue
+
+                if status >= 500:
+                    # Server error — also try next provider
+                    reason = f"{status} server error"
+                    last_error = f"{entry.get('name', '?')}: {reason}"
+                    self._fallback(entry.get("name", "?"), reason)
+                    continue
+
+                # Other 4xx — fatal
+                raise
+
+            except requests.ConnectionError as exc:
+                logger.warning("Provider %s connection error — %s",
+                               entry.get("name"), exc)
+                last_error = f"{entry.get('name', '?')}: connection error: {exc}"
+                self._fallback(entry.get("name", "?"), f"connection error: {exc}")
+                continue
+
+            except RuntimeError as exc:
+                # Malformed response (e.g. missing choices[0].message.content)
+                # indicates the model is overwhelmed or returning empty results.
+                # Fall back to the next provider rather than crashing the turn.
+                logger.warning("Provider %s RuntimeError — %s", entry.get("name"), exc)
+                last_error = f"{entry.get('name', '?')}: malformed response: {exc}"
+                self._fallback(entry.get("name", "?"), f"malformed response: {exc}")
+                continue
+
+        raise RuntimeError(
+            f"All providers exhausted. Last error: {last_error or '(no details)'}"
+        )
+
+    # ── Status queries ──────────────────────────────────────────────────
 
     @property
-    def name(self) -> str:
-        return self.profile.name
+    def active_provider_name(self) -> str:
+        entry = self._providers[self._current_idx] if self._providers else {}
+        return entry.get("name", "none")
 
+    @property
+    def fallback_events(self) -> List[str]:
+        return list(self._fallback_log)
 
-# ── KiloCode provider ────────────────────────────────────────────────────
+    def drain_fallback_events(self) -> List[str]:
+        events = self._fallback_log
+        self._fallback_log = []
+        return events
 
-class KiloCodeProvider(Provider):
-    """Provider for KiloCode's OpenAI-compatible API."""
+    # ── Config reload ───────────────────────────────────────────────────
 
-    def complete(self, messages: List[Dict[str, str]],
-                 model: Optional[str] = None,
-                 **kwargs: Any) -> str:
+    def reload_config(self) -> None:
         cfg = get_config()
-        api_key = self._resolve_api_key()
-        if not api_key:
-            raise RuntimeError(f"Missing API key for {self.name} "
-                               f"(set {self.profile.api_key_env})")
+        self._providers = _load_providers()
+        self._rate_limiter = RateLimiter(
+            enabled=cfg.rate_limit_enabled,
+            min_delay_ms=cfg.rate_limit_min_delay_ms,
+            max_delay_ms=cfg.rate_limit_max_delay_ms,
+        )
+        self._current_idx = 0
 
-        url = kwargs.get("base_url") or self.profile.base_url or cfg.model_base_url
-        model_name = model or self.profile.default_model or cfg.model_name
+    # ── Internals ───────────────────────────────────────────────────────
+
+    def _fallback(self, from_name: str, reason: str) -> None:
+        """Advance to the next provider and log the fallback."""
+        self._current_idx = (self._current_idx + 1) % len(self._providers)
+        next_name = self._providers[self._current_idx].get("name", "?") if self._providers else "?"
+        msg = f"{from_name} → {next_name}: {reason}"
+        self._fallback_log.append(msg)
+        logger.info("Provider fallback: %s", msg)
+
+    def _post(self, entry: Dict[str, Any], api_key: str,
+              messages: List[Dict[str, str]], **kwargs) -> str:
+        """Perform the actual HTTP POST to the provider."""
+        url = entry.get("base_url", "")
+        model = entry.get("model", "")
+        max_tokens = kwargs.get("max_tokens", 4000)
 
         response = requests.post(
             url,
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                **self.profile.extra_headers,
             },
             json={
-                "model": model_name,
+                "model": model,
                 "messages": messages,
-                "max_tokens": kwargs.get("max_tokens", self.profile.max_tokens),
-                **self.profile.extra_body,
+                "max_tokens": max_tokens,
             },
             timeout=kwargs.get("timeout", 120),
         )
+
         if response.status_code >= 400:
-            raise RuntimeError(
-                f"{self.name} error {response.status_code}: {response.text[:500]}"
-            )
+            raise requests.HTTPError(response=response)
 
         data = response.json()
         try:
             content = data["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as exc:
+        except (KeyError, IndexError, TypeError):
             raise RuntimeError(
-                f"{self.name} response missing choices[0].message.content"
-            ) from exc
+                f"Provider {entry.get('name')} response missing choices[0].message.content"
+            )
         if not isinstance(content, str):
-            raise RuntimeError(f"{self.name} response content was not text")
+            raise RuntimeError(
+                f"Provider {entry.get('name')} response content was not text"
+            )
         return content
 
 
-# ── Registry ──────────────────────────────────────────────────────────────
+# ── Module-level singleton ──────────────────────────────────────────────
 
-_registry: Dict[str, Provider] = {}
-_lock = threading.Lock()
-
-
-def register_provider(provider: Provider, *, alias: Optional[str] = None) -> None:
-    """Register a provider instance by name."""
-    with _lock:
-        _registry[provider.name] = provider
-        if alias:
-            _registry[alias] = provider
-    logger.info("Provider registered: %s", provider.name)
+_provider: Optional[VirtualProvider] = None
 
 
-def get_provider(name: Optional[str] = None) -> Provider:
-    """Look up a provider by name.  Defaults to the configured provider."""
-    with _lock:
-        if not name:
-            cfg = get_config()
-            name = cfg.model_provider
-        provider = _registry.get(name)
-        if provider:
-            return provider
-        raise KeyError(f"Unknown provider: {name!r}. "
-                       f"Available: {list(_registry.keys())}")
-
-
-def list_providers() -> List[str]:
-    with _lock:
-        return list(_registry.keys())
-
-
-# ── Auto-register built-in providers ─────────────────────────────────────
-
-def _init_builtins() -> None:
-    cfg = get_config()
-    profile = ProviderProfile(
-        name="kilocode",
-        base_url=cfg.model_base_url,
-        default_model=cfg.model_name,
-        api_key_env=ENV_KILOCODE_API_KEY,
-    )
-    register_provider(KiloCodeProvider(profile), alias="default")
-
-
-_init_builtins()
+def get_provider(*, reload: bool = False) -> VirtualProvider:
+    """Return the global VirtualProvider singleton."""
+    global _provider
+    if _provider is None or reload:
+        _provider = VirtualProvider()
+    return _provider

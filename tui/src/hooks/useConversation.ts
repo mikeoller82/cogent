@@ -57,16 +57,48 @@ export function useConversation() {
 
       setMessages((prev) => [...prev, { role: 'user', content: text }]);
       setIsProcessing(true);
-      currentAssistantRef.current = '';
 
       client.on('message', (e) => {
         const type = e.data.type as string;
+        const content = e.data.content as string | undefined;
+
         if (type === 'reasoning') {
-          const content = e.data.content as string;
-          if (content.startsWith('[auto-continue')) return;
+          if (content?.startsWith('[auto-continue')) return;
           setMessages((prev) => [
             ...prev,
-            { role: 'reasoning', content },
+            { role: 'reasoning', content: content ?? '' },
+          ]);
+        } else if (type === 'tool_call') {
+          const data = e.data.data as any;
+          setMessages((prev) => [
+            ...prev,
+            { role: 'tool_call', data: { tool: data?.tool ?? '', args: data?.args ?? {}, label: data?.label ?? '' } },
+          ]);
+        } else if (type === 'tool_result') {
+          const data = e.data.data as any;
+          setMessages((prev) => [
+            ...prev,
+            { role: 'tool_result', data: { tool: data?.tool ?? '', summary: data?.summary ?? '', display: data?.display ?? '' } },
+          ]);
+        } else if (type === 'loop') {
+          const data = e.data.data as any;
+          if (data) {
+            setMessages((prev) => [
+              ...prev,
+              { role: 'loop', data },
+            ]);
+          }
+        } else if (type === 'artifact') {
+          setMessages((prev) => [
+            ...prev,
+            { role: 'status', content: `artifact: ${content ?? ''}` },
+          ]);
+        } else if (type === 'provider') {
+          // Provider fallback / rate-limit event
+          const msg = content || 'provider event';
+          setMessages((prev) => [
+            ...prev,
+            { role: 'status', content: `⚡ ${msg}` },
           ]);
         }
       });
@@ -88,6 +120,12 @@ export function useConversation() {
             ...prev,
             { role: 'assistant', content },
           ]);
+        } else {
+          // Final event with no content — still need something
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: '(no response)' },
+          ]);
         }
         setIsProcessing(false);
       });
@@ -102,6 +140,8 @@ export function useConversation() {
 
       try {
         await client.send(text);
+        // If the stream ended without a final/error event, ensure processing stops
+        setIsProcessing(false);
       } catch {
         setIsProcessing(false);
       }
@@ -116,6 +156,90 @@ export function useConversation() {
     setSessionId(null);
   }, []);
 
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+  }, []);
+
+  const addSystemMessage = useCallback((content: string) => {
+    setMessages((prev) => [...prev, { role: 'system', content }]);
+  }, []);
+
+  const handleCommand = useCallback(async (text: string): Promise<boolean> => {
+    const cmd = text.trim().toLowerCase();
+
+    if (cmd === '/clear') {
+      clearMessages();
+      return true;
+    }
+
+    if (cmd === '/quit' || cmd === '/exit') {
+      process.exit(0);
+    }
+
+    if (cmd === '/help') {
+      addSystemMessage(
+        '── Cogent Commands ──────────────────────\n\n' +
+        '/help     Show this help message\n' +
+        '/skills   List available agent skills\n' +
+        '/session  Show current session info\n' +
+        '/connect  Reconnect to the backend server\n' +
+        '/clear    Clear the conversation\n' +
+        '/quit     Exit Cogent\n' +
+        '\nTip: Type any message to chat with Cogent.'
+      );
+      return true;
+    }
+
+    if (cmd === '/session') {
+      const client = clientRef.current;
+      const sid = client?.getSessionId() || sessionId;
+      const status = connectionStatus;
+      const url = (client as any)?.baseUrl ?? 'unknown';
+      addSystemMessage(
+        `session  ${sid ? sid.slice(0, 12) + '…' : 'none'}\n` +
+        `status   ${status}\n` +
+        `server   ${url}`
+      );
+      return true;
+    }
+
+    if (cmd === '/connect') {
+      addSystemMessage('Reconnecting to server…');
+      return true;
+    }
+
+    if (cmd === '/skills') {
+      // Fetch skills from the backend API
+      const client = clientRef.current;
+      const baseUrl = (client as any)?.baseUrl ?? 'http://localhost:8000';
+      addSystemMessage('Fetching installed skills…');
+
+      try {
+        const res = await fetch(`${baseUrl}/skills`);
+        if (!res.ok) {
+          addSystemMessage(`Error: server returned ${res.status} ${res.statusText}`);
+          return true;
+        }
+        const skills: Array<{ name: string; description?: string }> = await res.json();
+        if (!skills || skills.length === 0) {
+          addSystemMessage('No skills installed. Use /help to learn more about Cogent.');
+          return true;
+        }
+        const lines = skills.map(
+          (s, i) => `  ${i + 1}. ${s.name}${s.description ? ' — ' + s.description : ''}`
+        );
+        addSystemMessage(
+          `Installed skills (${skills.length}):\n${lines.join('\n')}`
+        );
+      } catch (e) {
+        addSystemMessage(`Failed to fetch skills: ${e instanceof Error ? e.message : String(e)}`);
+      }
+      return true;
+    }
+
+    return false; // not a command
+  }, [clearMessages, addSystemMessage, sessionId, connectionStatus]);
+
   return {
     messages,
     isProcessing,
@@ -124,5 +248,8 @@ export function useConversation() {
     connect,
     sendMessage,
     disconnect,
+    clearMessages,
+    addSystemMessage,
+    handleCommand,
   };
 }

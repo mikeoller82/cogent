@@ -34,7 +34,6 @@ from cogent_constants import (
 
 
 # ── Default config ────────────────────────────────────────────────────────
-
 _DEFAULTS: Dict[str, Any] = {
     "model": {
         "base_url": DEFAULT_CHAT_COMPLETIONS_URL,
@@ -47,6 +46,27 @@ _DEFAULTS: Dict[str, Any] = {
         "verbose": False,
         "reasoning_effort": "medium",
     },
+    "rate_limit": {
+        "enabled": True,
+        "min_delay_ms": 5000,
+        "max_delay_ms": 7000,
+    },
+    "providers": [
+        {
+            "name": "kilocode",
+            "base_url": "https://api.kilo.ai/api/gateway/chat/completions",
+            "model": "nex-agi/nex-n2-pro:free",
+            "api_key_env": "KILOCODE_API_KEY",
+            "priority": 1,
+        },
+        {
+            "name": "openrouter",
+            "base_url": "https://openrouter.ai/api/v1/chat/completions",
+            "model": "google/gemini-2.0-flash-exp:free",
+            "api_key_env": "OPENROUTER_API_KEY",
+            "priority": 2,
+        },
+    ],
     "workspace": {
         "default": DEFAULT_WORKSPACE,
     },
@@ -113,6 +133,29 @@ class CogentConfig:
     @property
     def model_api_key(self) -> str:
         return self._data.get("model", {}).get("api_key", "")
+
+
+    # Rate limit
+    @property
+    def rate_limit_enabled(self) -> bool:
+        return bool(self._data.get("rate_limit", {}).get("enabled", True))
+
+    @property
+    def rate_limit_min_delay_ms(self) -> int:
+        return int(self._data.get("rate_limit", {}).get("min_delay_ms", 5000))
+
+    @property
+    def rate_limit_max_delay_ms(self) -> int:
+        return int(self._data.get("rate_limit", {}).get("max_delay_ms", 7000))
+
+    # Virtual Provider chain
+    @property
+    def providers(self) -> list:
+        return list(self._data.get("providers", []))
+
+    @property
+    def active_provider(self) -> str:
+        return self._data.get("_active_provider", self.model_provider)
 
     @property
     def model_provider(self) -> str:

@@ -20,6 +20,7 @@ import loop_engine as le
 from cogent_config import get_config
 from cogent_logging import set_session_context
 from cogent_memory import memory_summary
+from cogent_providers import get_provider
 
 load_dotenv()
 _cfg = get_config()
@@ -306,40 +307,24 @@ def _parse_tool_call(text: str):
     before = text[: m.start()].strip()
     return parsed, before
 
+def _call_llm(messages: List[Dict[str, str]], **kwargs) -> str:
+    """Send a chat-completion request via the VirtualProvider fallback chain.
 
-def _post_kilocode_chat(messages: List[Dict[str, str]]) -> str:
-    api_key = os.environ.get("KILOCODE_API_KEY")
-    if not api_key:
-        raise RuntimeError("Missing KILOCODE_API_KEY")
+    Returns the response text.  Raises RuntimeError when all providers
+    are exhausted or a non-retryable error occurs.
+    """
+    vp = get_provider()
+    return vp.chat(messages, **kwargs)
 
-    response = requests.post(
-        KILOCODE_CHAT_COMPLETIONS_URL,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": KILOCODE_MODEL_NAME,
-            "messages": messages,
-            "max_tokens": 4000,
-        },
-        timeout=120,
-    )
-    if response.status_code >= 400:
-        raise RuntimeError(f"Kilo Gateway error {response.status_code}: {response.text[:500]}")
 
-    data = response.json()
-    try:
-        content = data["choices"][0]["message"]["content"]
-    except (KeyError, IndexError, TypeError):
-        raise RuntimeError("Kilo Gateway response missing choices[0].message.content")
-    if not isinstance(content, str):
-        raise RuntimeError("Kilo Gateway response content was not text")
-    return content
+def _collect_provider_events() -> List[str]:
+    """Return and clear any provider-fallback events since last check."""
+    vp = get_provider()
+    return vp.drain_fallback_events()
 
 
 async def _send_kilocode_chat(messages: List[Dict[str, str]]) -> str:
-    return await asyncio.to_thread(_post_kilocode_chat, messages)
+    return await asyncio.to_thread(_call_llm, messages)
 
 
 async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
@@ -515,6 +500,10 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             messages.append({"role": "user", "content": current_user_text})
             try:
                 response_text = await _send_kilocode_chat(messages)
+
+                # Emit any provider-fallback events since the last call
+                for ev in _collect_provider_events():
+                    yield {"type": "provider", "content": ev}
             except Exception as e:
                 yield {"type": "error", "content": f"LLM error: {e}"}
                 final_text = f"(LLM error: {e})"
