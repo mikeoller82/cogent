@@ -562,6 +562,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             yield {"type": "status", "content": "processing results and continuing work"}
 
         if tool_loop_error:
+            if not final_text:
+                final_text = "(error before any response)"
+            yield {"type": "final", "content": final_text}
             break
 
         # ── Auto-continue after tool loop exhausts ───────────────────
@@ -614,11 +617,13 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             if verdict == "PASS":
                 le.complete_task(loop_state, final_text[:200])
                 yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+                yield {"type": "final", "content": final_text}
                 break
 
             if loop_state.iteration >= le.MAX_ITERATIONS:
                 le.complete_task(loop_state, final_text[:200])
                 yield {"type": "loop", "data": {"phase": le.PHASE_DONE, "message": "Max iterations reached"}}
+                yield {"type": "final", "content": final_text}
                 break
 
             # Feed verification back and loop for refinement
@@ -637,6 +642,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
         # No output to verify — done
         le.complete_task(loop_state, (final_text or "")[:200])
         yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+        if not final_text:
+            final_text = "(no output generated)"
+        yield {"type": "final", "content": final_text}
         break
 
     else:

@@ -1,0 +1,22 @@
+2026-06-17 05:03:11,387 ERROR [d0bb14b2-f39] cogent.server: stream failed
+Traceback (most recent call last):
+  File "/home/mike/cogent/backend/server.py", line 272, in event_stream
+    async for ev in run_turn_stream(db, session_id, workspace_id, full_text, history):
+  File "/home/mike/cogent/backend/llm_service.py", line 520, in run_turn_stream
+    call, _ = _parse_tool_call(response_text)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mike/cogent/backend/llm_service.py", line 299, in _parse_tool_call
+    m = TOOL_RE.search(text)
+        ^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
+2026-06-17 05:34:51,936 ERROR [4b135417-dbd] cogent.server: stream failed
+Traceback (most recent call last):
+  File "/home/mike/cogent/backend/server.py", line 272, in event_stream
+    async for ev in run_turn_stream(db, session_id, workspace_id, full_text, history):
+  File "/home/mike/cogent/backend/llm_service.py", line 520, in run_turn_stream
+    call, _ = _parse_tool_call(response_text)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mike/cogent/backend/llm_service.py", line 299, in _parse_tool_call
+    m = TOOL_RE.search(text)
+        ^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
