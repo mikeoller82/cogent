@@ -29,3 +29,4 @@ firecrawl-py>=4.28.3
 agent-reach @ git+https://github.com/Panniantong/Agent-Reach.git
 ffmpeg-python>=0.2.0
 yt-dlp>=2026.6.9
+ollama>=0.4.0

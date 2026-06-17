@@ -27,7 +27,7 @@ providers:
     base_url: https://api.kilo.ai/api/gateway/chat/completions
     model: nvidia/nemotron-3-ultra-550b-a55b:free
     api_key_env: KILOCODE_API_KEY
-    priority: 1
+    priority: 4
   - name: kilocode
     base_url: https://api.kilo.ai/api/gateway/chat/completions
     model: nex-agi/nex-n2-pro:free
@@ -42,7 +42,18 @@ providers:
     base_url: https://opencode.ai/zen/v1/chat/completions
     model: deepseek-v4-flash-free
     api_key_env: OPENCODE_ZEN_API_KEY
-    priority: 4
+    priority: 1
+  - name: ollama-local
+    library: ollama
+    model: qwen3.6
+    api_key_env: OLLAMA_API_KEY
+    priority: 5
+  - name: ollama-cloud
+    library: ollama-cloud
+    base_url: https://cloud.ollama.ai
+    model: glm-5.2:cloud
+    api_key_env: OLLAMA_API_KEY
+    priority: 6
 
 agent:
   max_turns: 50               # max tool-using turns per message

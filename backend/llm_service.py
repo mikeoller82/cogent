@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import agent_skills
 import tools as tool_impls
 import agent_reach_tools as art
+from agent import context_compressor as cc
 import loop_engine as le
 
 from cogent_config import get_config
@@ -26,6 +27,9 @@ load_dotenv()
 _cfg = get_config()
 KILOCODE_MODEL_NAME = _cfg.model_name
 KILOCODE_CHAT_COMPLETIONS_URL = _cfg.model_base_url
+
+# Message compression threshold: auto-compress when messages exceed this count
+COMPRESS_AFTER_TURNS = 30  # compress messages after this many exchange turns
 MAX_TOOL_TURNS = _cfg.max_turns
 
 def build_system_prompt(workspace_name: str = "your team", memory_facts: str = "",
@@ -314,7 +318,10 @@ def _call_llm(messages: List[Dict[str, str]], **kwargs) -> str:
     are exhausted or a non-retryable error occurs.
     """
     vp = get_provider()
-    return vp.chat(messages, **kwargs)
+    content = vp.chat(messages, **kwargs)
+    if content is None:
+        raise RuntimeError("Provider returned None content")
+    return content
 
 
 def _collect_provider_events() -> List[str]:
@@ -479,7 +486,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
     tool_loop_error = False
 
     # ── Main refinement loop ─────────────────────────────────────────
-    while loop_state.iteration < le.MAX_ITERATIONS:
+    while loop_state.iteration < le.MAX_ITERATIONS and not le.should_halt_execution(loop_state):
         if loop_state.budget_exhausted:
             yield {"type": "loop", "data": {"phase": le.PHASE_ERROR, "message": "Budget exhausted"}}
             final_text = "(stopped — token budget exceeded)"
@@ -516,6 +523,15 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
             initial_messages.append({"role": "user", "content": current_user_text})
             initial_messages.append({"role": "assistant", "content": response_text})
+
+            # ── Auto-compress if messages exceed threshold ───────────
+            if len(initial_messages) > COMPRESS_AFTER_TURNS:
+                compressed = cc.compress_messages(initial_messages, max_tokens=64000)
+                if len(compressed) < len(initial_messages):
+                    yield {"type": "reasoning", "content": (
+                        f"[compressed: {len(initial_messages)} -> {len(compressed)} messages]"
+                    )}
+                    initial_messages = compressed
 
             call, _ = _parse_tool_call(response_text)
             if not call:
@@ -583,6 +599,11 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
         le.record_attempt(loop_state, le.PHASE_EXECUTE, (final_text or "")[:200])
 
+        # ── Response analysis (Ralph-style) ──────────────────────────
+        analysis = le.analyze_response_text(final_text or "")
+        loop_state.last_asking_questions = analysis["asking_questions"]
+        le.update_exit_signals(loop_state, analysis)
+
         # ── Verification (maker/checker split) ───────────────────────
         if final_text:
             if not loop_state.verification_criteria:
@@ -614,7 +635,12 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 "iteration": loop_state.iteration,
             }}
 
-            if verdict == "PASS":
+            # ── Dual-condition exit gate (Ralph-style) ───────────────
+            # Require BOTH verification PASS AND exit signal to complete
+            exit_reason = le.should_exit_gracefully(loop_state)
+            has_exit_signal = analysis.get("exit_signal", False) or analysis.get("explicit_exit_signal", False)
+
+            if exit_reason or (verdict == "PASS" and has_exit_signal):
                 le.complete_task(loop_state, final_text[:200])
                 yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
                 yield {"type": "final", "content": final_text}
@@ -646,7 +672,6 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             final_text = "(no output generated)"
         yield {"type": "final", "content": final_text}
         break
-
     else:
         if not final_text:
             final_text = "(stopped after max iterations)"

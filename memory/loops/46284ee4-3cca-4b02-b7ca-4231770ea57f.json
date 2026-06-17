@@ -1,0 +1,23 @@
+{
+  "session_id": "46284ee4-3cca-4b02-b7ca-4231770ea57f",
+  "phase": "plan",
+  "iteration": 0,
+  "task_description": "Research the top 5 AI agent startups in 2026 and summarize them.",
+  "verification_criteria": [],
+  "continue_count": 0,
+  "last_plan_text": "",
+  "attempts": [],
+  "tokens_estimated": 0,
+  "errors": [],
+  "decisions": [
+    "Task started: Research the top 5 AI agent startups in 2026 and summarize them."
+  ],
+  "last_output_summary": "",
+  "verification_result": null,
+  "verification_notes": "",
+  "budget_max": 200000,
+  "budget_warn_pct": 0.75,
+  "started_at": "2026-06-17T11:06:09.770479Z",
+  "updated_at": "2026-06-17T11:06:09.770495Z",
+  "completed_at": null
+}

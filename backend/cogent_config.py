@@ -73,6 +73,21 @@ _DEFAULTS: Dict[str, Any] = {
             "api_key_env": "OPENCODE_ZEN_API_KEY",
             "priority": 3,
         },
+        {
+            "name": "ollama-local",
+            "library": "ollama",
+            "model": "qwen3.6",
+            "api_key_env": "OLLAMA_API_KEY",
+            "priority": 4,
+        },
+        {
+            "name": "ollama-cloud",
+            "library": "ollama-cloud",
+            "base_url": "https://cloud.ollama.ai",
+            "model": "glm-5.2:cloud",
+            "api_key_env": "OLLAMA_API_KEY",
+            "priority": 5,
+        },
     ],
     "workspace": {
         "default": DEFAULT_WORKSPACE,

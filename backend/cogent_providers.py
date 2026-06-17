@@ -48,6 +48,13 @@ from typing import List, Dict, Any, Optional
 
 import requests
 
+try:
+    import ollama as _ollama
+    HAS_OLLAMA = True
+except ImportError:
+    _ollama = None  # type: ignore
+    HAS_OLLAMA = False
+
 from cogent_config import get_config
 
 logger = logging.getLogger("cogent.providers")
@@ -151,7 +158,11 @@ class VirtualProvider:
             self._rate_limiter.wait_if_needed()
 
             try:
-                return self._post(entry, api_key, messages, **kwargs)
+                result = self._post(entry, api_key, messages, **kwargs)
+                logger.info("Provider %s returned type=%s len=%d",
+                            entry.get("name"), type(result).__name__,
+                            len(result) if isinstance(result, str) else -1)
+                return result
             except requests.HTTPError as exc:
                 status = exc.response.status_code if exc.response is not None else 0
                 body = exc.response.text[:300] if exc.response is not None else ""
@@ -237,12 +248,36 @@ class VirtualProvider:
 
     def _post(self, entry: Dict[str, Any], api_key: str,
               messages: List[Dict[str, str]], **kwargs) -> str:
-        """Perform the actual HTTP POST to the provider."""
+        """Perform the actual API call to the provider.
+
+        Dispatches to the appropriate backend based on the ``library``
+        field in the provider entry:
+
+        * ``None`` / ``"openai"`` (default) — OpenAI-compatible HTTP POST
+        * ``"ollama"`` — local Ollama via the ``ollama`` Python library
+        * ``"ollama-cloud"`` — Ollama Cloud via the ``ollama`` library
+        """
+        library = entry.get("library")
+
+        if library in ("ollama", "ollama-cloud"):
+            if not HAS_OLLAMA:
+                raise RuntimeError(
+                    f"Provider {entry.get('name')} requires 'ollama' package — "
+                    f"run: pip install ollama"
+                )
+            return self._post_ollama(entry, messages, **kwargs)
+
+        # Default: OpenAI-compatible HTTP POST
+        return self._post_http(entry, api_key, messages, **kwargs)
+
+    def _post_http(self, entry: Dict[str, Any], api_key: str,
+                   messages: List[Dict[str, str]], **kwargs) -> str:
+        """OpenAI-compatible HTTP POST backend."""
         url = entry.get("base_url", "")
         model = entry.get("model", "")
         max_tokens = kwargs.get("max_tokens", 4000)
 
-        response = requests.post(
+        resp = requests.post(
             url,
             headers={
                 "Authorization": f"Bearer {api_key}",
@@ -256,10 +291,10 @@ class VirtualProvider:
             timeout=kwargs.get("timeout", 120),
         )
 
-        if response.status_code >= 400:
-            raise requests.HTTPError(response=response)
+        if resp.status_code >= 400:
+            raise requests.HTTPError(response=resp)
 
-        data = response.json()
+        data = resp.json()
         try:
             content = data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError):
@@ -270,7 +305,42 @@ class VirtualProvider:
             raise RuntimeError(
                 f"Provider {entry.get('name')} response had empty content"
             )
+        return content
 
+    def _post_ollama(self, entry: Dict[str, Any],
+                     messages: List[Dict[str, str]], **kwargs) -> str:
+        """Call a model via the ``ollama`` Python library (local or cloud)."""
+        library = entry.get("library", "ollama")
+        model = entry.get("model", "")
+        api_key = _pick_api_key(entry)
+
+        if library == "ollama-cloud":
+            host = entry.get("base_url", "https://cloud.ollama.ai")
+            headers = {}
+            if api_key:
+                headers["Authorization"] = f"Bearer {api_key}"
+            client = _ollama.Client(host=host, headers=headers)
+            response = client.chat(model=model, messages=messages)
+        elif api_key:
+            # Local Ollama with API key (proxied or authenticated)
+            host = entry.get("base_url", "http://localhost:11434")
+            client = _ollama.Client(
+                host=host,
+                headers={"Authorization": f"Bearer {api_key}"},
+            )
+            response = client.chat(model=model, messages=messages)
+        else:
+            # Plain local Ollama — no auth needed
+            response = _ollama.chat(model=model, messages=messages)
+
+        content = response.message.content
+        if not isinstance(content, str) or not content.strip():
+            raise RuntimeError(
+                f"Provider {entry.get('name')} returned empty content"
+            )
+        return content
+
+    # ── Config reload ───────────────────────────────────────────────────
 
 # ── Module-level singleton ──────────────────────────────────────────────
 

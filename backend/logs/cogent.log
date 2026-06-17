@@ -131,3 +131,103 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-17 05:37:43,707 INFO cogent.scheduler: Scheduler stopped
 2026-06-17 05:37:44,786 INFO cogent.scheduler: Scheduler started
 2026-06-17 05:37:44,808 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 05:44:21,056 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response missing choices[0].message.content
+2026-06-17 05:44:21,056 INFO cogent.providers: Provider fallback: kilocode → kilocode: malformed response: Provider kilocode response missing choices[0].message.content
+2026-06-17 05:44:37,077 ERROR [4ab07c12-572] cogent.server: stream failed
+Traceback (most recent call last):
+  File "/home/mike/cogent/backend/server.py", line 272, in event_stream
+    async for ev in run_turn_stream(db, session_id, workspace_id, full_text, history):
+  File "/home/mike/cogent/backend/llm_service.py", line 520, in run_turn_stream
+    call, _ = _parse_tool_call(response_text)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mike/cogent/backend/llm_service.py", line 299, in _parse_tool_call
+    m = TOOL_RE.search(text)
+        ^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
+2026-06-17 05:51:30,425 ERROR [e7584f4f-fbf] cogent.server: stream failed
+Traceback (most recent call last):
+  File "/home/mike/cogent/backend/server.py", line 272, in event_stream
+    async for ev in run_turn_stream(db, session_id, workspace_id, full_text, history):
+  File "/home/mike/cogent/backend/llm_service.py", line 520, in run_turn_stream
+    call, _ = _parse_tool_call(response_text)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/mike/cogent/backend/llm_service.py", line 299, in _parse_tool_call
+    m = TOOL_RE.search(text)
+        ^^^^^^^^^^^^^^^^^^^^
+TypeError: expected string or bytes-like object, got 'NoneType'
+2026-06-17 05:54:54,784 INFO cogent.scheduler: Scheduler started
+2026-06-17 05:54:54,806 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 06:01:07,344 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response missing choices[0].message.content
+2026-06-17 06:01:07,344 INFO cogent.providers: Provider fallback: kilocode → kilocode: malformed response: Provider kilocode response missing choices[0].message.content
+2026-06-17 06:01:22,356 INFO cogent.scheduler: Scheduler started
+2026-06-17 06:01:22,381 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 06:02:11,918 INFO cogent.scheduler: Scheduler started
+2026-06-17 06:02:11,941 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 06:08:08,611 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response missing choices[0].message.content
+2026-06-17 06:08:08,612 INFO cogent.providers: Provider fallback: kilocode → kilocode: malformed response: Provider kilocode response missing choices[0].message.content
+2026-06-17 06:11:01,253 INFO cogent.scheduler: Scheduler started
+2026-06-17 06:11:01,280 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 06:16:42,055 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response missing choices[0].message.content
+2026-06-17 06:16:42,055 INFO cogent.providers: Provider fallback: kilocode → kilocode: malformed response: Provider kilocode response missing choices[0].message.content
+2026-06-17 06:16:52,392 INFO cogent.providers: Provider openrouter returned type=str len=281
+2026-06-17 06:16:56,557 INFO cogent.providers: Provider kilocode returned type=str len=306
+2026-06-17 06:17:02,584 INFO cogent.providers: Provider kilocode returned type=str len=78
+2026-06-17 06:17:15,238 INFO cogent.providers: Provider kilocode returned type=str len=75
+2026-06-17 06:17:26,828 INFO cogent.providers: Provider kilocode returned type=str len=84
+2026-06-17 06:17:36,075 INFO cogent.providers: Provider kilocode returned type=str len=140
+2026-06-17 06:18:29,502 INFO cogent.providers: Provider kilocode returned type=str len=13932
+2026-06-17 06:20:18,909 INFO cogent.providers: Provider kilocode returned type=str len=652
+2026-06-17 06:21:06,953 INFO cogent.providers: Provider kilocode returned type=str len=16691
+2026-06-17 06:22:13,907 INFO cogent.providers: Provider kilocode returned type=str len=468
+2026-06-17 06:26:38,502 INFO cogent.providers: Provider kilocode returned type=str len=19541
+2026-06-17 06:28:16,546 INFO cogent.providers: Provider kilocode returned type=str len=598
+2026-06-17 06:33:29,885 INFO cogent.providers: Provider kilocode returned type=str len=9659
+2026-06-17 06:34:39,390 INFO cogent.providers: Provider kilocode returned type=str len=606
+2026-06-17 06:36:19,514 INFO cogent.providers: Provider kilocode returned type=str len=1723
+2026-06-17 06:36:58,110 INFO cogent.providers: Provider kilocode returned type=str len=403
+2026-06-17 06:38:03,915 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response had empty content
+2026-06-17 06:38:03,915 INFO cogent.providers: Provider fallback: kilocode → openrouter: malformed response: Provider kilocode response had empty content
+2026-06-17 06:38:03,916 WARNING cogent.providers: Provider opencode-zen skipped — no API key
+2026-06-17 06:43:05,678 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response missing choices[0].message.content
+2026-06-17 06:43:05,678 INFO cogent.providers: Provider fallback: kilocode → opencode-zen: malformed response: Provider kilocode response missing choices[0].message.content
+2026-06-17 06:46:48,167 INFO cogent.providers: Provider openrouter returned type=str len=42086
+2026-06-17 06:46:48,168 WARNING cogent.providers: Provider opencode-zen skipped — no API key
+2026-06-17 06:46:48,168 INFO cogent.providers: Provider fallback: opencode-zen → kilocode: missing API key
+2026-06-17 06:47:33,227 INFO cogent.providers: Provider kilocode returned type=str len=412
+2026-06-17 06:52:34,852 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response missing choices[0].message.content
+2026-06-17 06:52:34,852 INFO cogent.providers: Provider fallback: kilocode → kilocode: malformed response: Provider kilocode response missing choices[0].message.content
+2026-06-17 06:53:45,652 INFO cogent.providers: Provider openrouter returned type=str len=7243
+2026-06-17 06:54:56,923 INFO cogent.providers: Provider kilocode returned type=str len=441
+2026-06-17 06:56:25,170 INFO cogent.providers: Provider kilocode returned type=str len=20120
+2026-06-17 06:56:56,375 INFO cogent.providers: Provider kilocode returned type=str len=663
+2026-06-17 06:58:56,318 INFO cogent.providers: Provider kilocode returned type=str len=19648
+2026-06-17 07:00:21,176 INFO cogent.providers: Provider kilocode returned type=str len=453
+2026-06-17 07:02:25,984 INFO cogent.providers: Provider kilocode returned type=str len=13614
+2026-06-17 07:03:14,055 INFO cogent.providers: Provider kilocode returned type=str len=528
+2026-06-17 07:03:57,120 INFO cogent.providers: Provider kilocode returned type=str len=486
+2026-06-17 07:04:06,420 INFO cogent.providers: Provider kilocode returned type=str len=320
+2026-06-17 07:08:10,906 INFO cogent.providers: Provider kilocode returned type=str len=8764
+2026-06-17 07:10:10,061 INFO cogent.providers: Provider kilocode returned type=str len=524
+2026-06-17 07:12:09,963 INFO cogent.providers: Provider kilocode returned type=str len=11923
+2026-06-17 07:12:29,868 INFO cogent.providers: Provider kilocode returned type=str len=484
+2026-06-17 07:16:00,388 INFO cogent.providers: Provider kilocode returned type=str len=9431
+2026-06-17 07:18:54,147 INFO cogent.providers: Provider kilocode returned type=str len=810
+2026-06-17 07:29:55,071 INFO cogent.providers: Provider kilocode returned type=str len=78
+2026-06-17 07:30:24,382 INFO cogent.providers: Provider kilocode returned type=str len=271
+2026-06-17 07:30:40,350 INFO cogent.providers: Provider kilocode returned type=str len=154
+2026-06-17 07:33:19,332 INFO cogent.providers: Provider kilocode returned type=str len=84
+2026-06-17 07:34:13,321 INFO cogent.providers: Provider kilocode returned type=str len=121
+2026-06-17 07:34:28,498 INFO cogent.providers: Provider kilocode returned type=str len=103
+2026-06-17 07:36:04,976 INFO cogent.providers: Provider kilocode returned type=str len=15568
+2026-06-17 07:36:28,570 INFO cogent.providers: Provider kilocode returned type=str len=223
+2026-06-17 07:39:24,552 INFO cogent.providers: Provider kilocode returned type=str len=10644
+2026-06-17 07:40:16,241 INFO cogent.providers: Provider kilocode returned type=str len=284
+2026-06-17 07:41:36,739 INFO cogent.providers: Provider kilocode returned type=str len=8062
+2026-06-17 07:42:13,442 INFO cogent.providers: Provider kilocode returned type=str len=191
+2026-06-17 07:42:13,504 INFO [1b98d940-c5f] cogent.scheduler: Scheduler stopped
+2026-06-17 07:42:14,339 INFO cogent.scheduler: Scheduler started
+2026-06-17 07:42:14,366 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 07:44:10,150 INFO cogent.scheduler: Scheduler stopped
+2026-06-17 07:44:40,467 INFO cogent.scheduler: Scheduler started
+2026-06-17 07:44:40,471 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 07:51:01,454 INFO cogent.scheduler: Scheduler stopped
