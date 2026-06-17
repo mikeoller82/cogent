@@ -20,15 +20,20 @@ Config (``config.yaml``)::
 
     providers:
       - name: kilocode
-        base_url: https://.../chat/completions
-        model: nex-agi/nex-n2-pro:free
+        base_url: https://api.kilo.ai/api/gateway/chat/completions
+        model: nvidia/nemotron-3-ultra-550b-a55b:free
         api_key_env: KILOCODE_API_KEY
         priority: 1
-      - name: openrouter
-        base_url: https://.../chat/completions
-        model: google/gemini-2.0-flash-exp:free
-        api_key_env: OPENROUTER_API_KEY
+    - name: kilocode
+        base_url: https://api.kilo.ai/api/gateway/chat/completions
+        model: nex-agi/nex-n2-pro:free
+        api_key_env: KILOCODE_API_KEY
         priority: 2
+    - name: openrouter
+        base_url: https://openrouter.ai/api/v1/chat/completions
+        model: openrouter/owl-alpha
+        api_key_env: OPENROUTER_API_KEY
+        priority: 3
 
 The provider list sorted by priority forms the fallback chain.
 """

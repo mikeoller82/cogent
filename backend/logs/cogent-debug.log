@@ -420,3 +420,6 @@
 2026-06-17 04:44:28,680 INFO cogent.scheduler: Scheduler started
 2026-06-17 04:44:28,703 INFO cogent.scheduler: Loaded 0 scheduled tasks
 2026-06-17 04:46:00,141 DEBUG [d0bb14b2-f39] cogent.loop_engine: Loop d0bb14b2-f395-4843-a28e-31046872b5ce: plan → execute — Starting execution turn
+2026-06-17 04:51:01,205 WARNING cogent.providers: Provider kilocode RuntimeError — Provider kilocode response missing choices[0].message.content
+2026-06-17 04:51:01,206 INFO cogent.providers: Provider fallback: kilocode → kilocode: malformed response: Provider kilocode response missing choices[0].message.content
+2026-06-17 04:51:01,208 WARNING cogent.providers: Provider openrouter skipped — no API key

@@ -66,6 +66,13 @@ _DEFAULTS: Dict[str, Any] = {
             "api_key_env": "OPENROUTER_API_KEY",
             "priority": 2,
         },
+        {
+            "name": "opencode-zen",
+            "base_url": "https://opencode.ai/zen/v1/chat/completions",
+            "model": "deepseek-v4-flash-free",
+            "api_key_env": "OPENCODE_ZEN_API_KEY",
+            "priority": 3,
+        },
     ],
     "workspace": {
         "default": DEFAULT_WORKSPACE,
