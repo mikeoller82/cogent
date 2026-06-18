@@ -1,0 +1,36 @@
+{
+  "name": "implementing-cloud-security-posture-management",
+  "description": "Implementing Cloud Security Posture Management (CSPM) to continuously monitor multi-cloud environments for misconfigurations, compliance violations, and security risks using Prowler, ScoutSuite, AWS Security Hub, Azure Defender, and GCP Security Command Center.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "cloud-security",
+    "tags": [
+      "cloud-security",
+      "cspm",
+      "multi-cloud",
+      "compliance",
+      "prowler",
+      "scoutsuite"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.IR-01",
+      "ID.AM-08",
+      "GV.SC-06",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1078.004",
+      "T1530",
+      "T1537",
+      "T1580"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "conducting-social-engineering-penetration-test",
+  "description": "Design and execute a social engineering penetration test including phishing, vishing, smishing, and physical pretexting campaigns to measure human security resilience and identify training gaps.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "penetration-testing",
+    "tags": [
+      "social-engineering",
+      "phishing",
+      "vishing",
+      "pretexting",
+      "GoPhish",
+      "SET",
+      "OSINT",
+      "security-awareness",
+      "red-team"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "atlas_techniques": [
+      "AML.T0088",
+      "AML.T0052"
+    ],
+    "nist_ai_rmf": [
+      "GOVERN-6.2",
+      "MAP-5.2"
+    ],
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-06",
+      "GV.OV-02",
+      "DE.AE-07"
+    ],
+    "mitre_attack": [
+      "T1566",
+      "T1598",
+      "T1566.004",
+      "T1204.001",
+      "T1589"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "session_id": "test-loop",
+  "phase": "idle",
+  "iteration": 0,
+  "task_description": "",
+  "verification_criteria": [],
+  "continue_count": 0,
+  "last_plan_text": "",
+  "attempts": [],
+  "tokens_estimated": 0,
+  "errors": [],
+  "decisions": [],
+  "last_output_summary": "",
+  "verification_result": null,
+  "verification_notes": "",
+  "budget_max": 200000,
+  "budget_warn_pct": 0.75,
+  "started_at": null,
+  "updated_at": "2026-06-18T01:32:34.499120Z",
+  "completed_at": null,
+  "cb_state": "CLOSED",
+  "cb_consecutive_no_progress": 0,
+  "cb_consecutive_same_error": 0,
+  "cb_last_progress_loop": 0,
+  "cb_total_opens": 0,
+  "cb_opened_at": null,
+  "exit_signals": [],
+  "completion_indicators": [],
+  "done_signals": [],
+  "test_only_loops": [],
+  "tool_failure_history": [
+    [
+      "read_file",
+      "98d96ab1",
+      true
+    ],
+    [
+      "read_file",
+      "98d96ab1",
+      true
+    ],
+    [
+      "read_file",
+      "98d96ab1",
+      true
+    ],
+    [
+      "read_file",
+      "98d96ab1",
+      true
+    ],
+    [
+      "read_file",
+      "98d96ab1",
+      true
+    ]
+  ],
+  "tool_loop_detected_stop": false,
+  "last_files_changed": 0,
+  "last_errors_detected": false,
+  "last_output_length": 0,
+  "last_asking_questions": false
+}

@@ -1,0 +1,47 @@
+{
+  "name": "detecting-t1548-abuse-elevation-control-mechanism",
+  "description": "Detect abuse of elevation control mechanisms including UAC bypass, sudo exploitation, and setuid/setgid manipulation by monitoring registry modifications, process elevation flags, and unusual parent-child process relationships.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "threat-hunting",
+      "uac-bypass",
+      "privilege-escalation",
+      "mitre-t1548",
+      "elevation-control",
+      "windows-security"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Executable Denylisting",
+      "Execution Isolation",
+      "File Metadata Consistency Validation",
+      "Restore Access",
+      "Password Authentication"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ],
+    "mitre_attack": [
+      "T1548.002",
+      "T1548.001",
+      "T1548.003",
+      "T1548.004"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

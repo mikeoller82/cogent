@@ -1,0 +1,47 @@
+{
+  "name": "detecting-insider-threat-behaviors",
+  "description": "Detect insider threat behavioral indicators including unusual data access, off-hours activity, mass file downloads, privilege abuse, and resignation-correlated data theft.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "threat-hunting",
+      "mitre-attack",
+      "insider-threat",
+      "data-theft",
+      "ueba",
+      "proactive-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Restore Access",
+      "Password Authentication",
+      "Biometric Authentication",
+      "Strong Password Policy",
+      "Restore User Account Access"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ],
+    "mitre_attack": [
+      "T1046",
+      "T1057",
+      "T1082",
+      "T1083"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

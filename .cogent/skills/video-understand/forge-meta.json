@@ -1,0 +1,10 @@
+{
+  "name": "video-understand",
+  "description": "Understand video content locally using ffmpeg frame extraction and Whisper transcription. No API keys needed.\nUse when: (1) Understanding what a video contains, (2) Transcribing video audio locally,\n(3) Extracting key frames for visual analysis, (4) Getting video content without API keys.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": [
+    "scripts/understand_video.py",
+    "references/output-format.md"
+  ]
+}

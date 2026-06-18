@@ -1,0 +1,37 @@
+{
+  "name": "implementing-deception-based-detection-with-canarytoken",
+  "description": "Deploy and monitor Canary Tokens via the Thinkst Canary API for deception-based breach detection using web bug tokens, DNS tokens, document tokens, and AWS key tokens.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "deception-technology",
+    "tags": [
+      "canarytoken",
+      "deception",
+      "honeytokens",
+      "breach-detection",
+      "Thinkst-Canary",
+      "tripwire",
+      "early-warning"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-06",
+      "PR.IR-01"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1190",
+      "T1059",
+      "T1078.004",
+      "T1530"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

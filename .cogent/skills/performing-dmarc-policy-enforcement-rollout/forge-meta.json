@@ -1,0 +1,42 @@
+{
+  "name": "performing-dmarc-policy-enforcement-rollout",
+  "description": "Execute a phased DMARC rollout from p=none monitoring through p=quarantine to p=reject enforcement, ensuring all legitimate email sources are authenticated before blocking unauthorized senders.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "phishing-defense",
+    "tags": [
+      "dmarc",
+      "spf",
+      "dkim",
+      "email-authentication",
+      "anti-spoofing",
+      "phishing",
+      "dns",
+      "email-security"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AT-01",
+      "DE.CM-09",
+      "RS.CO-02",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1566",
+      "T1598",
+      "T1534",
+      "T1036"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

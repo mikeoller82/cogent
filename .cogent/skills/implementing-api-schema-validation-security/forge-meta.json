@@ -1,0 +1,39 @@
+{
+  "name": "implementing-api-schema-validation-security",
+  "description": "Implement API schema validation using OpenAPI specifications and JSON Schema to enforce input/output contracts and prevent injection, data exposure, and mass assignment attacks.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "api-security",
+    "tags": [
+      "api-security",
+      "schema-validation",
+      "openapi",
+      "json-schema",
+      "input-validation",
+      "data-leakage-prevention",
+      "mass-assignment",
+      "api-gateway"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "ID.RA-01",
+      "PR.DS-10",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1190",
+      "T1059.007",
+      "T1552.001",
+      "T1055",
+      "T1059"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

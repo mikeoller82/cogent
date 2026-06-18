@@ -1,0 +1,7 @@
+{
+  "name": "threejs-lighting",
+  "description": "Three.js lighting - light types, shadows, environment lighting. Use when adding lights, configuring shadows, setting up IBL, or optimizing lighting performance.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": []
+}

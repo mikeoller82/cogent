@@ -1,0 +1,48 @@
+{
+  "name": "detecting-pass-the-hash-attacks",
+  "description": "Detect Pass-the-Hash attacks by analyzing NTLM authentication patterns, identifying Type 3 logons with NTLM where Kerberos is expected, and correlating with credential dumping.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "threat-hunting",
+      "mitre-attack",
+      "pass-the-hash",
+      "credential-access",
+      "t1550",
+      "proactive-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Token Binding",
+      "Execution Isolation",
+      "Restore Access",
+      "Application Protocol Command Analysis",
+      "Process Termination"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ],
+    "mitre_attack": [
+      "T1046",
+      "T1057",
+      "T1082",
+      "T1083",
+      "T1003"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

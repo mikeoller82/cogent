@@ -1,0 +1,48 @@
+{
+  "name": "detecting-privilege-escalation-attempts",
+  "description": "Detect privilege escalation attempts including token manipulation, UAC bypass, unquoted service paths, kernel exploits, and sudo/doas abuse across Windows and Linux.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "threat-hunting",
+      "mitre-attack",
+      "privilege-escalation",
+      "token-manipulation",
+      "uac-bypass",
+      "proactive-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Token Binding",
+      "Executable Denylisting",
+      "Execution Isolation",
+      "Restore Access",
+      "Reissue Credential"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ],
+    "mitre_attack": [
+      "T1046",
+      "T1057",
+      "T1082",
+      "T1083",
+      "T1068"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

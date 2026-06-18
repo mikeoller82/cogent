@@ -1,0 +1,46 @@
+{
+  "name": "building-detection-rules-with-sigma",
+  "description": "Builds vendor-agnostic detection rules using the Sigma rule format for threat detection across SIEM platforms including Splunk, Elastic, and Microsoft Sentinel. Use when creating portable detection logic from threat intelligence, mapping rules to MITRE ATT&CK techniques, or converting community Sigma rules into platform-specific queries using sigmac or pySigma backends.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "soc-operations",
+    "tags": [
+      "soc",
+      "sigma",
+      "detection-rules",
+      "siem",
+      "mitre-attack",
+      "splunk",
+      "elastic",
+      "sentinel"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Execution Isolation",
+      "Process Termination",
+      "Hardware-based Process Isolation",
+      "Web Session Access Mediation",
+      "Process Suspension"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "RS.MA-01",
+      "DE.AE-06"
+    ],
+    "mitre_attack": [
+      "T1059.001",
+      "T1003.001",
+      "T1055",
+      "T1053.005",
+      "T1547.001"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

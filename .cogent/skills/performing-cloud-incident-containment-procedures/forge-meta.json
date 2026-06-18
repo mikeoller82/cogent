@@ -1,0 +1,50 @@
+{
+  "name": "performing-cloud-incident-containment-procedures",
+  "description": "Execute cloud-native incident containment across AWS, Azure, and GCP by isolating compromised resources, revoking credentials, preserving forensic evidence, and applying security group restrictions to prevent lateral movement.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "incident-response",
+    "tags": [
+      "cloud-security",
+      "incident-containment",
+      "aws",
+      "azure",
+      "gcp",
+      "cloud-forensics",
+      "credential-revocation",
+      "network-isolation"
+    ],
+    "mitre_attack": [
+      "T1486",
+      "T1490",
+      "T1070",
+      "T1078",
+      "T1021"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Restore Access",
+      "Password Authentication",
+      "Biometric Authentication",
+      "Strong Password Policy",
+      "Restore User Account Access"
+    ],
+    "nist_csf": [
+      "RS.MA-01",
+      "RS.MA-02",
+      "RS.AN-03",
+      "RC.RP-01"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

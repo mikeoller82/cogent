@@ -1,0 +1,9 @@
+{
+  "name": "triage",
+  "description": "Move issues through a state machine of triage roles \u2014 categorise, reproduce, grill if needed, and write agent-ready briefs.",
+  "imported_at": "2026-06-18T00:47:38Z",
+  "metadata": {
+    "disable-model-invocation": true
+  },
+  "resources": []
+}

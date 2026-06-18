@@ -1,0 +1,45 @@
+{
+  "name": "analyzing-persistence-mechanisms-in-linux",
+  "description": "Detect and analyze Linux persistence mechanisms including crontab entries, systemd service units, LD_PRELOAD hijacking, bashrc modifications, and authorized_keys backdoors using auditd and file integrity monitoring",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "linux-persistence",
+      "crontab",
+      "systemd",
+      "ld-preload",
+      "auditd",
+      "threat-hunting",
+      "incident-response"
+    ],
+    "mitre_attack": [
+      "T1053.003",
+      "T1543.002",
+      "T1574.006",
+      "T1546.004",
+      "T1098.004"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Executable Denylisting",
+      "Execution Isolation",
+      "File Metadata Consistency Validation",
+      "Process Termination",
+      "Content Format Conversion"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

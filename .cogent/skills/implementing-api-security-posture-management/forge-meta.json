@@ -1,0 +1,37 @@
+{
+  "name": "implementing-api-security-posture-management",
+  "description": "Implement API Security Posture Management to continuously discover, classify, and score APIs based on risk while enforcing security policies across the API lifecycle.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "api-security",
+    "tags": [
+      "api-security",
+      "aspm",
+      "api-posture-management",
+      "api-discovery",
+      "risk-scoring",
+      "api-governance",
+      "continuous-monitoring",
+      "api-inventory"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "ID.RA-01",
+      "PR.DS-10",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1190",
+      "T1059.007",
+      "T1552.001"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "agent-platform-skill-registry",
+  "description": "Interact with the Gemini Enterprise Agent Platform Skill Registry to create and search for available skills. Use this skill to enable agents to register functionality or discover new capabilities.",
+  "imported_at": "2026-06-18T01:25:53Z",
+  "metadata": {},
+  "resources": [
+    "scripts/requirements.txt",
+    "scripts/skill_registry_ops.py",
+    "scripts/validate_env.py",
+    "references/generate-skill.md",
+    "references/manage-skills.md",
+    "references/monitor-operations.md",
+    "references/query-skills.md"
+  ]
+}

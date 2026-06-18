@@ -1,0 +1,40 @@
+{
+  "name": "configuring-identity-aware-proxy-with-google-iap",
+  "description": "Configuring Google Cloud Identity-Aware Proxy (IAP) to enforce per-request identity verification for Compute Engine, App Engine, Cloud Run, and GKE services using access levels, context-aware policies, and programmatic access with service accounts.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "zero-trust-architecture",
+    "tags": [
+      "google-iap",
+      "identity-aware-proxy",
+      "gcp",
+      "zero-trust",
+      "access-context-manager",
+      "cloud-run",
+      "app-engine"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-05",
+      "PR.IR-01",
+      "GV.PO-01"
+    ],
+    "mitre_attack": [
+      "T1078.004",
+      "T1133",
+      "T1021.007"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

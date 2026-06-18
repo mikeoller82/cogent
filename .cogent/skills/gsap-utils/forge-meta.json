@@ -1,0 +1,9 @@
+{
+  "name": "gsap-utils",
+  "description": "Official GSAP skill for gsap.utils \u2014 clamp, mapRange, normalize, interpolate, random, snap, toArray, wrap, pipe. Use when the user asks about gsap.utils, clamp, mapRange, random, snap, toArray, wrap, or helper utilities in GSAP.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "license": "MIT"
+  },
+  "resources": []
+}

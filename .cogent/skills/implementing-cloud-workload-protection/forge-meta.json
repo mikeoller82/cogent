@@ -1,0 +1,37 @@
+{
+  "name": "implementing-cloud-workload-protection",
+  "description": "Implements cloud workload protection using boto3 and google-cloud APIs for runtime security monitoring, process anomaly detection, and file integrity checking on EC2/GCE instances. Scans for cryptomining, reverse shells, and unauthorized binaries. Use when building runtime security controls for cloud compute workloads.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "cloud-security",
+    "tags": [
+      "cloud-security",
+      "cwpp",
+      "workload-protection",
+      "boto3",
+      "runtime-security",
+      "process-anomaly-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.IR-01",
+      "ID.AM-08",
+      "GV.SC-06",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1078.004",
+      "T1530",
+      "T1537",
+      "T1580",
+      "T1071"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

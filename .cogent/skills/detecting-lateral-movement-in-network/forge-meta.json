@@ -1,0 +1,43 @@
+{
+  "name": "detecting-lateral-movement-in-network",
+  "description": "Identifies lateral movement techniques in enterprise networks by analyzing authentication logs, network flows, SMB traffic, and RDP sessions using Zeek, Velociraptor, and SIEM correlation rules to detect attackers moving between systems.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "network-security",
+    "tags": [
+      "network-security",
+      "lateral-movement",
+      "threat-detection",
+      "siem",
+      "pass-the-hash"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Application Protocol Command Analysis",
+      "Network Isolation",
+      "Network Traffic Analysis",
+      "Client-server Payload Profiling",
+      "Network Traffic Community Deviation"
+    ],
+    "nist_csf": [
+      "PR.IR-01",
+      "DE.CM-01",
+      "ID.AM-03",
+      "PR.DS-02"
+    ],
+    "mitre_attack": [
+      "T1046",
+      "T1040",
+      "T1557",
+      "T1071",
+      "T1021"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

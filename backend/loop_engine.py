@@ -64,6 +64,12 @@ MAX_CONSECUTIVE_TEST_LOOPS = 3
 MAX_CONSECUTIVE_DONE_SIGNALS = 2
 SAFETY_CIRCUIT_BREAKER_LIMIT = 5  # force exit after 5 consecutive EXIT_SIGNAL=true
 
+# ── Tool-loop guardrails (CowAgent-style) ───────────────────────
+MAX_SAME_ARGS_CALLS = 5      # Same tool + args called N times → stop
+MAX_CONSECUTIVE_FAILURES = 3  # Same tool + args failed N times → soft stop
+MAX_CRITICAL_FAILURES = 8     # Same tool failed N times → hard abort
+TOOL_FAILURE_HISTORY_MAX = 50  # max entries kept per session
+
 COMPLETION_KEYWORDS = ["done", "complete", "finished",
                        "all tasks complete", "project complete", "ready for review"]
 TEST_ONLY_PATTERNS = ["npm test", "bats", "pytest", "jest",
@@ -132,6 +138,10 @@ class LoopState:
     completion_indicators: List[int] = field(default_factory=list)  # loop numbers with strong completion
     done_signals: List[int] = field(default_factory=list)  # loop numbers with completion signals
     test_only_loops: List[int] = field(default_factory=list)  # loop numbers that were test-only
+
+    # ── Tool-loop guardrails (CowAgent-style) ─────────────────────
+    tool_failure_history: List[tuple] = field(default_factory=list)  # (tool_name, args_hash, success)
+    tool_loop_detected_stop: bool = False  # set when guardrail breaks the loop
 
     # Progress tracking (per-loop)
     last_files_changed: int = 0
@@ -226,6 +236,9 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.completion_indicators = []
     state.done_signals = []
     state.test_only_loops = []
+    # Reset CowAgent-style tool guardrails
+    state.tool_failure_history = []
+    state.tool_loop_detected_stop = False
     state.last_files_changed = 0
     state.last_errors_detected = False
     state.last_output_length = 0
@@ -371,6 +384,87 @@ def should_halt_execution(state: LoopState) -> bool:
         return True
 
     return False
+
+
+# ── Tool-loop guardrail functions (CowAgent-style) ───────────────────────
+
+import hashlib
+
+
+def _hash_args(args: dict) -> str:
+    """Deterministic hash of tool arguments for loop detection."""
+    args_str = json.dumps(args, sort_keys=True, ensure_ascii=False)
+    return hashlib.md5(args_str.encode()).hexdigest()[:8]
+
+
+def record_tool_result(state: LoopState, tool_name: str, args: dict, success: bool) -> None:
+    """Record a tool execution outcome for loop/failure detection.
+
+    Keeps a rolling window of the last TOOL_FAILURE_HISTORY_MAX entries.
+    """
+    args_hash = _hash_args(args)
+    state.tool_failure_history.append((tool_name, args_hash, success))
+    if len(state.tool_failure_history) > TOOL_FAILURE_HISTORY_MAX:
+        state.tool_failure_history = state.tool_failure_history[-TOOL_FAILURE_HISTORY_MAX:]
+    save_state(state)
+
+
+def check_tool_loop(state: LoopState, tool_name: str, args: dict) -> tuple[bool, str, bool]:
+    """Check if the tool call is in a loop and should be stopped.
+
+    Returns (should_stop, reason, is_critical).
+    - should_stop: True when repeated calls or failures detected
+    - reason: explanation for stopping
+    - is_critical: True means abort the entire conversation
+    """
+    args_hash = _hash_args(args)
+
+    # Count consecutive calls with same tool + args (success or failure)
+    same_args_calls = 0
+    for name, ahash, _success in reversed(state.tool_failure_history):
+        if name == tool_name and ahash == args_hash:
+            same_args_calls += 1
+        else:
+            break
+    if same_args_calls >= MAX_SAME_ARGS_CALLS:
+        return True, (
+            f"Tool '{tool_name}' called with same args {same_args_calls} times — "
+            f"stopping to prevent infinite loop"
+        ), False
+
+    # Count consecutive failures for same tool + args
+    same_args_failures = 0
+    for name, ahash, success in reversed(state.tool_failure_history):
+        if name == tool_name and ahash == args_hash:
+            if not success:
+                same_args_failures += 1
+            else:
+                break
+        else:
+            break
+    if same_args_failures >= MAX_CONSECUTIVE_FAILURES:
+        return True, (
+            f"Tool '{tool_name}' failed {same_args_failures} times with same args — "
+            f"stopping to prevent retry loop"
+        ), False
+
+    # Count consecutive failures for same tool (any args)
+    same_tool_failures = 0
+    for name, _ahash, success in reversed(state.tool_failure_history):
+        if name == tool_name:
+            if not success:
+                same_tool_failures += 1
+            else:
+                break
+        else:
+            break
+    if same_tool_failures >= MAX_CRITICAL_FAILURES:
+        return True, (
+            f"Tool '{tool_name}' failed {same_tool_failures} consecutive times — "
+            f"aborting this task"
+        ), True
+
+    return False, "", False
 
 
 # ── Response Analysis (Ralph-style) ──────────────────────────────────────
@@ -544,13 +638,16 @@ def update_exit_signals(state: LoopState, analysis: dict) -> None:
 
     save_state(state)
 
-
 def should_exit_gracefully(state: LoopState) -> Optional[str]:
-    """Check Ralph-style exit conditions.
+    """Check exit conditions — Ralph-style + CowAgent-style guardrails.
 
     Returns exit reason string or None if should continue.
     Ordered by severity: safety circuit breaker first, then normal conditions.
     """
+    # 0. Tool-loop guardrail triggered (CowAgent-style)
+    if state.tool_loop_detected_stop:
+        return "tool_loop_guardrail"
+
     # 1. Safety circuit breaker - 5+ consecutive EXIT_SIGNAL=true
     if len(state.completion_indicators) >= SAFETY_CIRCUIT_BREAKER_LIMIT:
         return "safety_circuit_breaker"
@@ -565,7 +662,6 @@ def should_exit_gracefully(state: LoopState) -> Optional[str]:
 
     # 4. Dual-condition exit: completion_indicators >= 2 AND explicit EXIT_SIGNAL in latest
     if len(state.completion_indicators) >= 2:
-        # Check that the latest exit_signal was explicit
         if state.exit_signals and state.iteration in state.exit_signals:
             return "project_complete"
 

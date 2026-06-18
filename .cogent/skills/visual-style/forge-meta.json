@@ -1,0 +1,23 @@
+{
+  "name": "visual-style",
+  "description": "Create, extract, and apply portable visual design systems via visual-style.md files. Use when: (1) Creating a visual-style.md design system from scratch, (2) Extracting a visual style from a website URL, video, or PDF brand guide, (3) Applying a visual style to HeyGen videos, HTML slides, Figma, or paper.design, (4) Browsing the gallery of pre-built visual styles (Swiss, Saul Bass, Game Boy, etc.), (5) User mentions \"visual style\", \"design system\", \"brand style\", or \"style guide\", (6) Styling a HeyGen video with a consistent design language.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": [
+    "references/connectors/figma.md",
+    "references/connectors/heygen-video-agent.md",
+    "references/connectors/html-slides.md",
+    "references/connectors/paper-design.md",
+    "references/extractors/from-pdf.md",
+    "references/extractors/from-video.md",
+    "references/extractors/from-website.md",
+    "references/gallery/game-boy-color.visual-style.md",
+    "references/gallery/heygen-ai-video.visual-style.md",
+    "references/gallery/mueller-brockmann-swiss.visual-style.md",
+    "references/gallery/neville-brody-industrial.visual-style.md",
+    "references/gallery/saul-bass-cinematic.visual-style.md",
+    "references/spec.md",
+    "references/templates/full.visual-style.md",
+    "references/templates/minimal.visual-style.md"
+  ]
+}

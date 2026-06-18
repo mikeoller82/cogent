@@ -1,0 +1,37 @@
+{
+  "name": "performing-osint-with-spiderfoot",
+  "description": "Automate OSINT collection using SpiderFoot REST API and CLI for target profiling, module-based reconnaissance, and structured result analysis across 200+ data sources",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-intelligence",
+    "tags": [
+      "osint",
+      "spiderfoot",
+      "reconnaissance",
+      "threat-intelligence",
+      "attack-surface",
+      "target-profiling"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-05",
+      "DE.CM-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1591",
+      "T1592",
+      "T1593",
+      "T1589",
+      "T1595"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

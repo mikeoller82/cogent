@@ -1,0 +1,37 @@
+{
+  "name": "detecting-compromised-cloud-credentials",
+  "description": "Detecting compromised cloud credentials across AWS, Azure, and GCP by analyzing anomalous API activity, impossible travel patterns, unauthorized resource provisioning, and credential abuse indicators using GuardDuty, Defender for Identity, and SCC Event Threat Detection.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "cloud-security",
+    "tags": [
+      "cloud-security",
+      "credential-compromise",
+      "threat-detection",
+      "guardduty",
+      "incident-response",
+      "anomaly-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.IR-01",
+      "ID.AM-08",
+      "GV.SC-06",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1078.004",
+      "T1530",
+      "T1537",
+      "T1580",
+      "T1003"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

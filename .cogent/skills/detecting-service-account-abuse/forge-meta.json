@@ -1,0 +1,47 @@
+{
+  "name": "detecting-service-account-abuse",
+  "description": "Detect abuse of service accounts through anomalous interactive logons, privilege escalation, lateral movement, and unauthorized access patterns.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "threat-hunting",
+      "mitre-attack",
+      "service-accounts",
+      "privilege-escalation",
+      "t1078",
+      "proactive-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Restore Access",
+      "Password Authentication",
+      "Biometric Authentication",
+      "Strong Password Policy",
+      "Restore User Account Access"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ],
+    "mitre_attack": [
+      "T1078.002",
+      "T1021.001",
+      "T1098.001",
+      "T1550.002"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

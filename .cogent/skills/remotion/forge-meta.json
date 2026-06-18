@@ -1,0 +1,7 @@
+{
+  "name": "remotion",
+  "description": "Toolkit-specific Remotion patterns \u2014 custom transitions, shared components, and project conventions. For core Remotion framework knowledge (hooks, animations, rendering, etc.), see the `remotion-official` skill.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": []
+}

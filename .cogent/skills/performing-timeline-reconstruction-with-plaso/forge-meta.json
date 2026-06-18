@@ -1,0 +1,37 @@
+{
+  "name": "performing-timeline-reconstruction-with-plaso",
+  "description": "Build comprehensive forensic super-timelines using Plaso (log2timeline) to correlate events across file systems, logs, and artifacts into a unified chronological view.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "digital-forensics",
+    "tags": [
+      "forensics",
+      "timeline-analysis",
+      "plaso",
+      "log2timeline",
+      "super-timeline",
+      "event-correlation"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "RS.AN-01",
+      "RS.AN-03",
+      "DE.AE-02",
+      "RS.MA-01"
+    ],
+    "mitre_attack": [
+      "T1005",
+      "T1074",
+      "T1119",
+      "T1070",
+      "T1059"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

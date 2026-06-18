@@ -1,0 +1,40 @@
+{
+  "name": "deploying-software-defined-perimeter",
+  "description": "Deploy a Software-Defined Perimeter using the CSA v2.0 specification with Single Packet Authorization, mutual TLS, and SDP controller/gateway configuration to enforce zero trust network access.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "zero-trust-architecture",
+    "tags": [
+      "zero-trust",
+      "sdp",
+      "software-defined-perimeter",
+      "network-access",
+      "ztna"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-05",
+      "PR.IR-01",
+      "GV.PO-01"
+    ],
+    "mitre_attack": [
+      "T1133",
+      "T1078",
+      "T1021",
+      "T1046",
+      "T1190"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

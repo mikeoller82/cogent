@@ -1,0 +1,48 @@
+{
+  "name": "performing-initial-access-with-evilginx3",
+  "description": "Perform authorized initial access using EvilGinx3 adversary-in-the-middle phishing framework to capture session tokens and bypass multi-factor authentication during red team engagements.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "red-teaming",
+    "tags": [
+      "red-team",
+      "initial-access",
+      "phishing",
+      "evilginx",
+      "mfa-bypass",
+      "adversary-in-the-middle",
+      "credential-theft"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "File Metadata Consistency Validation",
+      "Application Protocol Command Analysis",
+      "Identifier Analysis",
+      "Content Format Conversion",
+      "Message Analysis"
+    ],
+    "nist_csf": [
+      "ID.RA-01",
+      "GV.OV-02",
+      "DE.AE-07"
+    ],
+    "mitre_attack": [
+      "T1595",
+      "T1190",
+      "T1059",
+      "T1078",
+      "T1003"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

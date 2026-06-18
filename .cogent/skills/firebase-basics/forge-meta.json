@@ -1,0 +1,15 @@
+{
+  "name": "firebase-basics",
+  "description": "Use this skill whenever you are working on a project that uses Firebase products or services, especially for mobile or web apps.",
+  "imported_at": "2026-06-18T01:25:53Z",
+  "metadata": {},
+  "resources": [
+    "references/additional-skills.md",
+    "references/cli-usage.md",
+    "references/client-library-usage.md",
+    "references/core-concepts.md",
+    "references/iac-usage.md",
+    "references/iam-security.md",
+    "references/mcp-usage.md"
+  ]
+}

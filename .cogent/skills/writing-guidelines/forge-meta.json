@@ -1,0 +1,13 @@
+{
+  "name": "writing-guidelines",
+  "description": "Review docs/prose for Writing Guidelines compliance. Use when asked to \"review my docs\", \"check writing style\", \"audit prose\", \"review docs voice and tone\", or \"check this page against the writing handbook\".",
+  "imported_at": "2026-06-18T01:25:29Z",
+  "metadata": {
+    "metadata": {
+      "author": "vercel",
+      "version": "1.0.0",
+      "argument-hint": "<file-or-pattern>"
+    }
+  },
+  "resources": []
+}

@@ -1,0 +1,23 @@
+{
+  "name": "bfl-api",
+  "description": "BFL FLUX API integration guide covering endpoints, async polling patterns, rate limiting, error handling, webhooks, and regional endpoints with Python and TypeScript code examples.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "metadata": {
+      "author": "Black Forest Labs",
+      "version": "1.0.0",
+      "tags": "flux, bfl, api, integration, webhooks, rate-limiting"
+    }
+  },
+  "resources": [
+    "references/api-key-setup.md",
+    "references/code-examples/curl-examples.sh",
+    "references/code-examples/python-client.py",
+    "references/code-examples/typescript-client.ts",
+    "references/endpoints.md",
+    "references/error-handling.md",
+    "references/polling-patterns.md",
+    "references/rate-limiting.md",
+    "references/webhook-integration.md"
+  ]
+}

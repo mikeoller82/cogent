@@ -1,0 +1,47 @@
+{
+  "name": "performing-hardware-security-module-integration",
+  "description": "Integrate Hardware Security Modules (HSMs) using PKCS#11 interface for cryptographic key management, signing operations, and secure key storage with python-pkcs11, AWS CloudHSM, and YubiHSM2.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "cryptography",
+    "tags": [
+      "HSM",
+      "PKCS11",
+      "CloudHSM",
+      "YubiHSM2",
+      "key-management",
+      "cryptographic-operations",
+      "hardware-security"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_ai_rmf": [
+      "MEASURE-2.7",
+      "MAP-5.1",
+      "MANAGE-2.4"
+    ],
+    "atlas_techniques": [
+      "AML.T0070",
+      "AML.T0066",
+      "AML.T0082"
+    ],
+    "nist_csf": [
+      "PR.DS-01",
+      "PR.DS-02",
+      "PR.DS-10"
+    ],
+    "mitre_attack": [
+      "T1600",
+      "T1573",
+      "T1553",
+      "T1078.004",
+      "T1530"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

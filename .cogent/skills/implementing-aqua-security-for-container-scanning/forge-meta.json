@@ -1,0 +1,42 @@
+{
+  "name": "implementing-aqua-security-for-container-scanning",
+  "description": "Deploy Aqua Security's Trivy scanner to detect vulnerabilities, misconfigurations, secrets, and license issues in container images across CI/CD pipelines and registries.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "devsecops",
+    "tags": [
+      "aqua-security",
+      "trivy",
+      "container-scanning",
+      "vulnerability-scanning",
+      "sbom",
+      "image-security",
+      "supply-chain"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "GV.SC-07",
+      "ID.IM-04",
+      "PR.PS-04"
+    ],
+    "mitre_attack": [
+      "T1195",
+      "T1554",
+      "T1059.004",
+      "T1610",
+      "T1611"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "detecting-container-escape-attempts",
+  "description": "Container escape is a critical attack technique where an adversary breaks out of container isolation to access the host system or other containers. Detection involves monitoring for escape indicators",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "container-security",
+    "tags": [
+      "containers",
+      "kubernetes",
+      "docker",
+      "security",
+      "runtime-security",
+      "escape-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Platform Monitoring",
+      "Process Code Segment Verification",
+      "Stack Frame Canary Validation",
+      "Segment Address Offset Randomization",
+      "Process Analysis"
+    ],
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.IR-01",
+      "ID.AM-08",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1610",
+      "T1611",
+      "T1609",
+      "T1525"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

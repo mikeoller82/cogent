@@ -1,0 +1,7 @@
+{
+  "name": "tdd",
+  "description": "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests.",
+  "imported_at": "2026-06-18T00:47:38Z",
+  "metadata": {},
+  "resources": []
+}

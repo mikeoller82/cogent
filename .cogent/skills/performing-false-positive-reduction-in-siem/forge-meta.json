@@ -1,0 +1,48 @@
+{
+  "name": "performing-false-positive-reduction-in-siem",
+  "description": "Perform systematic SIEM false positive reduction through rule tuning, threshold adjustment, correlation refinement, and threat intelligence enrichment to combat alert fatigue.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "soc-operations",
+    "tags": [
+      "siem",
+      "false-positive",
+      "alert-tuning",
+      "detection-engineering",
+      "alert-fatigue",
+      "soc",
+      "correlation"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Token Binding",
+      "Restore Access",
+      "Password Authentication",
+      "Reissue Credential",
+      "Strong Password Policy"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "RS.MA-01",
+      "DE.AE-06"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1685.002",
+      "T1685.005",
+      "T1566"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

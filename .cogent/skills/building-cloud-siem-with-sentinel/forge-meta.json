@@ -1,0 +1,46 @@
+{
+  "name": "building-cloud-siem-with-sentinel",
+  "description": "This skill covers deploying Microsoft Sentinel as a cloud-native SIEM and SOAR platform for centralized security operations. It details configuring data connectors for multi-cloud log ingestion, writing KQL detection queries, building automated response playbooks with Logic Apps, and leveraging the Sentinel data lake for petabyte-scale threat hunting across AWS, Azure, and GCP security telemetry.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "cloud-security",
+    "tags": [
+      "microsoft-sentinel",
+      "cloud-siem",
+      "kql-queries",
+      "soar-automation",
+      "threat-detection"
+    ],
+    "version": "1.0.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_ai_rmf": [
+      "MEASURE-2.7",
+      "MAP-5.1",
+      "MANAGE-2.4"
+    ],
+    "atlas_techniques": [
+      "AML.T0070",
+      "AML.T0066",
+      "AML.T0082"
+    ],
+    "nist_csf": [
+      "PR.IR-01",
+      "ID.AM-08",
+      "GV.SC-06",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1078.004",
+      "T1548.005",
+      "T1485",
+      "T1530",
+      "T1021.007"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

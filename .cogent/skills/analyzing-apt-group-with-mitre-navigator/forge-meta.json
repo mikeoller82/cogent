@@ -1,0 +1,46 @@
+{
+  "name": "analyzing-apt-group-with-mitre-navigator",
+  "description": "Analyze advanced persistent threat (APT) group techniques using MITRE ATT&CK Navigator to create layered heatmaps of adversary TTPs for detection gap analysis and threat-informed defense.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-intelligence",
+    "tags": [
+      "mitre-attack",
+      "navigator",
+      "apt",
+      "threat-actor",
+      "ttp-analysis",
+      "heatmap",
+      "detection-gap",
+      "threat-intelligence"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Executable Denylisting",
+      "Execution Isolation",
+      "File Metadata Consistency Validation",
+      "Content Format Conversion",
+      "File Content Analysis"
+    ],
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-05",
+      "DE.CM-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1059.001",
+      "T1071.001",
+      "T1003.001",
+      "T1486",
+      "T1547.001"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

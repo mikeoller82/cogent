@@ -1,0 +1,18 @@
+{
+  "name": "agent-platform-tuning",
+  "description": "Agent Platform Model Tuning. Use when you need to fine-tune open models or Gemini models using Agent Platform infrastructure. Don't use for model training outside Agent Platform, model deployment to endpoints (use `agent-platform-deploy`), or managing serving endpoints (use `agent-platform-endpoint-management`).",
+  "imported_at": "2026-06-18T01:25:53Z",
+  "metadata": {},
+  "resources": [
+    "scripts/calculate_cost.py",
+    "scripts/cancel_tuning_job.py",
+    "scripts/monitor_tuning_job.py",
+    "scripts/prepare_dataset.py",
+    "scripts/tune_open_model.py",
+    "references/data_prep.md",
+    "references/hf_datasets.md",
+    "references/models.md",
+    "references/requirements.txt",
+    "references/tuning_guide.md"
+  ]
+}

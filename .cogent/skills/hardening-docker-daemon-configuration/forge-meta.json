@@ -1,0 +1,41 @@
+{
+  "name": "hardening-docker-daemon-configuration",
+  "description": "Harden the Docker daemon by configuring daemon.json with user namespace remapping, TLS authentication, rootless mode, and CIS benchmark controls.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "container-security",
+    "tags": [
+      "docker",
+      "daemon-hardening",
+      "container-security",
+      "cis-benchmark",
+      "rootless",
+      "userns-remap"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.IR-01",
+      "ID.AM-08",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1610",
+      "T1611",
+      "T1609",
+      "T1525",
+      "T1553"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

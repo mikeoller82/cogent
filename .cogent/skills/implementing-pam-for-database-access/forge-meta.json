@@ -1,0 +1,38 @@
+{
+  "name": "implementing-pam-for-database-access",
+  "description": "Deploy privileged access management for database systems including Oracle, SQL Server, PostgreSQL, and MySQL. Covers session proxy configuration, credential vaulting, query auditing, dynamic credentia",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "identity-access-management",
+    "tags": [
+      "iam",
+      "identity",
+      "access-control",
+      "privileged-access",
+      "pam",
+      "database",
+      "dba"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-02",
+      "PR.AA-05",
+      "PR.AA-06"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1110",
+      "T1556",
+      "T1098",
+      "T1003"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

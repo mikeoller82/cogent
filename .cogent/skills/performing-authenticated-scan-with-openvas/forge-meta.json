@@ -1,0 +1,42 @@
+{
+  "name": "performing-authenticated-scan-with-openvas",
+  "description": "Configure and execute authenticated vulnerability scans using OpenVAS/Greenbone Vulnerability Management with SSH and SMB credentials for comprehensive host-level assessment.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "vulnerability-management",
+    "tags": [
+      "openvas",
+      "gvm",
+      "authenticated-scan",
+      "vulnerability-scanning",
+      "greenbone",
+      "network-security",
+      "credentialed-scan"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-02",
+      "ID.IM-02",
+      "ID.RA-06"
+    ],
+    "mitre_attack": [
+      "T1190",
+      "T1203",
+      "T1068",
+      "T1003",
+      "T1110"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

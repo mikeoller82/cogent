@@ -1,0 +1,9 @@
+{
+  "name": "character-animation-qa",
+  "description": "Review local character animation with schema checks, Playwright browser previews, frame sampling, and FFmpeg/ffprobe final output checks.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "license": "MIT"
+  },
+  "resources": []
+}

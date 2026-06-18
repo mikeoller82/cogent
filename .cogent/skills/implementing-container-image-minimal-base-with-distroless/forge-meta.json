@@ -1,0 +1,43 @@
+{
+  "name": "implementing-container-image-minimal-base-with-distroless",
+  "description": "Reduce container attack surface by building application images on Google distroless base images that contain only the application runtime with no shell, package manager, or unnecessary OS utilities.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "container-security",
+    "tags": [
+      "distroless",
+      "container-images",
+      "minimal-base",
+      "attack-surface",
+      "docker",
+      "security-hardening",
+      "supply-chain",
+      "kubernetes"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.IR-01",
+      "ID.AM-08",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1610",
+      "T1611",
+      "T1609",
+      "T1525",
+      "T1195"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

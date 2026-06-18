@@ -1,0 +1,49 @@
+{
+  "name": "analyzing-ios-app-security-with-objection",
+  "description": "Runtime iOS app security testing with Objection (Frida): inspect keychain and filesystem data, explore app internals at runtime, and validate/bypass client-side protections during authorized mobile assessments.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "mobile-security",
+    "author": "mahipal",
+    "tags": [
+      "mobile-security",
+      "ios",
+      "objection",
+      "frida",
+      "owasp-mobile",
+      "penetration-testing"
+    ],
+    "version": "1.0.0",
+    "license": "Apache-2.0",
+    "atlas_techniques": [
+      "AML.T0054"
+    ],
+    "nist_ai_rmf": [
+      "MEASURE-2.7",
+      "MANAGE-2.4",
+      "GOVERN-6.2",
+      "MAP-5.1"
+    ],
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.AA-05",
+      "ID.RA-01",
+      "DE.CM-09"
+    ],
+    "mitre_attack": [
+      "T1635",
+      "T1414",
+      "T1417.001",
+      "T1409"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

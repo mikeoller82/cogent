@@ -1,0 +1,9 @@
+{
+  "name": "svg-character-animation",
+  "description": "Animate SVG character rigs with GSAP, CSS transforms, Remotion frame control, and HyperFrames-compatible browser previews.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "license": "MIT"
+  },
+  "resources": []
+}

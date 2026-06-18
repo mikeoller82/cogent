@@ -1,0 +1,42 @@
+{
+  "name": "configuring-aws-verified-access-for-ztna",
+  "description": "Configure AWS Verified Access to provide VPN-less zero trust network access to internal applications using identity and device posture verification with Cedar policy language.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "zero-trust-architecture",
+    "tags": [
+      "zero-trust",
+      "aws",
+      "verified-access",
+      "ztna",
+      "cedar-policy",
+      "vpn-less",
+      "identity-verification",
+      "device-posture",
+      "aws-ram"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-05",
+      "PR.IR-01",
+      "GV.PO-01"
+    ],
+    "mitre_attack": [
+      "T1078.004",
+      "T1133",
+      "T1021.007"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "implementing-policy-as-code-with-open-policy-agent",
+  "description": "This skill covers implementing Open Policy Agent (OPA) and Gatekeeper for policy-as-code enforcement in Kubernetes and CI/CD pipelines. It addresses writing Rego policies, deploying OPA Gatekeeper as a Kubernetes admission controller, testing policies in development, and integrating policy evaluation into deployment pipelines.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "devsecops",
+    "tags": [
+      "devsecops",
+      "cicd",
+      "opa",
+      "gatekeeper",
+      "policy-as-code",
+      "kubernetes",
+      "secure-sdlc"
+    ],
+    "version": "1.0.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_ai_rmf": [
+      "GOVERN-1.1",
+      "MEASURE-2.7",
+      "MANAGE-3.1"
+    ],
+    "nist_csf": [
+      "PR.PS-01",
+      "GV.SC-07",
+      "ID.IM-04",
+      "PR.PS-04"
+    ],
+    "mitre_attack": [
+      "T1195",
+      "T1554",
+      "T1059.004",
+      "T1610",
+      "T1611"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

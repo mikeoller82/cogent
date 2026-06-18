@@ -1,0 +1,45 @@
+{
+  "name": "detecting-supply-chain-attacks-in-ci-cd",
+  "description": "Scans GitHub Actions workflows and CI/CD pipeline configurations for supply chain attack vectors including unpinned actions, script injection via expressions, dependency confusion, and secrets exposure. Uses PyGithub and YAML parsing for automated audit. Use when hardening CI/CD pipelines or investigating compromised build systems.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "security-operations",
+    "tags": [
+      "supply-chain-security",
+      "ci-cd-security",
+      "github-actions",
+      "pipeline-security",
+      "dependency-pinning",
+      "devsecops"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "atlas_techniques": [
+      "AML.T0010",
+      "AML.T0104"
+    ],
+    "nist_ai_rmf": [
+      "GOVERN-5.2",
+      "MAP-1.6",
+      "MANAGE-2.2"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "RS.MA-01",
+      "GV.OV-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1195.002",
+      "T1195.001",
+      "T1199",
+      "T1554"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

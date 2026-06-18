@@ -1,0 +1,42 @@
+{
+  "name": "implementing-google-workspace-phishing-protection",
+  "description": "Configure Google Workspace advanced phishing and malware protection settings including pre-delivery scanning, attachment protection, spoofing detection, and Enhanced Safe Browsing.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "phishing-defense",
+    "tags": [
+      "google-workspace",
+      "gmail",
+      "phishing",
+      "email-security",
+      "safe-browsing",
+      "anti-spoofing",
+      "admin-console"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AT-01",
+      "DE.CM-09",
+      "RS.CO-02",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1566",
+      "T1598",
+      "T1534",
+      "T1036",
+      "T1027"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

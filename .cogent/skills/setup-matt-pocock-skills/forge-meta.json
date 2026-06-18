@@ -1,0 +1,9 @@
+{
+  "name": "setup-matt-pocock-skills",
+  "description": "Configure this repo for the engineering skills \u2014 set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.",
+  "imported_at": "2026-06-18T00:47:38Z",
+  "metadata": {
+    "disable-model-invocation": true
+  },
+  "resources": []
+}

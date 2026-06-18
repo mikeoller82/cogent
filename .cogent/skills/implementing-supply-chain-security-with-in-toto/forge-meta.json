@@ -1,0 +1,44 @@
+{
+  "name": "implementing-supply-chain-security-with-in-toto",
+  "description": "Implement software supply chain integrity verification for container builds using the in-toto framework to create cryptographically signed attestations across CI/CD pipeline steps.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "container-security",
+    "tags": [
+      "in-toto",
+      "supply-chain-security",
+      "attestation",
+      "slsa",
+      "sigstore",
+      "container-security",
+      "cncf",
+      "provenance",
+      "sbom"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.IR-01",
+      "ID.AM-08",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1610",
+      "T1611",
+      "T1609",
+      "T1525",
+      "T1195"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

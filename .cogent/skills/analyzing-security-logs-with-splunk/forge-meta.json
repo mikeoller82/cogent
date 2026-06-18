@@ -1,0 +1,55 @@
+{
+  "name": "analyzing-security-logs-with-splunk",
+  "description": "Leverages Splunk Enterprise Security and SPL (Search Processing Language) to investigate security incidents through log correlation, timeline reconstruction, and anomaly detection. Covers Windows event logs, firewall logs, proxy logs, and authentication data analysis. Activates for requests involving Splunk investigation, SPL queries, SIEM log analysis, security event correlation, or log-based incident investigation.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "incident-response",
+    "tags": [
+      "splunk",
+      "SPL",
+      "SIEM",
+      "log-analysis",
+      "security-monitoring"
+    ],
+    "mitre_attack": [
+      "T1110",
+      "T1550.002",
+      "T1021.001",
+      "T1059.001",
+      "T1003.001"
+    ],
+    "version": "1.0.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "atlas_techniques": [
+      "AML.T0070",
+      "AML.T0066",
+      "AML.T0082"
+    ],
+    "d3fend_techniques": [
+      "Executable Denylisting",
+      "Execution Isolation",
+      "File Metadata Consistency Validation",
+      "Content Format Conversion",
+      "File Content Analysis"
+    ],
+    "nist_ai_rmf": [
+      "MEASURE-2.7",
+      "MAP-5.1",
+      "MANAGE-2.4",
+      "MANAGE-3.1",
+      "MEASURE-3.1"
+    ],
+    "nist_csf": [
+      "RS.MA-01",
+      "RS.MA-02",
+      "RS.AN-03",
+      "RC.RP-01"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

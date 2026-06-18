@@ -1,0 +1,43 @@
+{
+  "name": "implementing-proofpoint-email-security-gateway",
+  "description": "Deploy and configure Proofpoint Email Protection as a secure email gateway to detect and block phishing, malware, BEC, and spam before messages reach user inboxes.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "phishing-defense",
+    "tags": [
+      "email-security",
+      "proofpoint",
+      "secure-email-gateway",
+      "phishing",
+      "anti-spam",
+      "anti-malware",
+      "bec",
+      "email-filtering"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AT-01",
+      "DE.CM-09",
+      "RS.CO-02",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1566",
+      "T1598",
+      "T1534",
+      "T1036",
+      "T1027"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

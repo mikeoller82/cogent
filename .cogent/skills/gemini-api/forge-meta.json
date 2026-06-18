@@ -1,0 +1,19 @@
+{
+  "name": "gemini-api",
+  "description": "Use when the user asks about using Gemini in an enterprise environment or explicitly mentions Vertex AI, Google Cloud, or Agent Platform. Guides the usage of the Gemini API on Agent Platform with the Google Gen AI SDK. Covers SDK usage (Python, JS/TS, Go, Java, C#), capabilities like multimodal inputs, tools, media generation, caching, batch prediction, and Live API.",
+  "imported_at": "2026-06-18T01:25:53Z",
+  "metadata": {
+    "compatibility": "Requires active Google Cloud credentials and Agent Platform API enabled."
+  },
+  "resources": [
+    "references/advanced_features.md",
+    "references/bounding_box.md",
+    "references/embeddings.md",
+    "references/live_api.md",
+    "references/media_generation.md",
+    "references/model_tuning.md",
+    "references/safety.md",
+    "references/structured_and_tools.md",
+    "references/text_and_multimodal.md"
+  ]
+}

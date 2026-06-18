@@ -1,0 +1,41 @@
+{
+  "name": "performing-yara-rule-development-for-detection",
+  "description": "Develop precise YARA rules for malware detection by identifying unique byte patterns, strings, and behavioral indicators in executable files while minimizing false positives.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "malware-analysis",
+    "tags": [
+      "yara",
+      "malware-detection",
+      "signature-development",
+      "threat-hunting",
+      "pattern-matching",
+      "yara-x",
+      "indicator-development"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "DE.AE-02",
+      "RS.AN-03",
+      "ID.RA-01",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1027",
+      "T1055",
+      "T1140",
+      "T1497"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

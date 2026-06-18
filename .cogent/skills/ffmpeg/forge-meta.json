@@ -1,0 +1,7 @@
+{
+  "name": "ffmpeg",
+  "description": "Video and audio processing with FFmpeg. Use for format conversion, resizing, compression, audio extraction, and preparing assets for Remotion. Triggers include converting GIF to MP4, resizing video, extracting audio, compressing files, or any media transformation task.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": []
+}

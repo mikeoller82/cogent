@@ -1,0 +1,43 @@
+{
+  "name": "scanning-kubernetes-manifests-with-kubesec",
+  "description": "Perform security risk analysis on Kubernetes resource manifests using Kubesec to identify misconfigurations, privilege escalation risks, and deviations from security best practices.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "container-security",
+    "tags": [
+      "kubesec",
+      "kubernetes",
+      "manifest-scanning",
+      "security-scanning",
+      "devsecops",
+      "misconfiguration",
+      "static-analysis",
+      "ci-cd"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.IR-01",
+      "ID.AM-08",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1610",
+      "T1611",
+      "T1609",
+      "T1525",
+      "T1068"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "analyzing-cobalt-strike-beacon-configuration",
+  "description": "Extract and analyze Cobalt Strike beacon configuration from PE files and memory dumps to identify C2 infrastructure, malleable profiles, and operator tradecraft.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "malware-analysis",
+    "tags": [
+      "cobalt-strike",
+      "beacon",
+      "c2",
+      "malware-analysis",
+      "config-extraction",
+      "threat-hunting",
+      "red-team-tools"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "DE.AE-02",
+      "RS.AN-03",
+      "ID.RA-01",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1071.001",
+      "T1573.001",
+      "T1090.004",
+      "T1105",
+      "T1027"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

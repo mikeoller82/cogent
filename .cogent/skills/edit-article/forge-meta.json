@@ -1,0 +1,9 @@
+{
+  "name": "edit-article",
+  "description": "Edit and improve articles by restructuring sections, improving clarity, and tightening prose. Use when user wants to edit, revise, or improve an article draft.",
+  "imported_at": "2026-06-18T00:47:38Z",
+  "metadata": {
+    "disable-model-invocation": true
+  },
+  "resources": []
+}

@@ -1,0 +1,37 @@
+{
+  "name": "implementing-zero-trust-with-beyondcorp",
+  "description": "Deploy Google BeyondCorp Enterprise zero trust access controls using Identity-Aware Proxy (IAP), context-aware access policies, device trust validation, and Access Context Manager to enforce identity and posture-based access to GCP resources and internal applications.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "zero-trust",
+    "tags": [
+      "zero-trust",
+      "beyondcorp",
+      "google-cloud",
+      "iap",
+      "context-aware-access",
+      "device-trust",
+      "identity"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-05",
+      "PR.IR-01"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1550",
+      "T1021",
+      "T1556",
+      "T1078.004"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

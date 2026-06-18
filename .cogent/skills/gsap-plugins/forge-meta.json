@@ -1,0 +1,9 @@
+{
+  "name": "gsap-plugins",
+  "description": "Official GSAP skill for GSAP plugins \u2014 registration, ScrollToPlugin, ScrollSmoother, Flip, Draggable, Inertia, Observer, SplitText, ScrambleText, SVG and physics plugins, CustomEase, EasePack, CustomWiggle, CustomBounce, GSDevTools. Use when the user asks about a GSAP plugin, scroll-to, flip animations, draggable, SVG drawing, or plugin registration.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "license": "MIT"
+  },
+  "resources": []
+}

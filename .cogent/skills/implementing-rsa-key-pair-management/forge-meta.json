@@ -1,0 +1,38 @@
+{
+  "name": "implementing-rsa-key-pair-management",
+  "description": "RSA (Rivest-Shamir-Adleman) is the most widely deployed asymmetric cryptographic algorithm, used for digital signatures, key exchange, and encryption. This skill covers generating, storing, rotating,",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "cryptography",
+    "tags": [
+      "cryptography",
+      "rsa",
+      "key-management",
+      "pki",
+      "asymmetric-encryption"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.DS-01",
+      "PR.DS-02",
+      "PR.DS-10"
+    ],
+    "mitre_attack": [
+      "T1600",
+      "T1573",
+      "T1553",
+      "T1486"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

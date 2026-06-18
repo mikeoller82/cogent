@@ -1,0 +1,42 @@
+{
+  "name": "analyzing-typosquatting-domains-with-dnstwist",
+  "description": "Detect typosquatting, homograph phishing, and brand impersonation domains using dnstwist to generate domain permutations and identify registered lookalike domains targeting your organization.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-intelligence",
+    "tags": [
+      "dnstwist",
+      "typosquatting",
+      "phishing",
+      "domain-monitoring",
+      "brand-protection",
+      "homograph",
+      "dns",
+      "threat-intelligence"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "atlas_techniques": [
+      "AML.T0073",
+      "AML.T0052"
+    ],
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-05",
+      "DE.CM-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1583.001",
+      "T1566.002",
+      "T1598.003",
+      "T1583.006"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "alloydb-basics",
+  "description": "Manages clusters, instances, and backups for AlloyDB for PostgreSQL, and integrates with AlloyDB model context protocol (MCP) tools for automated database operations.",
+  "imported_at": "2026-06-18T01:25:53Z",
+  "metadata": {},
+  "resources": [
+    "references/cli-usage.md",
+    "references/client-library-usage.md",
+    "references/core-concepts.md",
+    "references/iac-usage.md",
+    "references/iam-security.md",
+    "references/mcp-usage.md"
+  ]
+}

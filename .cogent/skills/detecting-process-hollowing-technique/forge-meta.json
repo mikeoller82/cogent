@@ -1,0 +1,49 @@
+{
+  "name": "detecting-process-hollowing-technique",
+  "description": "Detect process hollowing (T1055.012) by analyzing memory-mapped sections, hollowed process indicators, and parent-child process anomalies in EDR telemetry.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "threat-hunting",
+      "mitre-attack",
+      "process-hollowing",
+      "process-injection",
+      "edr",
+      "t1055",
+      "proactive-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Platform Monitoring",
+      "Process Code Segment Verification",
+      "Segment Address Offset Randomization",
+      "Process Analysis",
+      "Application Hardening"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ],
+    "mitre_attack": [
+      "T1046",
+      "T1057",
+      "T1082",
+      "T1083",
+      "T1055"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "name": "performing-alert-triage-with-elastic-siem",
+  "description": "Perform systematic alert triage in Elastic Security SIEM to rapidly classify, prioritize, and investigate security alerts for SOC operations.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "soc-operations",
+    "tags": [
+      "elastic",
+      "siem",
+      "alert-triage",
+      "soc",
+      "elastic-security",
+      "detection",
+      "esql",
+      "kibana"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Token Binding",
+      "Restore Access",
+      "Application Protocol Command Analysis",
+      "Password Authentication",
+      "Reissue Credential"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "RS.MA-01",
+      "DE.AE-06"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1685.002",
+      "T1685.005",
+      "T1566"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

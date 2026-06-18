@@ -1,0 +1,13 @@
+{
+  "name": "web-design-guidelines",
+  "description": "Review UI code for Web Interface Guidelines compliance. Use when asked to \"review my UI\", \"check accessibility\", \"audit design\", \"review UX\", or \"check my site against best practices\".",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "metadata": {
+      "author": "vercel",
+      "version": "1.0.0",
+      "argument-hint": "<file-or-pattern>"
+    }
+  },
+  "resources": []
+}

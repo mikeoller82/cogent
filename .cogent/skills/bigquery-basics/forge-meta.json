@@ -1,0 +1,17 @@
+{
+  "name": "bigquery-basics",
+  "description": "Manages datasets, tables, and jobs in BigQuery, and integrates with BigQuery ML and Gemini for advanced data analytics and AI-driven insights. Use when you need to interact with BigQuery, run SQL queries, manage BigQuery resources, or leverage BigQuery's built-in ML capabilities. Also use when performing data analysis, ingesting data into BigQuery, or developing AI applications on BigQuery.",
+  "imported_at": "2026-06-18T01:25:53Z",
+  "metadata": {},
+  "resources": [
+    "references/bigquery_ai_detect_anomalies.md",
+    "references/bigquery_ai_forecast.md",
+    "references/bigquery_ai_generate.md",
+    "references/cli-usage.md",
+    "references/client-library-usage.md",
+    "references/core-concepts.md",
+    "references/iac-usage.md",
+    "references/iam-security.md",
+    "references/mcp-usage.md"
+  ]
+}

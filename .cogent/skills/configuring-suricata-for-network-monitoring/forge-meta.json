@@ -1,0 +1,36 @@
+{
+  "name": "configuring-suricata-for-network-monitoring",
+  "description": "Deploys and configures Suricata IDS/IPS with Emerging Threats rulesets, EVE JSON logging, and custom rules for real-time network traffic inspection, threat detection, and integration with SIEM platforms for centralized security monitoring.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "network-security",
+    "tags": [
+      "network-security",
+      "suricata",
+      "ids",
+      "ips",
+      "network-monitoring"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.IR-01",
+      "DE.CM-01",
+      "ID.AM-03",
+      "PR.DS-02"
+    ],
+    "mitre_attack": [
+      "T1046",
+      "T1071.001",
+      "T1572",
+      "T1048",
+      "T1573.001"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

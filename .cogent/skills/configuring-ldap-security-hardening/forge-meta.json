@@ -1,0 +1,37 @@
+{
+  "name": "configuring-ldap-security-hardening",
+  "description": "Harden LDAP directory services against common attacks including credential harvesting, LDAP injection, anonymous binding, and channel binding bypass. Covers LDAPS enforcement, channel binding, LDAP si",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "identity-access-management",
+    "tags": [
+      "iam",
+      "identity",
+      "access-control",
+      "ldap",
+      "directory-services",
+      "hardening"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-02",
+      "PR.AA-05",
+      "PR.AA-06"
+    ],
+    "mitre_attack": [
+      "T1087.002",
+      "T1110.003",
+      "T1557.001",
+      "T1040",
+      "T1078.002"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "detecting-evasion-techniques-in-endpoint-logs",
+  "description": "Detects defense evasion techniques used by adversaries in endpoint logs including log tampering, timestomping, process injection, and security tool disabling. Use when investigating suspicious endpoint behavior, building detection rules for evasion tactics, or conducting threat hunting for stealthy adversary activity. Activates for requests involving evasion detection, defense evasion analysis, log tampering detection, or MITRE ATT&CK TA0005.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "endpoint-security",
+    "tags": [
+      "endpoint",
+      "edr",
+      "threat-hunting",
+      "defense-evasion",
+      "MITRE-ATT&CK",
+      "detection-engineering"
+    ],
+    "version": "1.0.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "File Metadata Consistency Validation",
+      "Content Format Conversion",
+      "File Content Analysis",
+      "Platform Hardening",
+      "File Format Verification"
+    ],
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.PS-02",
+      "DE.CM-01",
+      "PR.IR-01"
+    ],
+    "mitre_attack": [
+      "T1055",
+      "T1547",
+      "T1059",
+      "T1036",
+      "T1027"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

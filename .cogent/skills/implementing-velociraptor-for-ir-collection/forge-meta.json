@@ -1,0 +1,50 @@
+{
+  "name": "implementing-velociraptor-for-ir-collection",
+  "description": "Deploy and configure Velociraptor for scalable endpoint forensic artifact collection during incident response using VQL queries, hunts, and pre-built artifact packs across Windows, Linux, and macOS environments.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "incident-response",
+    "tags": [
+      "velociraptor",
+      "dfir",
+      "endpoint-collection",
+      "vql",
+      "forensic-artifacts",
+      "rapid7",
+      "threat-hunting",
+      "incident-response"
+    ],
+    "mitre_attack": [
+      "T1486",
+      "T1490",
+      "T1070",
+      "T1078",
+      "T1005"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Executable Denylisting",
+      "Execution Isolation",
+      "File Metadata Consistency Validation",
+      "Content Format Conversion",
+      "File Content Analysis"
+    ],
+    "nist_csf": [
+      "RS.MA-01",
+      "RS.MA-02",
+      "RS.AN-03",
+      "RC.RP-01"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

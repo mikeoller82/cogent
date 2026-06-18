@@ -1,0 +1,16 @@
+{
+  "name": "manimgl-best-practices",
+  "description": "Trigger when: (1) User mentions \"manimgl\" or \"ManimGL\" or \"3b1b manim\", (2) Code contains `from manimlib import *`, (3) User runs `manimgl` CLI commands, (4) Working with InteractiveScene, self.frame, self.embed(), ShowCreation(), or ManimGL-specific patterns.\n\nBest practices for ManimGL (Grant Sanderson's 3Blue1Brown version) - OpenGL-based animation engine with interactive development. Covers InteractiveScene, Tex with t2c, camera frame control, interactive mode (-se flag), 3D rendering, and checkpoint_paste() workflow.\n\nNOT for Manim Community Edition (which uses `manim` imports and `manim` CLI).",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": [
+    "references/equation_transforms.md",
+    "references/integration_visualization.md",
+    "references/parallax_starfield.md",
+    "references/rotating_exponentials.md",
+    "references/spring_mass_system.md",
+    "references/three_d_surfaces.md",
+    "references/transit_animation.md",
+    "references/vector_fields.md"
+  ]
+}

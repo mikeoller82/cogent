@@ -1,0 +1,7 @@
+{
+  "name": "google-cloud-recipe-auth",
+  "description": "Provides expert guidance on authenticating and authorizing to Google Cloud services and APIs, covering human users, service identities, Application Default Credentials (ADC), and best practices for secure access.",
+  "imported_at": "2026-06-18T01:25:53Z",
+  "metadata": {},
+  "resources": []
+}

@@ -1,0 +1,9 @@
+{
+  "name": "prototype",
+  "description": "Build a throwaway prototype to flesh out a design \u2014 a runnable terminal app for state/business-logic questions, or several radically different UI variations toggleable from one route.",
+  "imported_at": "2026-06-18T00:47:38Z",
+  "metadata": {
+    "disable-model-invocation": true
+  },
+  "resources": []
+}

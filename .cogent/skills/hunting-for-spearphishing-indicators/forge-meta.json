@@ -1,0 +1,49 @@
+{
+  "name": "hunting-for-spearphishing-indicators",
+  "description": "Hunt for spearphishing campaign indicators across email logs, endpoint telemetry, and network data to detect targeted email attacks.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-hunting",
+    "tags": [
+      "threat-hunting",
+      "mitre-attack",
+      "spearphishing",
+      "initial-access",
+      "email-security",
+      "t1566",
+      "proactive-detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "File Metadata Consistency Validation",
+      "Application Protocol Command Analysis",
+      "Identifier Analysis",
+      "Content Format Conversion",
+      "Message Analysis"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "DE.AE-07",
+      "ID.RA-05"
+    ],
+    "mitre_attack": [
+      "T1046",
+      "T1057",
+      "T1082",
+      "T1083",
+      "T1566"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

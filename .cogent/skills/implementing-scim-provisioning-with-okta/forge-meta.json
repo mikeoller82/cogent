@@ -1,0 +1,41 @@
+{
+  "name": "implementing-scim-provisioning-with-okta",
+  "description": "Implement automated user provisioning and deprovisioning using SCIM 2.0 protocol with Okta as the identity provider.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "identity-access-management",
+    "tags": [
+      "scim",
+      "okta",
+      "provisioning",
+      "identity-management",
+      "automation",
+      "sso",
+      "lifecycle-management"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-02",
+      "PR.AA-05",
+      "PR.AA-06"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1110",
+      "T1556",
+      "T1098"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

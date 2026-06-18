@@ -1,0 +1,39 @@
+{
+  "name": "triaging-security-incident-with-ir-playbook",
+  "description": "Classify and prioritize security incidents using structured IR playbooks to determine severity, assign response teams, and initiate appropriate response procedures.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "incident-response",
+    "tags": [
+      "incident-response",
+      "triage",
+      "playbook",
+      "severity-classification",
+      "soc"
+    ],
+    "mitre_attack": [
+      "T1486",
+      "T1490",
+      "T1070",
+      "T1078"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "RS.MA-01",
+      "RS.MA-02",
+      "RS.AN-03",
+      "RC.RP-01"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

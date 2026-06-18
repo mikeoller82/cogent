@@ -1,0 +1,11 @@
+{
+  "name": "beautiful-mermaid",
+  "description": "Render Mermaid diagrams as SVG and PNG using the Beautiful Mermaid library. Use when the user asks to render a Mermaid diagram.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": [
+    "scripts/create-html.ts",
+    "scripts/render.ts",
+    "references/mermaid-syntax.md"
+  ]
+}

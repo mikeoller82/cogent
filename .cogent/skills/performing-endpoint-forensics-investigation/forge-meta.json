@@ -1,0 +1,41 @@
+{
+  "name": "performing-endpoint-forensics-investigation",
+  "description": "Performs digital forensics investigation on compromised endpoints including memory acquisition, disk imaging, artifact analysis, and timeline reconstruction. Use when investigating security incidents, collecting evidence for legal proceedings, or analyzing endpoint compromise scope. Activates for requests involving endpoint forensics, memory analysis, disk forensics, or incident investigation.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "endpoint-security",
+    "tags": [
+      "endpoint",
+      "forensics",
+      "memory-analysis",
+      "disk-imaging",
+      "incident-investigation",
+      "Volatility"
+    ],
+    "version": "1.0.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "PR.PS-02",
+      "DE.CM-01",
+      "PR.IR-01"
+    ],
+    "mitre_attack": [
+      "T1055",
+      "T1547",
+      "T1059",
+      "T1036",
+      "T1005"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "analyzing-email-headers-for-phishing-investigation",
+  "description": "Parse and analyze email headers to trace the origin of phishing emails, verify sender authenticity, and identify spoofing through SPF, DKIM, and DMARC validation.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "digital-forensics",
+    "tags": [
+      "forensics",
+      "email-analysis",
+      "phishing",
+      "spf",
+      "dkim",
+      "dmarc",
+      "header-analysis"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "atlas_techniques": [
+      "AML.T0052"
+    ],
+    "nist_csf": [
+      "RS.AN-01",
+      "RS.AN-03",
+      "DE.AE-02",
+      "RS.MA-01"
+    ],
+    "mitre_attack": [
+      "T1566.001",
+      "T1566.002",
+      "T1598.003"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

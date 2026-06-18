@@ -1,0 +1,34 @@
+{
+  "name": "conducting-man-in-the-middle-attack-simulation",
+  "description": "Simulates man-in-the-middle attacks using Ettercap, mitmproxy, and Bettercap in authorized environments to intercept, analyze, and modify network traffic for testing encryption enforcement, certificate validation, and detection capabilities.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "network-security",
+    "tags": [
+      "network-security",
+      "mitm",
+      "bettercap",
+      "ettercap",
+      "mitmproxy"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.IR-01",
+      "DE.CM-01",
+      "ID.AM-03",
+      "PR.DS-02"
+    ],
+    "mitre_attack": [
+      "T1557.001",
+      "T1557.002",
+      "T1040"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

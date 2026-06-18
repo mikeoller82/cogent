@@ -1,0 +1,7 @@
+{
+  "name": "deprecation-and-migration",
+  "description": "Manages deprecation and migration. Use when removing old systems, APIs, or features. Use when migrating users from one implementation to another. Use when deciding whether to maintain or sunset existing code.",
+  "imported_at": "2026-06-18T00:51:08Z",
+  "metadata": {},
+  "resources": []
+}

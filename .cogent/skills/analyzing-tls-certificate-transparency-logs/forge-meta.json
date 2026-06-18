@@ -1,0 +1,40 @@
+{
+  "name": "analyzing-tls-certificate-transparency-logs",
+  "description": "Queries Certificate Transparency logs via crt.sh and pycrtsh to detect phishing domains, unauthorized certificate issuance, and shadow IT. Monitors newly issued certificates for typosquatting and brand impersonation using Levenshtein distance. Use for proactive phishing domain detection and certificate monitoring.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "security-operations",
+    "tags": [
+      "certificate-transparency",
+      "ct-logs",
+      "crt-sh",
+      "phishing-detection",
+      "tls-monitoring",
+      "security-operations"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "atlas_techniques": [
+      "AML.T0073",
+      "AML.T0052"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "RS.MA-01",
+      "GV.OV-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1583.001",
+      "T1566.002",
+      "T1598.003",
+      "T1583.006"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

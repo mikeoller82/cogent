@@ -70,7 +70,7 @@ _DEFAULTS: Dict[str, Any] = {
             "name": "opencode-zen",
             "base_url": "https://opencode.ai/zen/v1/chat/completions",
             "model": "deepseek-v4-flash-free",
-            "api_key_env": "OPENCODE_ZEN_API_KEY",
+            "api_key_env": "OPENCODE_API_KEY",
             "priority": 3,
         },
         {

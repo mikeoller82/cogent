@@ -1,0 +1,7 @@
+{
+  "name": "doubao-tts",
+  "description": "Generate Mandarin and multilingual narration with Volcengine Doubao Speech 2.0. Use when creating Chinese voiceovers, when the user prefers Doubao/Volcengine/\u706b\u5c71\u5f15\u64ce/\u8c46\u5305 TTS, or when narration needs character-level timestamp metadata for subtitles.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": []
+}

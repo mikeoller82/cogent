@@ -1,0 +1,41 @@
+{
+  "name": "heygen",
+  "description": "[DEPRECATED] Use `create-video` for prompt-based video generation or `avatar-video` for precise avatar/scene control. This legacy skill combines both workflows \u2014 the newer focused skills provide clearer guidance.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "homepage": "https://docs.heygen.com/reference/generate-video-agent",
+    "allowed-tools": "mcp__heygen__*",
+    "metadata": {
+      "openclaw": {
+        "requires": {
+          "env": [
+            "HEYGEN_API_KEY"
+          ]
+        },
+        "primaryEnv": "HEYGEN_API_KEY"
+      }
+    }
+  },
+  "resources": [
+    "references/assets.md",
+    "references/authentication.md",
+    "references/avatars.md",
+    "references/backgrounds.md",
+    "references/captions.md",
+    "references/dimensions.md",
+    "references/photo-avatars.md",
+    "references/prompt-examples.md",
+    "references/prompt-optimizer.md",
+    "references/quota.md",
+    "references/remotion-integration.md",
+    "references/scripts.md",
+    "references/templates.md",
+    "references/text-overlays.md",
+    "references/video-agent.md",
+    "references/video-generation.md",
+    "references/video-status.md",
+    "references/visual-styles.md",
+    "references/voices.md",
+    "references/webhooks.md"
+  ]
+}

@@ -36,6 +36,8 @@ def build_system_prompt(workspace_name: str = "your team", memory_facts: str = "
                         loop_state=None) -> str:
     mem_block = f"\n\n## Known facts about the user (from memory)\n{memory_facts}\n" if memory_facts else ""
     loop_block = le.build_loop_system_block(loop_state)
+    tools_block = tool_impls.tool_specs_for_prompt()
+    skills_block = agent_skills.skill_catalog_for_prompt()
     return f"""You are Cogent — an AI coworker. Not a chatbot. A colleague who ships real work.
 
 You don't describe what to do; you do it. Asked for an audit? Hand over the PDF. Asked for a dashboard? Build and deploy it. Told a fact about the business? Remember it.{mem_block}
@@ -50,9 +52,9 @@ After the tool block, STOP generating. The system will execute the tool and send
 Issue ONE tool call per turn. You may chain multiple turns.
 
 ## Tools available
-{tool_impls.tool_specs_for_prompt()}
+{tools_block}
 
-{agent_skills.skill_catalog_for_prompt()}
+{skills_block}
 
 ## You operate in an agent loop, iteratively completing tasks through these steps:
 1. Analyze Events: Understand user needs and current state through event stream, focusing on latest user messages and execution results
@@ -71,90 +73,6 @@ Issue ONE tool call per turn. You may chain multiple turns.
 - Deploy websites or applications and provide public access
 - Suggest users to temporarily take control of the browser for sensitive operations when necessary
 - Utilize various tools to complete user-assigned tasks step by step
-
-## Tools and Interfaces
-
-### Browser Capabilities
-- Navigating to websites and web applications
-- Reading and extracting content from web pages
-- Interacting with web elements (clicking, scrolling, form filling)
-- Executing JavaScript in browser console for enhanced functionality
-- Monitoring web page changes and updates
-- Taking screenshots of web content when needed
-
-### File System Operations
-- Reading from and writing to files in various formats
-- Searching for files based on names, patterns, or content
-- Creating and organizing directory structures
-- Compressing and archiving files (zip, tar)
-- Analyzing file contents and extracting relevant information
-- Converting between different file formats
-
-### Shell and Command Line
-- Executing shell commands in a Linux environment
-- Installing and configuring software packages
-- Running scripts in various languages
-- Managing processes (starting, monitoring, terminating)
-- Automating repetitive tasks through shell scripts
-- Accessing and manipulating system resources
-
-### Communication Tools
-- Sending informative messages to users
-- Asking questions to clarify requirements
-- Providing progress updates during long-running tasks
-- Attaching files and resources to messages
-- Suggesting next steps or additional actions
-
-### Deployment Capabilities
-- Exposing local ports for temporary access to services
-- Deploying static websites to public URLs
-- Deploying web applications with server-side functionality
-- Providing access links to deployed resources
-- Monitoring deployed applications
-
-## Programming Languages and Technologies
-
-### Languages I Can Work With
-- JavaScript/TypeScript
-- Python
-- HTML/CSS
-- Shell scripting (Bash)
-- SQL
-- PHP
-- Ruby
-- Java
-- C/C++
-- Go
-- And many others
-
-### Frameworks and Libraries
-- React, Vue, Angular for frontend development
-- Node.js, Express for backend development
-- Django, Flask for Python web applications
-- Various data analysis libraries (pandas, numpy, etc.)
-- Testing frameworks across different languages
-- Database interfaces and ORMs
-
-## Task Approach Methodology
-
-### Understanding Requirements
-- Analyzing user requests to identify core needs
-- Asking clarifying questions when requirements are ambiguous
-- Breaking down complex requests into manageable components
-- Identifying potential challenges before beginning work
-
-### Planning and Execution
-- Creating structured plans for task completion
-- Selecting appropriate tools and approaches for each step
-- Executing steps methodically while monitoring progress
-- Adapting plans when encountering unexpected challenges
-- Providing regular updates on task status
-
-### Quality Assurance
-- Verifying results against original requirements
-- Testing code and solutions before delivery
-- Documenting processes and solutions for future reference
-- Seeking feedback to improve outcomes
 
 ## Style rules
 - Be brief. Colleagues don't lecture.
@@ -183,11 +101,8 @@ Never emit a plain wall of text. Use the rich section types to compose a real do
 Plain unstyled HTML is a failure. Every web app you ship MUST have:
 - A clear design system in `:root` CSS variables (palette, type scale, spacing).
 - Real typography — load Google Fonts (e.g. Inter + Instrument Serif for landing pages, JetBrains Mono for tools).
-- A specific aesthetic — pick one and commit: warm dark (Cogent brand: cream #f5ede0 on #15110d, accent #b5a8f5) OR clean light (off-white #fafaf5, ink #15110d, accent #7c5cf5) OR something the user asks for.
 - Proper layout via CSS Grid / Flexbox, generous whitespace (2x more than feels comfortable), and visual hierarchy through size + weight contrast.
 - Interactive elements with hover states, smooth transitions (200-300ms), and subtle micro-animations.
-- For landing pages: hero with confident headline + italic serif accent + clear CTA, feature grid with icons (use inline SVGs), social proof or testimonial block, footer.
-- For dashboards / tools: KPI tiles on a dark or light card surface, sectioned regions, real data visualizations (CSS-only bar charts, gauges, etc. are fine).
 - No clip art, no center-aligned body text, no generic Bootstrap look. Borrow taste from Linear, Stripe, Vercel, Notion.
 - Keep it single-file — inline `<style>` + inline `<script>`.
 
@@ -512,11 +427,38 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 for ev in _collect_provider_events():
                     yield {"type": "provider", "content": ev}
             except Exception as e:
-                yield {"type": "error", "content": f"LLM error: {e}"}
-                final_text = f"(LLM error: {e})"
-                le.fail_task(loop_state, f"LLM error: {e}")
-                tool_loop_error = True
-                break
+                error_msg = str(e).lower()
+                is_overflow = any(kw in error_msg for kw in [
+                    "context length", "maximum context", "prompt is too long",
+                    "context overflow", "too large", "tokens exceed", "request_too_large",
+                ])
+
+                if is_overflow and turn > 0:
+                    # Trim context and retry once
+                    yield {"type": "reasoning", "content": "[context overflow — trimming and retrying]"}
+                    yield {"type": "status", "content": "context overflow detected, trimming messages"}
+                    # Keep system + last 2 exchanges
+                    trimmed = initial_messages[:1]
+                    if len(initial_messages) > 3:
+                        trimmed += initial_messages[-2:]
+                    initial_messages = trimmed
+                    try:
+                        response_text = await _send_kilocode_chat(initial_messages + [
+                            {"role": "user", "content": current_user_text},
+                        ])
+                        yield {"type": "reasoning", "content": response_text}
+                    except Exception as e2:
+                        yield {"type": "error", "content": f"LLM error after overflow retry: {e2}"}
+                        final_text = f"(LLM error after overflow: {e2})"
+                        le.fail_task(loop_state, f"LLM error: {e2}")
+                        tool_loop_error = True
+                        break
+                else:
+                    yield {"type": "error", "content": f"LLM error: {e}"}
+                    final_text = f"(LLM error: {e})"
+                    le.fail_task(loop_state, f"LLM error: {e}")
+                    tool_loop_error = True
+                    break
 
             # ── Emit reasoning event with raw LLM output ─────────────
             yield {"type": "reasoning", "content": response_text}
@@ -561,11 +503,33 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             made_tool_calls = True
             tool_name = call.get("name", "")
             args = call.get("args", {})
+
+            # ── CowAgent-style loop detection ──────────────────
+            should_stop, stop_reason, is_critical = le.check_tool_loop(loop_state, tool_name, args)
+            if should_stop:
+                loop_state.tool_loop_detected_stop = True
+                loop_state.decisions.append(f"Tool loop guardrail: {stop_reason}")
+                le.save_state(loop_state)
+                yield {"type": "reasoning", "content": f"[tool-loop guardrail] {stop_reason}"}
+                yield {"type": "status", "content": "loop detected, stopping tool execution"}
+                if is_critical:
+                    final_text = f"(stopped: {stop_reason})"
+                    yield {"type": "final", "content": final_text}
+                    le.fail_task(loop_state, stop_reason)
+                    tool_loop_error = True
+                else:
+                    # Soft stop: skip tool call, break to outer loop
+                    final_text = f"(loop stopped: {stop_reason})"
+                break
+
             label = _tool_action_label(tool_name, args)
             yield {"type": "tool", "data": {"tool": tool_name, "args": args, "label": label}}
             yield {"type": "status", "content": label}
-            
+
             tool_result = await _execute_tool(db, workspace_id, call)
+            is_success = tool_result.get("result", "").find("Error") != 0
+            le.record_tool_result(loop_state, tool_name, args, is_success)
+
             summary = tool_result.get("result", "")[:500]
             display = _tool_display_summary(tool_name, args, summary)
             yield {"type": "tool_result", "data": {"tool": tool_name, "summary": summary, "display": display}}
@@ -583,21 +547,51 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             yield {"type": "final", "content": final_text}
             break
 
-        # ── Auto-continue after tool loop exhausts ───────────────────
-        if not final_text and loop_state.continue_count < le.CONTINUE_MAX:
-            loop_state.continue_count += 1
-            le.save_state(loop_state)
-            note = f"[auto-continue: tool turns exhausted, continuing ({loop_state.continue_count}/{le.CONTINUE_MAX})]"
-            yield {"type": "reasoning", "content": note}
-            yield {"type": "status", "content": "continuing execution"}
-            current_user_text = (
-                "Your tool calls completed but the task is not finished. "
-                "Continue working — make more tool calls to complete the task.\n\n"
-                f"Original task: {user_text}"
-            )
-            continue  # Re-enter tool loop (next outer iteration)
+        # ── Tool turns exhausted — force summary (CowAgent-style) ────
+        if not final_text:
+            if loop_state.continue_count >= le.CONTINUE_MAX:
+                # Budget fully exhausted — force a summary before stopping
+                yield {"type": "status", "content": "reached max turns, requesting summary"}
+                yield {"type": "reasoning", "content": "[max turns reached — forcing LLM to summarize]"}
+                force_summary_messages = initial_messages.copy()
+                force_summary_messages.append({
+                    "role": "user",
+                    "content": (
+                        "You have reached the maximum number of execution steps for this turn. "
+                        "Summarize what you accomplished and provide your final response.\n\n"
+                        f"Original task: {user_text}"
+                    ),
+                })
+                try:
+                    summary_text = await _send_kilocode_chat(force_summary_messages)
+                    final_text = summary_text.strip()
+                    yield {"type": "reasoning", "content": summary_text}
+                except Exception:
+                    final_text = f"(reached max steps for this turn. Original task: {user_text})"
+            else:
+                # Budget remaining — auto-continue
+                loop_state.continue_count += 1
+                le.save_state(loop_state)
+                note = f"[auto-continue: tool turns exhausted, continuing ({loop_state.continue_count}/{le.CONTINUE_MAX})]"
+                yield {"type": "reasoning", "content": note}
+                yield {"type": "status", "content": "continuing execution"}
+                current_user_text = (
+                    "Your tool calls completed but the task is not finished. "
+                    "Continue working — make more tool calls to complete the task.\n\n"
+                    f"Original task: {user_text}"
+                )
+                continue  # Re-enter tool loop
 
         le.record_attempt(loop_state, le.PHASE_EXECUTE, (final_text or "")[:200])
+
+        # ── Short-circuit on tool-loop guardrail ──────────────────
+        if loop_state.tool_loop_detected_stop:
+            exit_reason = le.should_exit_gracefully(loop_state)
+            yield {"type": "reasoning", "content": f"[tool-loop guardrail] {exit_reason} — exiting"}
+            le.complete_task(loop_state, final_text[:200])
+            yield {"type": "loop", "data": {"phase": le.PHASE_DONE, "message": exit_reason}}
+            yield {"type": "final", "content": final_text}
+            break
 
         # ── Response analysis (Ralph-style) ──────────────────────────
         analysis = le.analyze_response_text(final_text or "")
@@ -635,12 +629,19 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 "iteration": loop_state.iteration,
             }}
 
-            # ── Dual-condition exit gate (Ralph-style) ───────────────
-            # Require BOTH verification PASS AND exit signal to complete
-            exit_reason = le.should_exit_gracefully(loop_state)
-            has_exit_signal = analysis.get("exit_signal", False) or analysis.get("explicit_exit_signal", False)
+            # ── Exit on PASS (verifier is the objective gate) ──────────
+            # The verifier is the maker/checker split — if it says PASS,
+            # the work is done. No need for a coincident EXIT_SIGNAL.
+            if verdict == "PASS":
+                le.complete_task(loop_state, final_text[:200])
+                yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+                yield {"type": "final", "content": final_text}
+                break
 
-            if exit_reason or (verdict == "PASS" and has_exit_signal):
+            # Dual-condition exit gate (Ralph-style) — for non-PASS verdicts
+            exit_reason = le.should_exit_gracefully(loop_state)
+
+            if exit_reason:
                 le.complete_task(loop_state, final_text[:200])
                 yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
                 yield {"type": "final", "content": final_text}

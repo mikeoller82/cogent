@@ -1,0 +1,47 @@
+{
+  "name": "performing-lateral-movement-detection",
+  "description": "Detects lateral movement techniques including Pass-the-Hash, PsExec, WMI execution, RDP pivoting, and SMB-based spreading using SIEM correlation of Windows event logs, network flow data, and endpoint telemetry mapped to MITRE ATT&CK Lateral Movement (TA0008) techniques.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "soc-operations",
+    "tags": [
+      "soc",
+      "lateral-movement",
+      "mitre-attack",
+      "pass-the-hash",
+      "psexec",
+      "wmi",
+      "rdp",
+      "smb",
+      "detection"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Token Binding",
+      "Execution Isolation",
+      "Restore Access",
+      "Application Protocol Command Analysis",
+      "Process Termination"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "RS.MA-01",
+      "DE.AE-06"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1685.002",
+      "T1685.005",
+      "T1566",
+      "T1021"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "implementing-taxii-server-with-opentaxii",
+  "description": "Deploy and configure an OpenTAXII server to share and consume STIX-formatted cyber threat intelligence using the TAXII 2.1 protocol for automated indicator exchange between organizations.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-intelligence",
+    "tags": [
+      "taxii",
+      "stix",
+      "opentaxii",
+      "threat-sharing",
+      "cti",
+      "indicator-exchange",
+      "taxii-server",
+      "automation"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-05",
+      "DE.CM-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1591",
+      "T1592",
+      "T1593",
+      "T1589"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

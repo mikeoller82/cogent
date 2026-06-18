@@ -1,0 +1,26 @@
+{
+  "name": "video_toolkit",
+  "description": "Create professional videos autonomously using claude-code-video-toolkit \u2014 AI voiceovers, image generation, music, talking heads, and Remotion rendering.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "metadata": {
+      "openclaw": {
+        "emoji": "\ud83c\udfac",
+        "skillKey": "video-toolkit",
+        "os": [
+          "darwin",
+          "linux"
+        ],
+        "requires": {
+          "bins": [
+            "node",
+            "python3",
+            "ffmpeg",
+            "npm"
+          ]
+        }
+      }
+    }
+  },
+  "resources": []
+}

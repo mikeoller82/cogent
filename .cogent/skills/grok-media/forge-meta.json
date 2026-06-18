@@ -1,0 +1,13 @@
+{
+  "name": "grok-media",
+  "description": "xAI Grok image and video generation guide covering authentication, endpoints, prompt structure, image editing, reference-image video, and async polling.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "metadata": {
+      "author": "OpenMontage",
+      "version": "1.0.0",
+      "tags": "xai, grok, image-generation, video-generation, media"
+    }
+  },
+  "resources": []
+}

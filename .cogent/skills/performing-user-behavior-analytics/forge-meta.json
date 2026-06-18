@@ -1,0 +1,38 @@
+{
+  "name": "performing-user-behavior-analytics",
+  "description": "Performs User and Entity Behavior Analytics (UEBA) to detect anomalous user activities including impossible travel, unusual access patterns, privilege abuse, and insider threats using SIEM-based behavioral baselines and statistical analysis. Use when SOC teams need to identify compromised accounts or insider threats through deviation from established behavioral norms.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "soc-operations",
+    "tags": [
+      "soc",
+      "ueba",
+      "user-behavior",
+      "insider-threat",
+      "anomaly-detection",
+      "splunk",
+      "baseline"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "RS.MA-01",
+      "DE.AE-06"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1685.002",
+      "T1685.005",
+      "T1566",
+      "T0816"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "implementing-patch-management-for-ot-systems",
+  "description": "This skill covers implementing a structured patch management program for OT/ICS environments where traditional IT patching approaches can cause process disruption or safety hazards. It addresses vendor compatibility testing, risk-based patch prioritization, staged deployment through test environments, maintenance window coordination, rollback procedures, and compensating controls when patches cannot be applied due to operational constraints or vendor restrictions.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "ot-ics-security",
+    "tags": [
+      "ot-security",
+      "ics",
+      "scada",
+      "industrial-control",
+      "iec62443",
+      "patch-management",
+      "vulnerability-management"
+    ],
+    "version": "1.0.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.IR-01",
+      "DE.CM-01",
+      "ID.AM-05",
+      "GV.OC-02"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1190",
+      "T1059",
+      "T0816",
+      "T0836"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

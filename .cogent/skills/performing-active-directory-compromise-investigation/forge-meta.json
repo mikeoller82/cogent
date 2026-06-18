@@ -1,0 +1,50 @@
+{
+  "name": "performing-active-directory-compromise-investigation",
+  "description": "Investigate Active Directory compromise by analyzing authentication logs, replication metadata, Group Policy changes, and Kerberos ticket anomalies to identify attacker persistence and lateral movement paths.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "incident-response",
+    "tags": [
+      "active-directory",
+      "compromise-investigation",
+      "identity-forensics",
+      "kerberos",
+      "lateral-movement",
+      "dfir",
+      "ntds-dit",
+      "golden-ticket"
+    ],
+    "mitre_attack": [
+      "T1486",
+      "T1490",
+      "T1070",
+      "T1078",
+      "T1021"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "d3fend_techniques": [
+      "Application Protocol Command Analysis",
+      "Network Isolation",
+      "Network Traffic Analysis",
+      "Client-server Payload Profiling",
+      "Platform Monitoring"
+    ],
+    "nist_csf": [
+      "RS.MA-01",
+      "RS.MA-02",
+      "RS.AN-03",
+      "RC.RP-01"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

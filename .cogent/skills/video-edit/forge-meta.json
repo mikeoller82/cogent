@@ -1,0 +1,9 @@
+{
+  "name": "video-edit",
+  "description": "Edit videos locally using ffmpeg. Trim, concat, resize, speed, overlay, extract audio, compress, and convert.\nUse when: (1) Trimming or cutting video segments, (2) Concatenating multiple clips, (3) Resizing video for social platforms,\n(4) Extracting or replacing audio, (5) Compressing video, (6) Converting video formats, (7) Getting video info.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {},
+  "resources": [
+    "references/operations.md"
+  ]
+}

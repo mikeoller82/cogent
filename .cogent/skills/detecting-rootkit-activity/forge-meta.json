@@ -1,0 +1,35 @@
+{
+  "name": "detecting-rootkit-activity",
+  "description": "Detects rootkit presence on compromised systems by identifying hidden processes, hooked system calls, modified kernel structures, hidden files, and covert network connections using memory forensics, cross-view detection, and integrity checking techniques. Activates for requests involving rootkit detection, hidden process discovery, kernel integrity checking, or system call hook analysis.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "malware-analysis",
+    "tags": [
+      "malware",
+      "rootkit",
+      "detection",
+      "kernel-analysis",
+      "memory-forensics"
+    ],
+    "version": "1.0.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "DE.AE-02",
+      "RS.AN-03",
+      "ID.RA-01",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1014",
+      "T1547.006",
+      "T1564.001",
+      "T1574.006"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

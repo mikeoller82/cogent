@@ -1,0 +1,7 @@
+{
+  "name": "performance-optimization",
+  "description": "Optimizes application performance. Use when performance requirements exist, when you suspect performance regressions, or when Core Web Vitals or load times need improvement. Use when profiling reveals bottlenecks that need fixing.",
+  "imported_at": "2026-06-18T00:51:08Z",
+  "metadata": {},
+  "resources": []
+}

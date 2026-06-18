@@ -1,0 +1,38 @@
+{
+  "name": "detecting-email-account-compromise",
+  "description": "Detect compromised O365 and Google Workspace email accounts by analyzing inbox rule creation, suspicious sign-in locations, mail forwarding rules, and unusual API access patterns via Microsoft Graph and audit logs.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "incident-response",
+    "tags": [
+      "email-compromise",
+      "office365",
+      "microsoft-graph",
+      "bec",
+      "inbox-rules",
+      "sign-in-analysis",
+      "account-takeover"
+    ],
+    "mitre_attack": [
+      "T1486",
+      "T1490",
+      "T1070",
+      "T1078",
+      "T1566"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "RS.MA-01",
+      "RS.MA-02",
+      "RS.AN-03",
+      "RC.RP-01"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "analyzing-cyber-kill-chain",
+  "description": "Analyzes intrusion activity against the Lockheed Martin Cyber Kill Chain framework to identify which phases an adversary has completed, where defenses succeeded or failed, and what controls would have interrupted the attack at earlier phases. Use when conducting post-incident analysis, building prevention-focused security controls, or mapping detection gaps to kill chain phases. Activates for requests involving kill chain analysis, intrusion kill chain, attack phase mapping, or Lockheed Martin kill chain framework.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "threat-intelligence",
+    "tags": [
+      "kill-chain",
+      "Lockheed-Martin",
+      "MITRE-ATT&CK",
+      "intrusion-analysis",
+      "defense-in-depth",
+      "NIST-CSF"
+    ],
+    "version": "1.0.0",
+    "author": "team-cybersecurity",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-05",
+      "DE.CM-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1566.001",
+      "T1190",
+      "T1547.001",
+      "T1071.001",
+      "T1486"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

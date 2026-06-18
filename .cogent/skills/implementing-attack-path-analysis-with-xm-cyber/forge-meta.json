@@ -1,0 +1,40 @@
+{
+  "name": "implementing-attack-path-analysis-with-xm-cyber",
+  "description": "Deploy XM Cyber's continuous exposure management platform to map attack paths, identify choke points, and prioritize the 2% of exposures that threaten critical assets.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "vulnerability-management",
+    "tags": [
+      "xm-cyber",
+      "attack-path-analysis",
+      "exposure-management",
+      "ctem",
+      "choke-points",
+      "breach-simulation",
+      "attack-surface"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "ID.RA-01",
+      "ID.RA-02",
+      "ID.IM-02",
+      "ID.RA-06"
+    ],
+    "mitre_attack": [
+      "T1190",
+      "T1203",
+      "T1068"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

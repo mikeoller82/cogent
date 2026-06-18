@@ -1,0 +1,43 @@
+{
+  "name": "building-identity-federation-with-saml-azure-ad",
+  "description": "Establish SAML 2.0 identity federation between on-premises Active Directory and Azure AD (Microsoft Entra ID) for seamless cross-domain authentication and SSO to cloud applications.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "identity-access-management",
+    "tags": [
+      "saml",
+      "azure-ad",
+      "entra-id",
+      "federation",
+      "identity",
+      "sso",
+      "adfs",
+      "hybrid-identity"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.AA-01",
+      "PR.AA-02",
+      "PR.AA-05",
+      "PR.AA-06"
+    ],
+    "mitre_attack": [
+      "T1606.002",
+      "T1556.007",
+      "T1484.002",
+      "T1078.004",
+      "T1110.003"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

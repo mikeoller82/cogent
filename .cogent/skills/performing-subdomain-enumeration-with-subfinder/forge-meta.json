@@ -1,0 +1,42 @@
+{
+  "name": "performing-subdomain-enumeration-with-subfinder",
+  "description": "Enumerate subdomains of target domains using ProjectDiscovery's Subfinder passive reconnaissance tool to map the attack surface during security assessments.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "web-application-security",
+    "tags": [
+      "subdomain-enumeration",
+      "reconnaissance",
+      "bug-bounty",
+      "attack-surface",
+      "subfinder",
+      "passive-recon",
+      "osint"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "PR.PS-01",
+      "ID.RA-01",
+      "PR.DS-10",
+      "DE.CM-01"
+    ],
+    "mitre_attack": [
+      "T1190",
+      "T1059.007",
+      "T1505.003",
+      "T1083",
+      "T1595"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

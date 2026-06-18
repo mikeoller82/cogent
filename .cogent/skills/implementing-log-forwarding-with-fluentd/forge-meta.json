@@ -1,0 +1,38 @@
+{
+  "name": "implementing-log-forwarding-with-fluentd",
+  "description": "Configure Fluentd and Fluent Bit for centralized log aggregation, routing, filtering, and enrichment across distributed infrastructure",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "security-operations",
+    "tags": [
+      "fluentd",
+      "fluent-bit",
+      "log-aggregation",
+      "log-forwarding",
+      "siem",
+      "centralized-logging",
+      "observability"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_csf": [
+      "DE.CM-01",
+      "RS.MA-01",
+      "GV.OV-01",
+      "DE.AE-02"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1190",
+      "T1059",
+      "T1685.002",
+      "T1685.005"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "references/api-reference.md"
+  ]
+}

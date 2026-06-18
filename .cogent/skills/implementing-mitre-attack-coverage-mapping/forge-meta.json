@@ -1,0 +1,57 @@
+{
+  "name": "implementing-mitre-attack-coverage-mapping",
+  "description": "Implement MITRE ATT&CK coverage mapping to identify detection gaps, prioritize rule development, and measure SOC detection maturity against adversary techniques.",
+  "imported_at": "2026-06-18T01:21:19Z",
+  "metadata": {
+    "domain": "cybersecurity",
+    "subdomain": "soc-operations",
+    "tags": [
+      "mitre-attack",
+      "detection-coverage",
+      "gap-analysis",
+      "attack-navigator",
+      "soc",
+      "detection-engineering"
+    ],
+    "version": "1.0",
+    "author": "mahipal",
+    "license": "Apache-2.0",
+    "nist_ai_rmf": [
+      "MEASURE-2.7",
+      "MAP-5.1",
+      "MANAGE-2.4"
+    ],
+    "atlas_techniques": [
+      "AML.T0070",
+      "AML.T0066",
+      "AML.T0082"
+    ],
+    "d3fend_techniques": [
+      "Token Binding",
+      "Restore Access",
+      "Application Protocol Command Analysis",
+      "Password Authentication",
+      "Reissue Credential"
+    ],
+    "nist_csf": [
+      "DE.CM-01",
+      "DE.AE-02",
+      "RS.MA-01",
+      "DE.AE-06"
+    ],
+    "mitre_attack": [
+      "T1078",
+      "T1685.002",
+      "T1685.005",
+      "T1566"
+    ]
+  },
+  "resources": [
+    "scripts/agent.py",
+    "scripts/process.py",
+    "references/api-reference.md",
+    "references/standards.md",
+    "references/workflows.md",
+    "assets/template.md"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "pose-library-design",
+  "description": "Design reusable 2D character pose libraries, action cycles, and expression states for data-driven animation.",
+  "imported_at": "2026-06-18T00:48:58Z",
+  "metadata": {
+    "license": "MIT"
+  },
+  "resources": []
+}
