@@ -1,0 +1,52 @@
+{
+  "name": "apify-mcp-server",
+  "source": "com.apify/apify-mcp-server",
+  "registry_entry": {
+    "id": "com.apify/apify-mcp-server",
+    "name": "com.apify/apify-mcp-server",
+    "display_name": "Apify",
+    "description": "Extract data from any website with thousands of scrapers, crawlers, and automations on Apify Store \u26a1",
+    "url": "https://github.com/apify/apify-mcp-server",
+    "created_at": "0.11.2",
+    "updated_at": "2026-06-17T12:57:30Z",
+    "stargazer_count": 1352,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/24586296?v=4",
+    "primary_language": "TypeScript",
+    "primary_language_color": "#3178c6",
+    "repo_id": null,
+    "license": "MIT License",
+    "topics": [
+      "agents",
+      "ai",
+      "mcp",
+      "mcp-server"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/73f181ce8f2c480ee8f66927edaf251eadc10fa58d23f4fed9c84d994c59537b/apify/apify-mcp-server",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "apify/apify-mcp-server",
+    "is_in_organization": true,
+    "pushed_at": "2026-06-17T12:57:30Z",
+    "repository": {
+      "source": "github",
+      "url": "https://github.com/apify/apify-mcp-server"
+    },
+    "full_name": "io.github.com.apify/apify-mcp-server",
+    "api_name": "com.apify/apify-mcp-server"
+  },
+  "install_command": "git clone https://github.com/com.apify/apify-mcp-server && cd apify-mcp-server && make install",
+  "install_results": [
+    {
+      "command": "git clone https://github.com/com.apify/apify-mcp-server && cd apify-mcp-server && make install",
+      "exit_code": 129,
+      "stdout": "",
+      "stderr": "fatal: Too many arguments.\n\nusage: git clone [<options>] [--] <repo> [<dir>]\n\n    -v, --[no-]verbose    be more verbose\n    -q, --[no-]quiet      be more quiet\n    --[no-]progress       force progress reporting\n    --[no-]reject-shallow don't clone shallow repository\n    -n, --no-checkout     don't create a checkout\n    --checkout            opposite of --no-checkout\n    --[no-]bare           create a bare repository\n    --[no-]mirror         create a mirror repository (implies --bare)\n    -l, --[no-]local      to clone from a local repository\n    --no-hardlinks        don't use local hardlinks, always copy\n    --hardlinks           opposite of --no-hardlinks\n    -s, --[no-]shared     setup as shared repository\n    --[no-]recurse-submodules[=<pathspec>]\n                          initialize submodules in the clone\n    --[no-]recursive ...  alias of --recurse-submodules\n    -j, --[no-]jobs <n>   number of submodules cloned in parallel\n    --[no-]template <template-directory>\n            "
+    },
+    {
+      "command": "npm install -g @com-apify/apify-mcp-server",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@com-apify%2fapify-mcp-server - Not found\nnpm error 404\nnpm error 404  The requested resource '@com-apify/apify-mcp-server@*' could not be found or you do not have permission to access it.\nnpm error 404\nnpm error 404 Note that you can also install from a\nnpm error 404 tarball, folder, http url, or git url.\nnpm error A complete log of this run can be found in: /home/mike/.npm/_logs/2026-06-18T15_52_48_240Z-debug-0.log\n"
+    }
+  ],
+  "installed_at": "2026-06-18T15:52:48.587484+00:00"
+}

@@ -113,6 +113,12 @@ def detect_install_methods(
     seen_types: set = set()
 
     def add_method(mtype, label, install_cmd, mcp_cmd, transport="stdio", **extra):
+        # npx as install command hangs — the server starts and waits on stdio.
+        # Always use npm install -g for installation; keep npx only for the
+        # MCP client's run command.
+        if mtype.startswith("npx") and install_cmd.startswith("npx "):
+            pkg_for_npm = install_cmd.removeprefix("npx -y ").removeprefix("npx ").strip()
+            install_cmd = f"npm install -g {pkg_for_npm}"
         if mtype in seen_types:
             return
         seen_types.add(mtype)
@@ -145,6 +151,10 @@ def detect_install_methods(
         # Derive MCP command from method type
         if method_type == "npx":
             mcp_cmd = install_cmd if install_cmd else f"npx -y {pkg}"
+            # npx as install command hangs — use npm install -g instead
+            if install_cmd.startswith("npx "):
+                bare_pkg = install_cmd.removeprefix("npx -y ").removeprefix("npx ").strip()
+                install_cmd = f"npm install -g {bare_pkg}"
         elif method_type == "npm":
             mcp_cmd = pkg
         elif method_type == "pip":
@@ -190,9 +200,12 @@ def detect_install_methods(
             add_method("cargo", f"cargo install {pkg}",
                         f"cargo install {pkg}", pkg)
         elif manifest_type == "go":
-            # Go module path is already the install path
+            # Root module — works when main.go is at the module root
             add_method("go_install", f"go install {pkg}@latest",
                         f"go install {pkg}@latest", repo_pkg)
+            # Some Go repos put main.go in a subdirectory like cmd/<name>/
+            add_method("go_install_cmd", f"go install {pkg}/cmd/{repo_pkg}@latest",
+                        f"go install {pkg}/cmd/{repo_pkg}@latest", repo_pkg)
         elif manifest_type == "gem":
             add_method("gem", f"gem install {pkg}",
                         f"gem install {pkg}", pkg)
@@ -225,14 +238,27 @@ def detect_install_methods(
     elif lang in ("TypeScript", "JavaScript", "TypeScript/JavaScript"):
         scope = f"@{org_pkg}" if org else ""
         npx_pkg = f"{scope}/{repo_pkg}" if scope else repo_pkg
-        add_method("npx", f"npx {npx_pkg}",
-                    f"npx -y {npx_pkg}", f"npx -y {npx_pkg}")
+        # Bare name first — many MCP servers publish without a scope even
+        # when the repo lives under an org (e.g. ``apify-mcp-server`` runs
+        # under ``com.apify`` on GitHub but publishes as bare ``apify-mcp-server``).
+        add_method("npx_bare", f"npx {repo_pkg} (bare)",
+                    f"npx -y {repo_pkg}", f"npx -y {repo_pkg}")
+        if scope:
+            add_method("npx", f"npx {npx_pkg} (scoped)",
+                        f"npx -y {npx_pkg}", f"npx -y {npx_pkg}")
+        else:
+            add_method("npx", f"npx {npx_pkg}",
+                        f"npx -y {npx_pkg}", f"npx -y {npx_pkg}")
         add_method("npm", f"npm install -g {npx_pkg}",
                     f"npm install -g {npx_pkg}", repo_pkg)
 
     elif lang == "Go":
-        add_method("go_install", f"go install github.com/{org}/{repo}@latest",
-                    f"go install github.com/{org}/{repo}@latest", repo_pkg)
+        go_module = f"github.com/{org}/{repo}" if org else repo_pkg
+        add_method("go_install", f"go install {go_module}@latest",
+                    f"go install {go_module}@latest", repo_pkg)
+        # Some Go repos place main.go in cmd/<name>/
+        add_method("go_install_cmd", f"go install {go_module}/cmd/{repo_pkg}@latest",
+                    f"go install {go_module}/cmd/{repo_pkg}@latest", repo_pkg)
         if org == "github":
             add_method("gh_extension", f"gh extension install {org}/{repo_pkg}",
                         f"gh extension install {org}/{repo_pkg}", repo_pkg)
@@ -607,19 +633,48 @@ def _extract_readme_commands(readme_text: str) -> List[Dict[str, str]]:
 
     return unique
 
+SHELL_OPERATORS_RE = re.compile(r'[&|;<>$()`]')
+
+
+def _needs_shell(command: str) -> bool:
+    """Check if a command string needs shell interpretation.
+
+    Commands with ``&&``, ``|``, ``>``, ``<``, ``;``, ``$()```, backticks, or
+    environment-variable-style tokens require ``sh -c`` wrapping because
+    ``create_subprocess_exec`` passes every token as a literal argument.
+    """
+    return bool(SHELL_OPERATORS_RE.search(command))
+
+
 async def _run_command(
     cmd: List[str],
     timeout: int = 120,
     cwd: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Run a shell command and return exit code + output."""
+    """Run a shell command and return exit code + output.
+
+    Commands that contain shell operators (``&&``, ``|``, ``;``, etc.) are
+    automatically routed through ``sh -c`` so that the operators work as
+    expected.
+    """
+    import shlex
+
     try:
-        proc = await asyncio.create_subprocess_exec(
-            *cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            cwd=cwd,
-        )
+        raw = shlex.join(cmd) if isinstance(cmd, list) else str(cmd)
+        if _needs_shell(raw):
+            proc = await asyncio.create_subprocess_shell(
+                raw,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=cwd,
+            )
+        else:
+            proc = await asyncio.create_subprocess_exec(
+                *cmd,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                cwd=cwd,
+            )
         stdout, stderr = await asyncio.wait_for(
             proc.communicate(), timeout=timeout,
         )

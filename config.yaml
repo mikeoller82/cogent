@@ -103,7 +103,7 @@ datagen:
   output_dir: memory/research/
   max_items: 100
 headroom:
-  enabled: false
+  enabled: true
   compression_level: auto  # off | auto | aggressive
   output_shaper: false     # also trim output tokens (proxy mode)
 

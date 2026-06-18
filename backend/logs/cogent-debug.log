@@ -2517,3 +2517,56 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-18 10:18:42,285 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
 2026-06-18 10:19:40,712 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=123
 2026-06-18 10:20:57,366 INFO [48179029-41a] cogent.scheduler: Scheduler stopped
+2026-06-18 10:48:02,292 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:48:02,293 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:48:02,293 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:48:02,298 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:50:59,906 INFO cogent.mcp_registry: MCP server 'playwright-mcp' install_failed (method: npx @playwright/mcp@latest)
+2026-06-18 10:51:40,462 INFO cogent.mcp_registry: MCP server 'ghcr.io-github-github-mcp-server:latest' installed (method: docker pull ghcr.io/github/github-mcp-server:latest)
+2026-06-18 10:52:37,252 INFO cogent.mcp_registry: MCP server 'apify-mcp-server' install_failed (method: docker pull ghcr.io/com.apify/apify-mcp-server:latest)
+2026-06-18 10:52:42,859 INFO cogent.mcp_registry: MCP server 'apify-mcp-server' install_failed (method: npx @apify/actors-mcp-server`)
+2026-06-18 10:52:46,199 INFO cogent.mcp_registry: MCP server 'apify-mcp-server' install_failed (method: npm install -g @apify/mcpc`).)
+2026-06-18 10:52:48,587 INFO cogent.mcp_registry: MCP server 'apify-mcp-server' install_failed (method: git clone https://github.com/com.apify/apify-mcp-server && cd apify-mcp-server && make install)
+2026-06-18 10:56:41,890 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:56:43,112 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:56:43,112 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:56:43,112 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:56:43,117 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:56:54,543 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:56:55,358 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:56:55,359 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:56:55,359 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:56:55,364 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:57:01,478 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:57:02,613 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:57:02,614 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:57:02,614 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:57:02,619 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:57:19,151 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:57:20,388 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:57:20,388 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:57:20,389 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:57:20,393 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:57:39,332 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:57:40,155 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:57:40,156 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:57:40,156 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:57:40,160 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:58:10,524 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:58:11,442 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:58:11,442 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:58:11,443 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:58:11,446 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:58:29,783 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:58:30,688 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:58:30,688 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:58:30,688 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:58:30,693 INFO cogent.scheduler: Loaded 0 scheduled tasks
