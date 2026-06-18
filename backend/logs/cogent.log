@@ -1583,3 +1583,32 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-18 03:27:13,966 INFO cogent.scheduler: Scheduler stopped
 2026-06-18 03:27:14,927 INFO cogent.scheduler: Scheduler started
 2026-06-18 03:27:14,931 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:29:49,647 INFO cogent.mcp_registry: MCP server 'upstash-context7-mcp' installed (method: npm install -g @upstash/context7-mcp)
+2026-06-18 03:29:49,651 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:30:16,367 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:30:16,371 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:32:41,592 INFO cogent.mcp_registry: MCP server 'upstash-context7-mcp' installed (method: npm install -g @upstash/context7-mcp)
+2026-06-18 03:32:41,600 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:32:42,788 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:32:42,793 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:34:06,053 INFO cogent.mcp_registry: MCP server 'markitdown' installed (method: pip install markitdown)
+2026-06-18 03:36:19,853 INFO cogent.mcp_registry: MCP server 'playwright-mcp' install_failed (method: npx -y @playwright/mcp)
+2026-06-18 03:58:50,163 INFO cogent.mcp_registry: MCP server 'playwright-mcp' install_failed (method: git clone https://github.com/microsoft/playwright-mcp && cd playwright-mcp && make install)
+2026-06-18 03:58:53,369 INFO cogent.mcp_registry: MCP server 'playwright-mcp' install_failed (method: docker pull ghcr.io/microsoft/playwright-mcp:latest)
+2026-06-18 03:59:15,174 INFO cogent.mcp_registry: MCP server 'github-mcp-server' install_failed (method: go install github.com/github/github-mcp-server@latest)
+2026-06-18 04:02:20,788 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 04:02:22,018 INFO cogent.scheduler: Scheduler started
+2026-06-18 04:02:22,023 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 04:03:07,623 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 04:03:08,818 INFO cogent.scheduler: Scheduler started
+2026-06-18 04:03:08,823 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 04:03:17,544 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 04:03:18,565 INFO cogent.scheduler: Scheduler started
+2026-06-18 04:03:18,570 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 04:03:23,781 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 04:03:24,840 INFO cogent.scheduler: Scheduler started
+2026-06-18 04:03:24,845 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 04:03:46,990 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 04:03:48,095 INFO cogent.scheduler: Scheduler started
+2026-06-18 04:03:48,099 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 04:09:06,314 INFO cogent.scheduler: Scheduler stopped

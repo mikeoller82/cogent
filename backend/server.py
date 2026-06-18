@@ -520,6 +520,12 @@ async def remove_mcp(body: MCPRemoveBody):
     return {"ok": True, "name": body.name}
 
 
+@api.get("/mcp/installed", summary="List installed MCP servers")
+async def list_installed_mcp():
+    """Get all currently installed MCP servers."""
+    return mcp_reg.get_installed_servers()
+
+
 @api.post("/mcp/config", summary="Update MCP server config")
 async def config_mcp(body: MCPConfigBody):
     """Update runtime config for an installed MCP server."""
@@ -541,7 +547,7 @@ async def list_mcp_topics():
     return mcp_reg.list_available_topics()
 
 
-@api.get("/mcp/server/{server_id}", summary="Get server detail (README + install methods)")
+@api.get("/mcp/server/{server_id:path}", summary="Get server detail (README + install methods)")
 async def mcp_server_detail(server_id: str):
     """Fetch full detail for a server: README, install methods, metadata."""
     try:

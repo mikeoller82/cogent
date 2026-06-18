@@ -1,0 +1,51 @@
+{
+  "name": "github-mcp-server",
+  "source": "io.github.github/github-mcp-server",
+  "registry_entry": {
+    "id": "io.github.github/github-mcp-server",
+    "name": "github/github-mcp-server",
+    "display_name": "GitHub",
+    "description": "Connect AI assistants to GitHub - manage repos, issues, PRs, and workflows through natural language.",
+    "url": "https://github.com/github/github-mcp-server",
+    "created_at": "1.3.0",
+    "updated_at": "2026-06-17T20:54:00Z",
+    "stargazer_count": 30778,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/9919?v=4",
+    "primary_language": "Go",
+    "primary_language_color": "#00ADD8",
+    "repo_id": null,
+    "license": "MIT License",
+    "topics": [
+      "github",
+      "mcp",
+      "mcp-server"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/ae83c32c364164661aa2661079d584f171efc53e93ee63182d7b2db7deec424b/github/github-mcp-server",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "github/github-mcp-server",
+    "is_in_organization": true,
+    "pushed_at": "2026-06-17T20:54:00Z",
+    "repository": {
+      "source": "github",
+      "url": "https://github.com/github/github-mcp-server"
+    },
+    "full_name": "io.github.github/github-mcp-server",
+    "api_name": "io.github.github/github-mcp-server"
+  },
+  "install_command": "go install github.com/github/github-mcp-server@latest",
+  "install_results": [
+    {
+      "command": "go install github.com/github/github-mcp-server@latest",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "go: downloading github.com/github/github-mcp-server v1.3.0\ngo: github.com/github/github-mcp-server@latest: module github.com/github/github-mcp-server@latest found (v1.3.0), but does not contain package github.com/github/github-mcp-server\n"
+    },
+    {
+      "command": "gh extension install github/github-mcp-server",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "extension name must start with `gh-`\n"
+    }
+  ],
+  "installed_at": "2026-06-18T08:59:15.174339+00:00"
+}

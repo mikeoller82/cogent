@@ -81,6 +81,7 @@ class InstalledMCPServer:
 def detect_install_methods(
     registry_entry: Dict[str, Any],
     manifest_info: Optional[Dict[str, Any]] = None,
+    readme_commands: Optional[List[Dict[str, str]]] = None,
 ) -> List[Dict[str, Any]]:
     """Auto-detect how to install an MCP server from its registry metadata.
 
@@ -129,6 +130,45 @@ def detect_install_methods(
             method["mcp_config"]["url"] = mcp_cmd
         method.update(extra)
         methods.append(method)
+
+    # ── README commands (highest priority — from actual docs) ──────
+    readme_commands = readme_commands or []
+    for rc in readme_commands:
+        rtype = rc.get("type", "")
+        if rtype in seen_types:
+            continue
+        seen_types.add(rtype)
+        install_cmd = rc.get("install_command", "")
+        pkg = rc.get("package", "")
+        method_type = rc.get("method_type", "npx")
+
+        # Derive MCP command from method type
+        if method_type == "npx":
+            mcp_cmd = install_cmd if install_cmd else f"npx -y {pkg}"
+        elif method_type == "npm":
+            mcp_cmd = pkg
+        elif method_type == "pip":
+            mcp_cmd = pkg
+        elif method_type == "uvx":
+            mcp_cmd = f"uvx {pkg}"
+        elif method_type == "go_install":
+            # Go module path last segment as binary name
+            mcp_cmd = pkg.rstrip("@latest").rsplit("/", 1)[-1]
+        elif method_type in ("cargo", "gem", "brew"):
+            mcp_cmd = pkg
+        else:
+            mcp_cmd = pkg
+
+        methods.append({
+            "type": rtype,
+            "label": f"{install_cmd} (from README)",
+            "install_command": install_cmd,
+            "mcp_config": {
+                "transport": "stdio",
+                "command": mcp_cmd,
+            },
+            "from_readme": True,
+        })
 
     # ── Best: Use real package name from manifest ──────────────────
     if has_real_name:
@@ -293,9 +333,13 @@ async def fetch_server_detail(server_id: str) -> Optional[Dict[str, Any]]:
     }
 
 async def _fetch_package_manifest(repo_url: str) -> Dict[str, Any]:
-    """Fetch package.json / pyproject.toml from a GitHub repo to determine exact package name.
+    """Dynamically explore a GitHub repo to find actual package manifests.
 
-    Uses the GitHub raw content API. Returns parsed manifest data.
+    Uses the GitHub Contents API (1 call) to list the root directory,
+    discovers manifest files at root and in common monorepo sub-patterns,
+    then fetches identified manifests via raw.githubusercontent.com.
+
+    Falls back to the legacy fixed-path scanner on rate-limit or API failure.
     """
     result: Dict[str, Any] = {}
     if not repo_url:
@@ -304,11 +348,119 @@ async def _fetch_package_manifest(repo_url: str) -> Dict[str, Any]:
     import re
     match = re.match(r"https://github\.com/([^/]+/[^/]+?)(?:/|$)", repo_url)
     if not match:
-        logger.debug("_fetch_package_manifest: could not extract owner/repo from %s", repo_url)
         return result
     full_name = match.group(1)
-    logger.debug("_fetch_package_manifest: scanning %s for %s", full_name, repo_url)
-    # Extract owner/repo from URL
+
+    MANIFEST_NAMES = ["package.json", "pyproject.toml", "setup.py",
+                       "Cargo.toml", "go.mod", "Gemfile"]
+
+    # ── Step 1: List root directory via GitHub Contents API (1 call) ────
+    root_files: set = set()
+    root_dirs: set = set()
+    api_succeeded = False
+    try:
+        api_url = f"https://api.github.com/repos/{full_name}/contents"
+        headers = {"User-Agent": "Cogent/1.0", "Accept": "application/vnd.github.v3+json"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url, headers=headers,
+                                   timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                if resp.status == 200:
+                    items = await resp.json()
+                    if isinstance(items, list):
+                        for item in items:
+                            if item["type"] == "file":
+                                root_files.add(item["name"])
+                            elif item["type"] == "dir":
+                                root_dirs.add(item["name"])
+                        api_succeeded = True
+    except Exception as e:
+        logger.debug("Contents API failed for %s: %s", full_name, e)
+
+    # If API rate-limited or down, fall back to legacy fixed-path scanning
+    if not api_succeeded:
+        return await _legacy_fetch_package_manifest(repo_url)
+
+    # ── Step 2: Build targeted file-check list from actual repo structure ──
+    def _dedup_append(lst, item):
+        if item not in lst:
+            lst.append(item)
+
+    paths_to_check: list = []
+
+    # Root-level manifests first (fastest match)
+    for name in MANIFEST_NAMES:
+        if name in root_files:
+            _dedup_append(paths_to_check, (name, name))
+
+    # Detect monorepo patterns
+    has_workspace = "packages" in root_dirs or "lerna.json" in root_files
+    has_mcp_subdir = "mcp" in root_dirs
+    has_server_subdir = "server" in root_dirs
+
+    if has_workspace:
+        for subdir in ["packages/mcp", "packages/server", "mcp", "server"]:
+            for name in MANIFEST_NAMES:
+                _dedup_append(paths_to_check, (f"{subdir}/{name}", name))
+
+    if has_mcp_subdir:
+        for name in MANIFEST_NAMES:
+            _dedup_append(paths_to_check, (f"mcp/{name}", name))
+
+    if has_server_subdir:
+        for name in MANIFEST_NAMES:
+            _dedup_append(paths_to_check, (f"server/{name}", name))
+
+    # No root manifests and no monorepo -> try common subpaths as safety net
+    if not any(name in root_files for name in MANIFEST_NAMES) and not has_workspace:
+        for subdir in ["mcp", "server", "src"]:
+            for name in MANIFEST_NAMES:
+                _dedup_append(paths_to_check, (f"{subdir}/{name}", name))
+
+    # ── Step 3: Fetch manifests via raw content (0 rate limit) ───────────
+    async with aiohttp.ClientSession() as session:
+        for filepath, pkg_type in paths_to_check:
+            for branch in ("main", "master"):
+                raw_url = f"https://raw.githubusercontent.com/{full_name}/{branch}/{filepath}"
+                try:
+                    async with session.get(
+                        raw_url,
+                        headers={"User-Agent": "Cogent/1.0"},
+                        timeout=aiohttp.ClientTimeout(total=5),
+                    ) as resp:
+                        if resp.status != 200:
+                            continue
+                        content = await resp.text()
+                        result["manifest_type"] = pkg_type
+                        result["manifest_file"] = filepath
+
+                        parsed = _parse_manifest_content(filepath, content)
+                        result.update(parsed)
+
+                        if result.get("package_name"):
+                            return result
+                except Exception:
+                    continue
+                break  # tried a branch, move to next file
+
+    return result
+
+
+async def _legacy_fetch_package_manifest(repo_url: str) -> Dict[str, Any]:
+    """Fallback: fetch package.json / pyproject.toml by checking fixed paths.
+
+    Used when the GitHub Contents API is rate-limited or unavailable.
+    """
+    result: Dict[str, Any] = {}
+    if not repo_url:
+        return result
+
+    import re
+    match = re.match(r"https://github\.com/([^/]+/[^/]+?)(?:/|$)", repo_url)
+    if not match:
+        logger.debug("_legacy_fetch_package_manifest: could not extract owner/repo from %s", repo_url)
+        return result
+    full_name = match.group(1)
+
     files_to_check = [
         # Monorepo sub-paths (MCP server is often in a subpackage) - check first
         ("packages/mcp/package.json", "npm"),
@@ -353,7 +505,7 @@ async def _fetch_package_manifest(repo_url: str) -> Dict[str, Any]:
                         if result.get("package_name"):
                             break
                 except Exception as e:
-                    logger.debug("manifest fetch failed for %s: %s", raw_url, e)
+                    logger.debug("legacy manifest fetch failed for %s: %s", raw_url, e)
                     continue
             if result.get("package_name"):
                 break
@@ -403,6 +555,54 @@ def _parse_manifest_content(filename: str, content: str) -> Dict[str, Any]:
             result["package_name"] = module_match.group(1)
 
     return result
+
+
+def _extract_readme_commands(readme_text: str) -> List[Dict[str, str]]:
+    """Extract install commands from a README text.
+
+    Parses the README for known install command patterns (pip, npm, npx,
+    go install, cargo install, etc.) and returns them as structured entries
+    that get converted to install methods.
+    """
+    if not readme_text:
+        return []
+
+    commands: List[Dict[str, str]] = []
+
+    # Patterns to search for (ordered by reliability for MCP context)
+    patterns = [
+        (r'(?<!//)npx\s+(?:-y\s+)?(\S+)', "npx"),
+        (r'(?<!//)npm\s+(?:install|add)\s+(?:-g\s+)?(\S+)', "npm"),
+        (r'(?<!//)pip(?:3)?\s+install\s+(\S+)', "pip"),
+        (r'(?<!//)uvx\s+(\S+)', "uvx"),
+        (r'(?<!//)go\s+install\s+(\S+@?(?:latest)?)', "go_install"),
+        (r'(?<!//)cargo\s+install\s+(\S+)', "cargo"),
+        (r'(?<!//)gem\s+install\s+(\S+)', "gem"),
+        (r'(?<!//)brew\s+install\s+(\S+)', "brew"),
+    ]
+
+    import re
+    for pattern, method_type in patterns:
+        for match in re.finditer(pattern, readme_text, re.IGNORECASE | re.MULTILINE):
+            full_cmd = match.group(0).strip().lstrip("$ ")
+            pkg = match.group(1).strip().rstrip("'\"`")
+            commands.append({
+                "type": f"readme_{method_type}",
+                "install_command": full_cmd,
+                "package": pkg,
+                "method_type": method_type,
+            })
+
+    # Deduplicate by install_command (keep first occurrence)
+    seen: set = set()
+    unique: List[Dict[str, str]] = []
+    for cmd in commands:
+        key = cmd["install_command"]
+        if key not in seen:
+            seen.add(key)
+            unique.append(cmd)
+
+    return unique
 
 async def _run_command(
     cmd: List[str],

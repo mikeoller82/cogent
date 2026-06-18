@@ -1,0 +1,50 @@
+{
+  "name": "markitdown",
+  "source": "microsoft/markitdown",
+  "registry_entry": {
+    "id": "microsoft/markitdown",
+    "name": "microsoft/markitdown",
+    "display_name": "Markitdown",
+    "description": "Convert various file formats (PDF, Word, Excel, images, audio) to Markdown.",
+    "url": "https://github.com/microsoft/markitdown",
+    "created_at": "1.0.0",
+    "updated_at": "2026-05-26T22:41:34Z",
+    "stargazer_count": 155361,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/6154722?v=4",
+    "primary_language": "Python",
+    "primary_language_color": "#3572A5",
+    "repo_id": "888092115",
+    "license": "MIT License",
+    "topics": [
+      "langchain",
+      "openai",
+      "autogen-extension",
+      "autogen",
+      "markdown",
+      "microsoft-office",
+      "pdf"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/88b2997765329715303ba4f623bd38c7792eacacff545df3d4c240e3ce8c08a9/microsoft/markitdown",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "microsoft/markitdown",
+    "is_in_organization": true,
+    "pushed_at": "2026-05-26T22:41:34Z",
+    "repository": {
+      "id": "888092115",
+      "source": "github",
+      "url": "https://github.com/microsoft/markitdown"
+    },
+    "full_name": "io.github.microsoft/markitdown",
+    "api_name": "microsoft/markitdown"
+  },
+  "install_command": "pip install markitdown",
+  "install_results": [
+    {
+      "command": "pip install markitdown",
+      "exit_code": 0,
+      "stdout": "Requirement already satisfied: markitdown in ./.venv/lib/python3.12/site-packages (0.1.6)\nRequirement already satisfied: beautifulsoup4 in ./.venv/lib/python3.12/site-packages (from markitdown) (4.15.0)\nRequirement already satisfied: charset-normalizer in ./.venv/lib/python3.12/site-packages (from markitdown) (3.4.7)\nRequirement already satisfied: defusedxml in ./.venv/lib/python3.12/site-packages (from markitdown) (0.7.1)\nRequirement already satisfied: magika~=0.6.1 in ./.venv/lib/python3.12/site-packages (from markitdown) (0.6.3)\nRequirement already satisfied: markdownify in ./.venv/lib/python3.12/site-packages (from markitdown) (1.2.2)\nRequirement already satisfied: requests in ./.venv/lib/python3.12/site-packages (from markitdown) (2.34.2)\nRequirement already satisfied: click>=8.1.7 in ./.venv/lib/python3.12/site-packages (from magika~=0.6.1->markitdown) (8.4.1)\nRequirement already satisfied: onnxruntime>=1.17.0 in ./.venv/lib/python3.12/site-packages (from magika~=0.6.1->markitdown) (1.27.0)\nRequirement already satisfied: numpy>=1.26 in ./.venv/lib/python3.12/site-packages (from magika~=0.6.1->markitdown) (2.4.6)\nRequirement already satisfied: python-dotenv>=1.0.1 in ./.venv/lib/python3.12/site-packages (from magika~=0.6.1->markitdown) (1.2.2)\nRequirement already satisfied: soupsieve>=1.6.1 in ./.venv/lib/python3.12/site-packages (from beautifulsoup4->markitdown) (2.8.4)\nRequirement already satisfied: typing-extensions>=4.0.0 in ./.venv/lib/python3.12/site-packages (from beautifulsoup4->markitdown) (4.15.0)\nRequirement already satisfied: six<2,>=1.15 in ./.venv/lib/python3.12/site-packages (from markdownify->markitdown) (1.17.0)\nRequirement already satisfied: idna<4,>=2.5 in ./.venv/lib/python3.12/site-packages (from requests->markitdown) (3.18)\nRequirement already satisfied: urllib3<3,>=1.26 in ./.venv/lib/python3.12/site-packages (from requests->markitdown) (2.7.0)\nRequirement already satisfied: certifi>=2023.5.7 in ./.venv/lib/python3.12/site-packages (from ",
+      "stderr": "\n[notice] A new release of pip is available: 24.3.1 -> 26.1.2\n[notice] To update, run: pip install --upgrade pip\n"
+    }
+  ],
+  "installed_at": "2026-06-18T08:34:06.053138+00:00"
+}

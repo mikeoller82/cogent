@@ -1,0 +1,51 @@
+{
+  "name": "playwright-mcp",
+  "source": "microsoft/playwright-mcp",
+  "registry_entry": {
+    "id": "microsoft/playwright-mcp",
+    "name": "microsoft/playwright-mcp",
+    "display_name": "Playwright",
+    "description": "Automate web browsers using accessibility trees for testing and data extraction.",
+    "url": "https://github.com/microsoft/playwright-mcp",
+    "created_at": "0.0.1-seed",
+    "updated_at": "2026-06-10T00:14:20Z",
+    "stargazer_count": 34067,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/6154722?v=4",
+    "primary_language": "TypeScript",
+    "primary_language_color": "#3178c6",
+    "repo_id": "952688112",
+    "license": "Apache License 2.0",
+    "topics": [
+      "mcp",
+      "playwright"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/84db9bfb4ca129e53292f4c3fe4df23cd97212cdec909e8d1dbc8299327c5645/microsoft/playwright-mcp",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "microsoft/playwright-mcp",
+    "is_in_organization": true,
+    "pushed_at": "2026-06-10T00:14:20Z",
+    "repository": {
+      "id": "952688112",
+      "source": "github",
+      "url": "https://github.com/microsoft/playwright-mcp"
+    },
+    "full_name": "io.github.microsoft/playwright-mcp",
+    "api_name": "microsoft/playwright-mcp"
+  },
+  "install_command": "docker pull ghcr.io/microsoft/playwright-mcp:latest",
+  "install_results": [
+    {
+      "command": "docker pull ghcr.io/microsoft/playwright-mcp:latest",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Error response from daemon: error from registry: denied\ndenied\n"
+    },
+    {
+      "command": "npm install -g @microsoft/playwright-mcp",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@microsoft%2fplaywright-mcp - Not found\nnpm error 404\nnpm error 404  The requested resource '@microsoft/playwright-mcp@*' could not be found or you do not have permission to access it.\nnpm error 404\nnpm error 404 Note that you can also install from a\nnpm error 404 tarball, folder, http url, or git url.\nnpm error A complete log of this run can be found in: /home/mike/.npm/_logs/2026-06-18T08_58_53_032Z-debug-0.log\n"
+    }
+  ],
+  "installed_at": "2026-06-18T08:58:53.369551+00:00"
+}

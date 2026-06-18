@@ -1,0 +1,8 @@
+name: github-mcp-server
+version: 1.0.0
+description: Connect AI assistants to GitHub - manage repos, issues, PRs, and workflows through natural language.
+transport: stdio
+command: github-mcp-server
+tools:
+  - name: github-mcp-server_help
+    description: Tools provided by github-mcp-server

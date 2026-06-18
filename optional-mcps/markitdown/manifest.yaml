@@ -1,0 +1,8 @@
+name: markitdown
+version: 1.0.0
+description: Convert various file formats (PDF, Word, Excel, images, audio) to Markdown.
+transport: stdio
+command: markitdown
+tools:
+  - name: markitdown_help
+    description: Tools provided by markitdown

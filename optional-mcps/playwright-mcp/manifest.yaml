@@ -1,0 +1,13 @@
+name: playwright-mcp
+version: 1.0.0
+description: Automate web browsers using accessibility trees for testing and data extraction.
+transport: stdio
+command: docker
+args:
+  - run
+  - --rm
+  - -i
+  - ghcr.io/microsoft/playwright-mcp:latest
+tools:
+  - name: playwright-mcp_help
+    description: Tools provided by playwright-mcp

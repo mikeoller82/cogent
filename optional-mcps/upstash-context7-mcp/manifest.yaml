@@ -1,0 +1,8 @@
+name: upstash-context7-mcp
+version: 1.0.0
+description: Up-to-date code docs for any prompt
+transport: stdio
+command: @upstash/context7-mcp
+tools:
+  - name: upstash-context7-mcp_help
+    description: Tools provided by upstash-context7-mcp
