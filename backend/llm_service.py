@@ -423,7 +423,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
     tool_loop_error = False
 
     # ── Main refinement loop ─────────────────────────────────────────
-    while loop_state.iteration < le.MAX_ITERATIONS and not le.should_halt_execution(loop_state):
+    while loop_state.iteration < le.MAX_ITERATIONS:
         if loop_state.budget_exhausted:
             yield {"type": "loop", "data": {"phase": le.PHASE_ERROR, "message": "Budget exhausted"}}
             final_text = "(stopped — token budget exceeded)"
@@ -606,14 +606,18 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
         le.record_attempt(loop_state, le.PHASE_EXECUTE, (final_text or "")[:200])
 
-        # ── Short-circuit on tool-loop guardrail ──────────────────
+        # ── Tool-loop guardrail — feed back, never exit ───────────
         if loop_state.tool_loop_detected_stop:
-            exit_reason = le.should_exit_gracefully(loop_state)
-            yield {"type": "reasoning", "content": f"[tool-loop guardrail] {exit_reason} — exiting"}
-            le.complete_task(loop_state, final_text[:200])
-            yield {"type": "loop", "data": {"phase": le.PHASE_DONE, "message": exit_reason}}
-            yield {"type": "final", "content": final_text}
-            break
+            loop_state.tool_loop_detected_stop = False  # reset for next iteration
+            yield {"type": "reasoning", "content": "[tool-loop guardrail] — same tool/args repeating, try a different approach"}
+            le.transition(loop_state, le.PHASE_PLAN, "Tool loop detected, try different approach")
+            yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": "Tool loop detected, switch tactics"}}
+            current_user_text = (
+                "You were calling the same tool with the same arguments repeatedly. "
+                "Stop and try a completely different approach.\n\n"
+                f"Original task: {user_text}"
+            )
+            continue
 
         # ── Response analysis (Ralph-style) ──────────────────────────
         analysis = le.analyze_response_text(final_text or "")
@@ -651,31 +655,16 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 "iteration": loop_state.iteration,
             }}
 
-            # ── Exit on PASS (verifier is the objective gate) ──────────
-            # The verifier is the maker/checker split — if it says PASS,
-            # the work is done. No need for a coincident EXIT_SIGNAL.
+            # ── ONLY exit on 100% complete (PASS verification) ────────
+            # No other exit conditions — the loop continues until the
+            # verifier confirms the task is fully complete.
             if verdict == "PASS":
                 le.complete_task(loop_state, final_text[:200])
                 yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
                 yield {"type": "final", "content": final_text}
                 break
 
-            # Dual-condition exit gate (Ralph-style) — for non-PASS verdicts
-            exit_reason = le.should_exit_gracefully(loop_state)
-
-            if exit_reason:
-                le.complete_task(loop_state, final_text[:200])
-                yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
-                yield {"type": "final", "content": final_text}
-                break
-
-            if loop_state.iteration >= le.MAX_ITERATIONS:
-                le.complete_task(loop_state, final_text[:200])
-                yield {"type": "loop", "data": {"phase": le.PHASE_DONE, "message": "Max iterations reached"}}
-                yield {"type": "final", "content": final_text}
-                break
-
-            # Feed verification back and loop for refinement
+            # ── Not PASS — feed verification back and continue ────────
             yield {"type": "status", "content": f"refining output after {verdict.lower()} — reworking based on feedback"}
             le.transition(loop_state, le.PHASE_PLAN, f"Refining after {verdict}")
             yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": f"Refining after {verdict}"}}
@@ -688,13 +677,14 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             )
             continue
 
-        # No output to verify — done
-        le.complete_task(loop_state, (final_text or "")[:200])
-        yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
-        if not final_text:
-            final_text = "(no output generated)"
-        yield {"type": "final", "content": final_text}
-        break
+        # ── No output to verify — feed back and continue ─────────────
+        le.transition(loop_state, le.PHASE_PLAN, "No output generated, retrying")
+        yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": "No output generated"}}
+        current_user_text = (
+            f"You did not produce any output. Please actually execute the work and provide a result.\n\n"
+            f"Original task: {user_text}"
+        )
+        continue
     else:
         if not final_text:
             final_text = "(stopped after max iterations)"

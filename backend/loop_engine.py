@@ -388,18 +388,11 @@ def record_loop_result(
 
 
 def should_halt_execution(state: LoopState) -> bool:
-    """Check if circuit breaker says halt."""
-    init_circuit_breaker(state)
+    """Check if execution should halt — stubbed: never halts on guardrails.
 
-    if state.cb_state == CB_OPEN:
-        return True
-
-    # Safety: if we've seen too many EXIT_SIGNAL=true without resolving
-    if len(state.exit_signals) >= SAFETY_CIRCUIT_BREAKER_LIMIT:
-        logger.warning("Safety circuit breaker: %d consecutive EXIT_SIGNAL=true responses",
-                       len(state.exit_signals))
-        return True
-
+    The circuit breaker and safety threshold are advisory diagnostics only.
+    Only PASS from the verifier completes the task.
+    """
     return False
 
 
@@ -660,31 +653,13 @@ def update_exit_signals(state: LoopState, analysis: dict) -> None:
     save_state(state)  # debounced
 
 def should_exit_gracefully(state: LoopState) -> Optional[str]:
-    """Check exit conditions — Ralph-style + CowAgent-style guardrails.
+    """Check exit conditions — stubbed: the loop NEVER exits on guardrails alone.
 
-    Returns exit reason string or None if should continue.
-    Ordered by severity: safety circuit breaker first, then normal conditions.
+    The only exit condition is PASS from the verifier (maker/checker split).
+    All other conditions (circuit breaker, test saturation, keyword signals,
+    RALPH_STATUS blocks) are advisory only — they feed back into the loop
+    but do NOT trigger exit.
     """
-    # 0. Tool-loop guardrail triggered (CowAgent-style)
-    if state.tool_loop_detected_stop:
-        return "tool_loop_guardrail"
-
-    # 1. Safety circuit breaker — explicit EXIT_SIGNAL only (not heuristic)
-    if len(state.explicit_exit_signals) >= SAFETY_CIRCUIT_BREAKER_LIMIT:
-        return "safety_circuit_breaker"
-
-    # 2. Too many consecutive test-only loops
-    if len(state.test_only_loops) >= MAX_CONSECUTIVE_TEST_LOOPS:
-        return "test_saturation"
-
-    # 3. Multiple done signals (keyword-based — uses higher threshold)
-    if len(state.done_signals) >= MAX_CONSECUTIVE_DONE_SIGNALS:
-        return "completion_signals"
-
-    # 4. Dual-condition exit: explicit EXIT_SIGNAL in RALPH_STATUS block
-    if state.explicit_exit_signals and state.iteration in state.explicit_exit_signals:
-        return "project_complete"
-
     return None
 
 

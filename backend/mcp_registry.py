@@ -320,8 +320,11 @@ async def fetch_server_detail(server_id: str) -> Optional[Dict[str, Any]]:
     except Exception as e:
         logger.debug("Failed to fetch manifest for %s: %s", server_id, e)
 
-    # Detect install methods (with real package names from manifest)
-    install_methods = detect_install_methods(registry_entry, manifest_info)
+    # Extract install commands from README (highest priority signal)
+    readme_commands = _extract_readme_commands(readme_text) if readme_text else []
+
+    # Detect install methods (README commands → manifest → heuristics)
+    install_methods = detect_install_methods(registry_entry, manifest_info, readme_commands)
 
     return {
         "server": registry_entry,

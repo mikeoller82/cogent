@@ -57,6 +57,7 @@ except ImportError:
     HAS_OLLAMA = False
 
 from cogent_config import get_config
+import cogent_headroom
 
 logger = logging.getLogger("cogent.providers")
 
@@ -142,6 +143,9 @@ class VirtualProvider:
         exhausted.
         """
         last_error: Optional[str] = None
+
+        # ── Headroom compression (once, all providers benefit) ─────
+        messages = cogent_headroom.compress_messages(messages)
 
         for attempt in range(len(self._providers)):
             idx = (self._current_idx + attempt) % len(self._providers)

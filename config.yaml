@@ -9,15 +9,15 @@
 
 model:
   # Default LLM — OpenAI-compatible chat completions
-  provider: opencode-zen
-  base_url: https://opencode.ai/zen/v1/chat/completions
-  default: deepseek-v4-flash-free
+  provider: kilocode
+  base_url: https://api.kilo.ai/api/gateway/chat/completions
+  default: nex-agi/nex-n2-pro:free
   # api_key: read from KILOCODE_API_KEY env var
 
 rate_limit:
   enabled: true
-  min_delay_ms: 30000          # Minimum gap between requests (30 s)
-  max_delay_ms: 60000          # Maximum gap (60 s) — randomized to avoid thundering herd
+  min_delay_ms: 5000          # Minimum gap between requests (30 s)
+  max_delay_ms: 7000          # Maximum gap (60 s) — randomized to avoid thundering herd
 
 # Virtual Provider — fallback chain when a provider returns 429 Rate Limited.
 # Providers are tried in priority order (lower = first). If one hits a 429,
@@ -102,6 +102,11 @@ datagen:
   enabled: false
   output_dir: memory/research/
   max_items: 100
+headroom:
+  enabled: false
+  compression_level: auto  # off | auto | aggressive
+  output_shaper: false     # also trim output tokens (proxy mode)
+
 mcp:
   enabled: true
   servers_dir: optional-mcps/

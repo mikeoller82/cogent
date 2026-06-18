@@ -104,10 +104,10 @@ _DEFAULTS: Dict[str, Any] = {
         "enabled": True,
         "max_snapshots": 10,
     },
-    "auxiliary": {
-        "vision": {"provider": "auto"},
-        "web_extract": {"provider": "auto"},
-        "compression": {"provider": "auto"},
+    "headroom": {
+        "enabled": False,
+        "compression_level": "auto",
+        "output_shaper": False,
     },
 }
 
@@ -226,6 +226,19 @@ class CogentConfig:
     @property
     def search_backend(self) -> str:
         return self._data.get("web", {}).get("search_backend", "firecrawl")
+
+    # Headroom
+    @property
+    def headroom_enabled(self) -> bool:
+        return bool(self._data.get("headroom", {}).get("enabled", False))
+
+    @property
+    def headroom_compression_level(self) -> str:
+        return str(self._data.get("headroom", {}).get("compression_level", "auto"))
+
+    @property
+    def headroom_output_shaper(self) -> bool:
+        return bool(self._data.get("headroom", {}).get("output_shaper", False))
 
     # Logging
     @property
