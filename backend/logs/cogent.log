@@ -1338,3 +1338,202 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-17 22:11:55,234 INFO cogent.skill_forge: Clone complete: /tmp/cogent-skf-xbwkexg5/repo
 2026-06-17 22:11:55,238 INFO cogent.skill_forge: Skill 'improve' installed -> /home/mike/cogent/.cogent/skills/improve (created)
 2026-06-17 22:13:23,539 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 01:55:35,182 INFO cogent.scheduler: Scheduler started
+2026-06-18 01:55:35,188 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 01:58:03,342 INFO cogent.skill_forge: Cloning https://github.com/Agents365-ai/drawio-skill.git -> /tmp/cogent-skf-b8lono4v/repo (depth=1)
+2026-06-18 01:58:04,247 INFO cogent.skill_forge: Clone complete: /tmp/cogent-skf-b8lono4v/repo
+2026-06-18 01:58:04,252 INFO cogent.skill_forge: Skill 'drawio-skill' installed -> /home/mike/cogent/.cogent/skills/drawio-skill (created)
+2026-06-18 02:02:37,010 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=83
+2026-06-18 02:02:40,049 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=247
+2026-06-18 02:02:45,700 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=239
+2026-06-18 02:03:31,105 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=192
+2026-06-18 02:03:37,495 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=145
+2026-06-18 02:03:43,637 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=200
+2026-06-18 02:03:50,232 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=358
+2026-06-18 02:03:54,961 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=141
+2026-06-18 02:04:00,813 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=312
+2026-06-18 02:04:07,433 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=224
+2026-06-18 02:04:14,353 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=585
+2026-06-18 02:04:19,122 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=463
+2026-06-18 02:04:25,714 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=239
+2026-06-18 02:04:43,849 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=3927
+2026-06-18 02:04:48,453 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=193
+2026-06-18 02:04:59,015 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=1523
+2026-06-18 02:05:02,193 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=209
+2026-06-18 02:05:02,194 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 31 messages to 6 (budget 64000 tokens)
+2026-06-18 02:05:08,729 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=199
+2026-06-18 02:05:13,115 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=193
+2026-06-18 02:05:18,255 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=127
+2026-06-18 02:05:27,610 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=295
+2026-06-18 02:05:30,491 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=294
+2026-06-18 02:05:38,514 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=444
+2026-06-18 02:05:43,737 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=522
+2026-06-18 02:05:49,161 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=678
+2026-06-18 02:06:03,297 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=192
+2026-06-18 02:06:59,961 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=13222
+2026-06-18 02:07:05,911 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=305
+2026-06-18 02:07:09,953 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=83
+2026-06-18 02:07:19,032 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=389
+2026-06-18 02:07:23,768 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=206
+2026-06-18 02:07:23,769 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 02:07:28,087 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=274
+2026-06-18 02:07:34,472 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=235
+2026-06-18 02:07:39,402 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=295
+2026-06-18 02:07:44,799 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=240
+2026-06-18 02:07:50,679 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=210
+2026-06-18 02:08:35,245 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=174
+2026-06-18 02:08:42,375 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=201
+2026-06-18 02:08:47,515 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=151
+2026-06-18 02:08:55,674 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=232
+2026-06-18 02:09:02,765 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=139
+2026-06-18 02:09:06,730 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=251
+2026-06-18 02:09:12,654 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=263
+2026-06-18 02:09:17,114 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=192
+2026-06-18 02:09:23,484 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=161
+2026-06-18 02:09:23,485 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 32 messages to 4 (budget 64000 tokens)
+2026-06-18 02:09:31,862 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=222
+2026-06-18 02:09:35,200 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=221
+2026-06-18 02:09:43,681 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=393
+2026-06-18 02:09:48,496 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=179
+2026-06-18 02:09:54,726 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=213
+2026-06-18 02:10:01,026 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=247
+2026-06-18 02:10:07,322 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=230
+2026-06-18 02:10:13,372 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=230
+2026-06-18 02:10:21,317 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=192
+2026-06-18 02:10:26,122 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=199
+2026-06-18 02:10:35,597 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=285
+2026-06-18 02:10:38,706 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=127
+2026-06-18 02:10:44,337 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=253
+2026-06-18 02:10:53,763 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=229
+2026-06-18 02:11:44,502 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=12391
+2026-06-18 02:11:44,502 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 32 messages to 4 (budget 64000 tokens)
+2026-06-18 02:11:55,064 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=236
+2026-06-18 02:15:05,901 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=232
+2026-06-18 02:15:08,524 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=83
+2026-06-18 02:15:25,566 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=282
+2026-06-18 02:15:34,266 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=245
+2026-06-18 02:15:39,886 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=339
+2026-06-18 02:15:47,776 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=219
+2026-06-18 02:15:53,094 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=249
+2026-06-18 02:16:00,795 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=217
+2026-06-18 02:16:05,324 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=159
+2026-06-18 02:16:11,127 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=199
+2026-06-18 02:16:23,985 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=205
+2026-06-18 02:16:36,546 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=336
+2026-06-18 02:16:42,171 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=193
+2026-06-18 02:16:46,571 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=126
+2026-06-18 02:16:52,661 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=352
+2026-06-18 02:16:52,662 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 31 messages to 6 (budget 64000 tokens)
+2026-06-18 02:17:01,077 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=322
+2026-06-18 02:17:04,827 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=307
+2026-06-18 02:17:12,173 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=269
+2026-06-18 02:17:32,821 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=217
+2026-06-18 02:17:41,297 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=291
+2026-06-18 02:17:49,432 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=238
+2026-06-18 02:17:57,097 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=237
+2026-06-18 02:18:02,317 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=138
+2026-06-18 02:18:08,597 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=133
+2026-06-18 02:18:15,710 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=129
+2026-06-18 02:18:25,062 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=308
+2026-06-18 02:18:57,322 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=9637
+2026-06-18 02:19:02,132 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=228
+2026-06-18 02:19:14,768 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=160
+2026-06-18 02:19:14,768 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 02:19:20,950 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=122
+2026-06-18 02:19:24,378 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=226
+2026-06-18 02:19:34,064 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=522
+2026-06-18 02:19:40,668 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=195
+2026-06-18 02:19:45,543 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=207
+2026-06-18 02:19:57,188 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=196
+2026-06-18 02:20:12,594 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=562
+2026-06-18 02:20:36,075 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=9737
+2026-06-18 02:20:39,583 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=238
+2026-06-18 02:20:44,946 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=253
+2026-06-18 02:20:50,075 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=169
+2026-06-18 02:20:57,270 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=553
+2026-06-18 02:21:02,023 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=169
+2026-06-18 02:21:02,023 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 02:21:35,912 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=185
+2026-06-18 02:22:04,898 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=438
+2026-06-18 02:22:08,809 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=291
+2026-06-18 02:22:17,538 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=196
+2026-06-18 02:22:21,408 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=269
+2026-06-18 02:22:27,221 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=170
+2026-06-18 02:22:35,475 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=247
+2026-06-18 02:22:41,368 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=409
+2026-06-18 02:22:45,813 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=245
+2026-06-18 02:22:53,824 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=795
+2026-06-18 02:22:57,353 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=274
+2026-06-18 02:23:05,004 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=1029
+2026-06-18 02:23:11,561 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=167
+2026-06-18 02:23:11,562 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 02:23:17,981 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=165
+2026-06-18 02:23:22,914 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=269
+2026-06-18 02:23:27,450 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=112
+2026-06-18 02:23:34,088 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=107
+2026-06-18 02:23:43,214 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=253
+2026-06-18 02:24:04,204 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=361
+2026-06-18 02:24:29,754 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=9537
+2026-06-18 02:24:35,772 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=403
+2026-06-18 02:24:57,044 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=10315
+2026-06-18 02:25:02,019 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=641
+2026-06-18 02:25:07,063 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=205
+2026-06-18 02:25:41,115 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=320
+2026-06-18 02:25:49,159 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=304
+2026-06-18 02:26:25,387 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=243
+2026-06-18 02:26:25,388 INFO [f06e57a5-770] cogent.agent.context_compressor: Compressed 32 messages to 4 (budget 64000 tokens)
+2026-06-18 02:26:37,095 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=1326
+2026-06-18 02:26:49,070 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=157
+2026-06-18 02:26:56,009 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=562
+2026-06-18 02:27:00,230 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=143
+2026-06-18 02:27:06,069 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=433
+2026-06-18 02:27:14,284 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=252
+2026-06-18 02:27:25,439 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=1720
+2026-06-18 02:27:47,230 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=266
+2026-06-18 02:30:19,005 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=445
+2026-06-18 02:30:25,060 INFO [f06e57a5-770] cogent.providers: Provider opencode-zen returned type=str len=165
+2026-06-18 02:56:08,308 INFO [f06e57a5-770] cogent.scheduler: Scheduler stopped
+2026-06-18 02:56:09,401 INFO cogent.scheduler: Scheduler started
+2026-06-18 02:56:09,405 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 02:56:21,038 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 02:56:22,097 INFO cogent.scheduler: Scheduler started
+2026-06-18 02:56:22,102 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 02:58:37,207 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 02:58:38,348 INFO cogent.scheduler: Scheduler started
+2026-06-18 02:58:38,352 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 02:58:40,357 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 02:58:41,569 INFO cogent.scheduler: Scheduler started
+2026-06-18 02:58:41,573 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:00:05,264 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:00:06,327 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:00:06,332 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:11:43,704 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:11:44,791 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:11:44,796 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:11:48,606 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:11:49,483 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:11:49,486 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:12:10,538 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:12:11,716 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:12:11,721 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:12:14,628 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:12:15,469 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:12:15,473 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:12:20,084 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:12:21,193 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:12:21,198 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:12:30,619 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:12:31,424 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:12:31,429 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:12:34,738 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:12:35,620 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:12:35,624 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:12:42,439 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:12:43,378 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:12:43,382 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:13:15,555 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:13:26,787 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:13:26,791 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 03:13:35,810 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 03:13:37,007 INFO cogent.scheduler: Scheduler started
+2026-06-18 03:13:37,012 INFO cogent.scheduler: Loaded 0 scheduled tasks

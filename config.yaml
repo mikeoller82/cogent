@@ -102,8 +102,8 @@ datagen:
   enabled: false
   output_dir: memory/research/
   max_items: 100
-
-
 mcp:
-  enabled: false
+  enabled: true
   servers_dir: optional-mcps/
+  registry_url: https://github.com/mcp
+  auto_sync_interval_hours: 24

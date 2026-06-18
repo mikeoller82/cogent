@@ -1,0 +1,18 @@
+{
+  "name": "aitoolinsider-reel",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "remotion studio",
+    "build": "remotion render src/Root.tsx out/video.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.479",
+    "@remotion/media-utils": "^4.0.479",
+    "@remotion/player": "^4.0.479",
+    "@remotion/renderer": "^4.0.479",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.242"
+  }
+}

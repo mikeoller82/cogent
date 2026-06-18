@@ -1,0 +1,147 @@
+{
+  "files": [
+    {
+      "file": "fa-brands-400.woff2",
+      "family": "Font Awesome 7 Brands",
+      "rawFamily": "Font Awesome 7 Brands",
+      "subfamily": "Regular",
+      "postscript": "FontAwesome7Brands-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true
+    },
+    {
+      "file": "fa-duotone-900.woff2",
+      "family": "Font Awesome 7 Duotone Solid",
+      "rawFamily": "Font Awesome 7 Duotone Solid",
+      "subfamily": "Regular",
+      "postscript": "FontAwesome7Duotone-Solid",
+      "weight": 900,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true
+    },
+    {
+      "file": "fa-light-300.woff2",
+      "family": "Font Awesome 7 Pro",
+      "rawFamily": "Font Awesome 7 Pro Light",
+      "subfamily": "Regular",
+      "postscript": "FontAwesome7Pro-Light",
+      "weight": 300,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true
+    },
+    {
+      "file": "fa-regular-400.woff2",
+      "family": "Font Awesome 7 Pro",
+      "rawFamily": "Font Awesome 7 Pro",
+      "subfamily": "Regular",
+      "postscript": "FontAwesome7Pro-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true
+    },
+    {
+      "file": "fa-solid-900.woff2",
+      "family": "Font Awesome 7 Pro Solid",
+      "rawFamily": "Font Awesome 7 Pro Solid",
+      "subfamily": "Regular",
+      "postscript": "FontAwesome7Pro-Solid",
+      "weight": 900,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true
+    },
+    {
+      "file": "fa-thin-100.woff2",
+      "family": "Font Awesome 7 Pro",
+      "rawFamily": "Font Awesome 7 Pro Thin",
+      "subfamily": "Regular",
+      "postscript": "FontAwesome7Pro-Thin",
+      "weight": 100,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true
+    },
+    {
+      "file": "fa-v4compatibility.woff2",
+      "family": "Font Awesome v4 Compatibility",
+      "rawFamily": "Font Awesome v4 Compatibility",
+      "subfamily": "Regular",
+      "postscript": "FontAwesomev4Compatibility-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true
+    }
+  ],
+  "families": [
+    {
+      "family": "Font Awesome 7 Brands",
+      "weights": [
+        400
+      ],
+      "variable": false,
+      "fileCount": 1,
+      "files": [
+        "fa-brands-400.woff2"
+      ]
+    },
+    {
+      "family": "Font Awesome 7 Duotone Solid",
+      "weights": [
+        900
+      ],
+      "variable": false,
+      "fileCount": 1,
+      "files": [
+        "fa-duotone-900.woff2"
+      ]
+    },
+    {
+      "family": "Font Awesome 7 Pro",
+      "weights": [
+        100,
+        300,
+        400
+      ],
+      "variable": false,
+      "fileCount": 3,
+      "files": [
+        "fa-light-300.woff2",
+        "fa-regular-400.woff2",
+        "fa-thin-100.woff2"
+      ]
+    },
+    {
+      "family": "Font Awesome 7 Pro Solid",
+      "weights": [
+        900
+      ],
+      "variable": false,
+      "fileCount": 1,
+      "files": [
+        "fa-solid-900.woff2"
+      ]
+    },
+    {
+      "family": "Font Awesome v4 Compatibility",
+      "weights": [
+        400
+      ],
+      "variable": false,
+      "fileCount": 1,
+      "files": [
+        "fa-v4compatibility.woff2"
+      ]
+    }
+  ],
+  "unidentified": [],
+  "meta": {
+    "generatedAt": "2026-06-18T07:08:30.662Z",
+    "tool": "fontkit"
+  }
+}

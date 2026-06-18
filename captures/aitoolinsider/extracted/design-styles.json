@@ -1,0 +1,205 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Segoe UI",
+      "fontSize": "72px",
+      "fontWeight": "900",
+      "lineHeight": "79.2px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "The AI Tools Pros Use2–4 Weeks Early.Tested. Not Hyped."
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Segoe UI",
+      "fontSize": "42px",
+      "fontWeight": "800",
+      "lineHeight": "50.4px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "Everything You Need to Pick the Right AI Tool.All Free. All "
+    },
+    {
+      "role": "body",
+      "fontFamily": "Segoe UI",
+      "fontSize": "20px",
+      "fontWeight": "400",
+      "lineHeight": "32px",
+      "letterSpacing": "normal",
+      "color": "#7A9BBF",
+      "sampleText": "I personally run every tool through real workflows before wr"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Segoe UI",
+      "fontSize": "18px",
+      "fontWeight": "800",
+      "lineHeight": "28.8px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "AIToolInsider"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Segoe UI",
+      "fontSize": "17px",
+      "fontWeight": "800",
+      "lineHeight": "27.2px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "\"50 AI Tools by Use Case [2026]\""
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Segoe UI",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "lineHeight": "27.2px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "2–4 Weeks Before It Trends"
+    },
+    {
+      "role": "heading-4",
+      "fontFamily": "Segoe UI",
+      "fontSize": "13px",
+      "fontWeight": "700",
+      "lineHeight": "20.8px",
+      "letterSpacing": "1px",
+      "color": "#7A9BBF",
+      "sampleText": "Browse"
+    },
+    {
+      "role": "label",
+      "fontFamily": "Segoe UI",
+      "fontSize": "12px",
+      "fontWeight": "700",
+      "lineHeight": "19.2px",
+      "letterSpacing": "1px",
+      "color": "#FF4444",
+      "sampleText": "LIVE REVIEWS"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      5,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      24,
+      28,
+      40,
+      48,
+      60,
+      90
+    ],
+    "baseUnit": 4
+  },
+  "radius": [
+    "8px",
+    "10px",
+    "12px",
+    "14px",
+    "20px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(0, 212, 255, 0.15) 0px 0px 40px 0px",
+      "count": 1
+    }
+  ],
+  "buttons": [
+    {
+      "label": "🚀 Get the Free Weekly Drop\n        See ",
+      "background": "#000000",
+      "color": "#FFFFFF",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "63.1875px"
+    },
+    {
+      "label": "🚀 Get the Free Weekly Drop",
+      "background": "#000000",
+      "color": "#050D1A",
+      "padding": "18px 40px",
+      "borderRadius": "10px",
+      "border": "0px none rgb(5, 13, 26)",
+      "boxShadow": "none",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "height": "63.1875px"
+    },
+    {
+      "label": "See What I'm Testing ↓",
+      "background": "#000000",
+      "color": "#00D4FF",
+      "padding": "18px 40px",
+      "borderRadius": "10px",
+      "border": "1px solid rgb(0, 212, 255)",
+      "boxShadow": "none",
+      "fontSize": "17px",
+      "fontWeight": "700",
+      "height": "63.1875px"
+    },
+    {
+      "label": "🎁 Claim the Bundle Before It Closes",
+      "background": "#000000",
+      "color": "#050D1A",
+      "padding": "14px 28px",
+      "borderRadius": "8px",
+      "border": "0px none rgb(5, 13, 26)",
+      "boxShadow": "none",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "height": "52px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "#0D1B2E",
+      "color": "#FFFFFF",
+      "padding": "28px",
+      "borderRadius": "14px",
+      "border": "1px solid rgb(26, 48, 80)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "361.141px"
+    },
+    {
+      "label": "card",
+      "background": "#0D1B2E",
+      "color": "#FFFFFF",
+      "padding": "24px",
+      "borderRadius": "12px",
+      "border": "1px solid rgb(26, 48, 80)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "310.719px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "#050D1A",
+    "color": "#FFFFFF",
+    "padding": "16px 0px",
+    "borderRadius": "0px",
+    "border": "",
+    "boxShadow": "none",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "73.7969px"
+  }
+}

@@ -1,0 +1,856 @@
+"""MCP Registry — GitHub MCP registry integration for Cogent.
+
+Fetches and caches the GitHub MCP server catalog (https://github.com/mcp),
+manages installation via manifest.yaml files in optional-mcps/, and
+provides a clean API for the frontend.
+
+Data flow:
+  GitHub MCP Registry (scraped)  →  local cache (memory/cache/mcp_registry.json)
+                                        ↓
+  User clicks Install             →  manifest.yaml generated in optional-mcps/<server>/
+                                        ↓
+  Docker MCP server manages the   →  actual MCP server container
+  installed servers
+"""
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import os
+import re
+import shutil
+from dataclasses import dataclass, field, asdict
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import aiohttp
+
+logger = logging.getLogger("cogent.mcp_registry")
+
+# ── Paths ──────────────────────────────────────────────────────────────
+ROOT_DIR = Path(__file__).parent.parent
+OPTIONAL_MCPS_DIR = ROOT_DIR / "optional-mcps"
+CACHE_DIR = ROOT_DIR / "memory" / "cache"
+
+GITHUB_REGISTRY_URL = "https://github.com/mcp"
+
+# ── Data models ────────────────────────────────────────────────────────
+
+
+@dataclass
+class MCPServer:
+    """A server entry from the GitHub MCP registry."""
+    id: str
+    name: str
+    display_name: str
+    description: str
+    url: str
+    stargazer_count: int = 0
+    owner_avatar_url: str = ""
+    primary_language: str = ""
+    primary_language_color: str = ""
+    license: str = ""
+    topics: List[str] = field(default_factory=list)
+    opengraph_image_url: str = ""
+    name_with_owner: str = ""
+
+
+@dataclass
+class InstalledMCPServer:
+    """An MCP server installed in the local manifest."""
+    name: str
+    version: str = "1.0.0"
+    description: str = ""
+    transport: str = "stdio"
+    command: str = ""
+    args: List[str] = field(default_factory=list)
+    url: str = ""
+    base_url: str = ""
+    auth: Optional[Dict[str, Any]] = None
+    tools: List[Dict[str, str]] = field(default_factory=list)
+    config: Dict[str, Any] = field(default_factory=dict)
+    installed_at: str = ""
+    source: str = ""  # GitHub registry server id
+
+
+# ── Install Method Detection ──────────────────────────────────────
+
+
+def detect_install_methods(registry_entry: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Auto-detect how to install an MCP server from its registry metadata.
+
+    Returns a list of possible install methods with commands and MCP configuration,
+    ranked by likelihood (first = best guess).
+    """
+    lang = (registry_entry.get("primary_language") or "").strip()
+    raw_name = (registry_entry.get("name") or "").strip()
+    display_name = (registry_entry.get("display_name") or "").strip()
+    topics = registry_entry.get("topics") or []
+
+    if "/" in raw_name:
+        org, repo = raw_name.split("/", 1)
+    else:
+        org, repo = "", raw_name
+
+    # Sanitize repo name for package lookups
+    repo_pkg = repo.lower().replace("_", "-").replace(".", "-")
+    org_pkg = org.lower().replace("_", "-").replace(".", "-")
+
+    methods: List[Dict[str, Any]] = []
+    seen_types: set = set()
+
+    def add_method(mtype, label, install_cmd, mcp_cmd, transport="stdio", **extra):
+        if mtype in seen_types:
+            return
+        seen_types.add(mtype)
+        method: Dict[str, Any] = {
+            "type": mtype,
+            "label": label,
+            "install_command": install_cmd,
+            "mcp_config": {
+                "transport": transport,
+            },
+        }
+        if transport == "stdio":
+            method["mcp_config"]["command"] = mcp_cmd
+        elif transport == "http":
+            method["mcp_config"]["url"] = mcp_cmd
+        method.update(extra)
+        methods.append(method)
+
+    # ── Language-specific heuristics ──────────────────────────────
+
+    if lang == "Python":
+        # pip install using the repo name as package name
+        add_method("pip", f"pip install ({repo_pkg})",
+                    f"pip install {repo_pkg}", repo_pkg)
+        # uvx is zero-install for Python tools
+        add_method("uvx", f"uvx {repo_pkg}",
+                    f"uvx {repo_pkg}", f"uvx {repo_pkg}")
+        # Check if it might be a known pattern with org prefix
+        if org:
+            add_method("pip_org", f"pip install {org}-{repo_pkg}",
+                        f"pip install {org}-{repo_pkg}", f"{org}-{repo_pkg}")
+
+    elif lang in ("TypeScript", "JavaScript", "TypeScript/JavaScript"):
+        # npx is zero-install for npm packages
+        scope = f"@{org_pkg}" if org else ""
+        npx_pkg = f"{scope}/{repo_pkg}" if scope else repo_pkg
+        add_method("npx", f"npx {npx_pkg}",
+                    f"npx -y {npx_pkg}", f"npx -y {npx_pkg}")
+        # npm global install
+        add_method("npm", f"npm install -g {npx_pkg}",
+                    f"npm install -g {npx_pkg}", repo_pkg)
+
+    elif lang == "Go":
+        add_method("go_install", f"go install github.com/{org}/{repo}@latest",
+                    f"go install github.com/{org}/{repo}@latest", repo_pkg)
+        # gh extension pattern
+        if org == "github":
+            add_method("gh_extension", f"gh extension install {org}/{repo_pkg}",
+                        f"gh extension install {org}/{repo_pkg}", repo_pkg)
+
+    elif lang == "Rust":
+        add_method("cargo", f"cargo install {repo_pkg}",
+                    f"cargo install {repo_pkg}", repo_pkg)
+
+    elif lang == "Ruby":
+        add_method("gem", f"gem install {repo_pkg}",
+                    f"gem install {repo_pkg}", repo_pkg)
+
+    # Fallback: clone from source
+    git_url = f"https://github.com/{org}/{repo}" if org else registry_entry.get("url", "")
+    if git_url:
+        add_method("source", f"git clone + build ({org}/{repo})",
+                    f"git clone {git_url} && cd {repo} && make install", repo_pkg,
+                    requires_build=True)
+
+    # Docker fallback
+    docker_image = f"ghcr.io/{org}/{repo_pkg}:latest"
+    add_method("docker", f"docker pull {docker_image}",
+                f"docker pull {docker_image}",
+                f"docker run --rm -i {docker_image}",
+                requires_build=False)
+
+    return methods
+
+
+async def fetch_server_detail(server_id: str) -> Optional[Dict[str, Any]]:
+    """Fetch the full detail page for a server from the GitHub MCP registry.
+
+    Returns server metadata + README content + detected install methods,
+    or None if the server isn't found.
+    """
+    # First check cache for the entry
+    registry = get_cached_registry()
+    registry_entry = None
+    if registry:
+        for s in registry["servers"]:
+            if s["id"] == server_id or s["name"] == server_id:
+                registry_entry = s
+                break
+
+    if not registry_entry:
+        return None
+
+    # Fetch the detail page to get the README
+    raw_name = registry_entry.get("name", server_id)
+    detail_url = f"{GITHUB_REGISTRY_URL}/{raw_name}"
+
+    readme_text = ""
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                detail_url,
+                headers={
+                    "Accept": "text/html",
+                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+                },
+                timeout=aiohttp.ClientTimeout(total=15),
+            ) as resp:
+                if resp.status == 200:
+                    html = await resp.text()
+                    # Extract README from embedded JSON payload
+                    import re
+                    match = re.search(
+                        r'"readme":"((?:[^"\\]|\\.)*)"',
+                        html,
+                    )
+                    if match:
+                        readme_text = match.group(1).encode().decode("unicode_escape")
+                    # Also extract the repository URL
+                    url_match = re.search(
+                        r'"url":"(https://github\.com/[^"]+)"',
+                        html,
+                    )
+    except Exception as e:
+        logger.warning("Failed to fetch server detail for %s: %s", server_id, e)
+
+    # Detect install methods
+    install_methods = detect_install_methods(registry_entry)
+
+    return {
+        "server": registry_entry,
+        "readme": readme_text[:10000] if readme_text else "",
+        "install_methods": install_methods,
+        "repo_url": registry_entry.get("url", ""),
+        "detail_url": detail_url,
+    }
+
+
+async def _run_command(
+    cmd: List[str],
+    timeout: int = 120,
+    cwd: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Run a shell command and return exit code + output."""
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=cwd,
+        )
+        stdout, stderr = await asyncio.wait_for(
+            proc.communicate(), timeout=timeout,
+        )
+        return {
+            "exit_code": proc.returncode or 0,
+            "stdout": stdout.decode("utf-8", errors="replace"),
+            "stderr": stderr.decode("utf-8", errors="replace"),
+        }
+    except asyncio.TimeoutError:
+        return {
+            "exit_code": -1,
+            "stdout": "",
+            "stderr": f"Command timed out after {timeout}s",
+        }
+    except FileNotFoundError:
+        return {
+            "exit_code": -1,
+            "stdout": "",
+            "stderr": f"Command not found: {cmd[0]}",
+        }
+    except Exception as e:
+        return {
+            "exit_code": -1,
+            "stdout": "",
+            "stderr": str(e),
+        }
+
+# ── GitHub Registry Scraper ────────────────────────────────────────────
+
+
+async def fetch_registry_page(page: int = 1) -> Dict[str, Any]:
+    """Fetch one page of the GitHub MCP registry.
+
+    Returns parsed JSON with 'servers' and 'metadata' keys,
+    or raises on failure.
+    """
+    url = f"{GITHUB_REGISTRY_URL}?page={page}"
+    headers = {
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "User-Agent": (
+            "Mozilla/5.0 (X11; Linux x86_64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/125.0.0.0 Safari/537.36"
+        ),
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=30)) as resp:
+            if resp.status != 200:
+                raise RuntimeError(f"GitHub registry returned HTTP {resp.status}")
+            html = await resp.text()
+
+    # Extract embedded JSON payload
+    import json
+    match = re.search(
+        r'<script[^>]*type="application/json"[^>]*data-target="react-app\.embeddedData"[^>]*>'
+        r'({.*?})</script>',
+        html,
+        re.DOTALL,
+    )
+    if not match:
+        raise RuntimeError("Could not find registry data in page HTML")
+
+    raw = json.loads(match.group(1))
+    route = raw.get("payload", {}).get("mcpRegistryRoute", {})
+    servers_data = route.get("serversData", {})
+
+    return {
+        "servers": servers_data.get("servers", []),
+        "metadata": servers_data.get("metadata", {"count": 0, "total": 0, "total_pages": 1}),
+    }
+
+
+async def sync_registry() -> Dict[str, Any]:
+    """Fetch all pages of the GitHub MCP registry and cache locally.
+
+    Returns the full server list with metadata.
+    """
+    logger.info("Syncing GitHub MCP registry...")
+
+    # Fetch first page to get total pages
+    first_page = await fetch_registry_page(1)
+    metadata = first_page["metadata"]
+    total_pages = metadata.get("total_pages", 1)
+    all_servers: List[Dict[str, Any]] = list(first_page["servers"])
+
+    # Fetch remaining pages in parallel
+    if total_pages > 1:
+        tasks = [fetch_registry_page(p) for p in range(2, total_pages + 1)]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        for result in results:
+            if isinstance(result, Exception):
+                logger.warning("Registry page fetch failed: %s", result)
+                continue
+            all_servers.extend(result["servers"])
+
+    # Build cached registry
+    registry = {
+        "servers": all_servers,
+        "total": len(all_servers),
+        "synced_at": datetime.now(timezone.utc).isoformat(),
+        "metadata": metadata,
+    }
+
+    # Write cache
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_path = CACHE_DIR / "mcp_registry.json"
+    cache_path.write_text(json.dumps(registry, indent=2), encoding="utf-8")
+
+    logger.info("Synced %d MCP servers from GitHub registry", len(all_servers))
+    return registry
+
+
+def get_cached_registry() -> Optional[Dict[str, Any]]:
+    """Return cached registry, or None if never synced."""
+    cache_path = CACHE_DIR / "mcp_registry.json"
+    if not cache_path.exists():
+        return None
+    try:
+        return json.loads(cache_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as e:
+        logger.warning("Failed to read registry cache: %s", e)
+        return None
+
+
+def search_registry(
+    query: str = "",
+    page: int = 1,
+    per_page: int = 30,
+    language: str = "",
+    topic: str = "",
+) -> Dict[str, Any]:
+    """Search the cached registry. Falls back to empty results if not synced."""
+    registry = get_cached_registry()
+    if not registry:
+        return {"servers": [], "total": 0, "page": 1, "total_pages": 0}
+
+    servers = registry["servers"]
+    
+    # Filter
+    q = query.lower().strip()
+    if q:
+        servers = [
+            s for s in servers
+            if q in s.get("display_name", "").lower()
+            or q in s.get("description", "").lower()
+            or q in s.get("name", "").lower()
+            or q in s.get("name_with_owner", "").lower()
+            or any(q in t.lower() for t in s.get("topics", []) if t)
+        ]
+    if language:
+        servers = [s for s in servers if (s.get("primary_language") or "").lower() == language.lower()]
+    if topic:
+        servers = [s for s in servers if topic.lower() in [t.lower() for t in s.get("topics", [])]]
+
+    # Paginate
+    total = len(servers)
+    total_pages = max(1, (total + per_page - 1) // per_page)
+    start = (page - 1) * per_page
+    end = start + per_page
+    page_servers = servers[start:end]
+
+    return {
+        "servers": page_servers,
+        "total": total,
+        "page": page,
+        "total_pages": total_pages,
+        "synced_at": registry.get("synced_at", ""),
+    }
+
+
+def get_languages() -> List[Dict[str, Any]]:
+    """List available programming languages in the registry with counts."""
+    registry = get_cached_registry()
+    if not registry:
+        return []
+    
+    counts: Dict[str, int] = {}
+    for s in registry["servers"]:
+        lang = s.get("primary_language", "") or "Unknown"
+        counts[lang] = counts.get(lang, 0) + 1
+
+    return sorted(
+        [{"name": k, "count": v} for k, v in counts.items()],
+        key=lambda x: -x["count"],
+    )
+
+
+# ── Installed Server Management ────────────────────────────────────────
+
+
+def get_installed_servers() -> List[Dict[str, Any]]:
+    """List all installed MCP servers from the manifests directory."""
+    if not OPTIONAL_MCPS_DIR.exists():
+        return []
+
+    installed = []
+    for item in sorted(OPTIONAL_MCPS_DIR.iterdir()):
+        manifest_file = item / "manifest.yaml"
+        if not manifest_file.exists():
+            continue
+
+        try:
+            manifest = _parse_manifest(manifest_file)
+            if manifest:
+                installed.append(manifest)
+        except Exception as e:
+            logger.warning("Failed to parse manifest %s: %s", manifest_file, e)
+            installed.append({
+                "name": item.name,
+                "error": str(e),
+                "installed_at": "",
+            })
+
+    return installed
+
+
+def _parse_manifest(path: Path) -> Optional[Dict[str, Any]]:
+    """Parse a manifest.yaml file into a dict."""
+    text = path.read_text(encoding="utf-8")
+    # Simple YAML parser for our known format — avoids pyyaml dependency
+    manifest: Dict[str, Any] = {}
+    current_list_key: Optional[str] = None
+    current_list: List[str] = []
+    tools_list: List[Dict[str, str]] = []
+    in_tools = False
+    current_tool: Dict[str, str] = {}
+
+    for line in text.splitlines():
+        stripped = line.strip()
+
+        # Skip comments and blanks
+        if not stripped or stripped.startswith("#"):
+            continue
+
+        # Track indentation
+        indent = len(line) - len(line.lstrip())
+
+        if indent == 0 and not stripped.startswith("-"):
+            # Top-level key: value
+            in_tools = False
+            current_list_key = None
+            current_list = []
+            if ":" in stripped:
+                key, _, value = stripped.partition(":")
+                key = key.strip()
+                value = value.strip()
+                if value == "":
+                    # Could be a list or nested
+                    current_list_key = key
+                else:
+                    manifest[key] = value
+                    current_list = []
+            continue
+
+        if indent == 2 and stripped.startswith("- ") and current_list_key:
+            # List item: - value
+            if current_list_key == "tools":
+                in_tools = True
+                current_tool = {}
+                item_text = stripped[2:].strip()
+                current_tool["name"] = item_text
+            else:
+                current_list.append(stripped[2:].strip())
+            continue
+
+        if in_tools and stripped.startswith("description:"):
+            _, _, val = stripped.partition(":")
+            current_tool["description"] = val.strip()
+            continue
+
+        if in_tools and current_tool and not stripped.startswith("-"):
+            # End of tool entry
+            tools_list.append(current_tool)
+            current_tool = {}
+            in_tools = False
+
+    # Add last tool if any
+    if current_tool:
+        tools_list.append(current_tool)
+    if tools_list:
+        manifest["tools"] = tools_list
+    if current_list_key and current_list and current_list_key != "tools":
+        manifest[current_list_key] = current_list
+
+    return manifest
+
+
+def _manifest_to_yaml(manifest: Dict[str, Any]) -> str:
+    """Generate YAML string from an InstalledMCPServer dict."""
+    lines = []
+    
+    # Basic fields
+    for key in ("name", "version", "description", "transport"):
+        if manifest.get(key):
+            lines.append(f"{key}: {manifest[key]}")
+    
+    # Command (stdio transport)
+    if manifest.get("command"):
+        lines.append(f"command: {manifest['command']}")
+    
+    # Args
+    if manifest.get("args"):
+        lines.append("args:")
+        for arg in manifest["args"]:
+            lines.append(f"  - {arg}")
+    
+    # URL (http transport)
+    if manifest.get("url"):
+        lines.append(f"url: {manifest['url']}")
+    if manifest.get("base_url"):
+        lines.append(f"base_url: {manifest['base_url']}")
+    
+    # Auth
+    if manifest.get("auth"):
+        lines.append("auth:")
+        for k, v in manifest["auth"].items():
+            if isinstance(v, list):
+                lines.append(f"  {k}:")
+                for item in v:
+                    lines.append(f"    - {item}")
+            else:
+                lines.append(f"  {k}: {v}")
+    
+    # Tools
+    if manifest.get("tools"):
+        lines.append("tools:")
+        for tool in manifest["tools"]:
+            if isinstance(tool, dict):
+                lines.append(f'  - name: {tool.get("name", "")}')
+                if tool.get("description"):
+                    lines.append(f'    description: {tool["description"]}')
+            else:
+                lines.append(f"  - {tool}")
+    
+    # Config (extra)
+    if manifest.get("config"):
+        lines.append("# Runtime config (set via Cogent UI)")
+        lines.append("config:")
+        for k, v in manifest["config"].items():
+            lines.append(f"  {k}: {v}")
+    
+    return "\n".join(lines) + "\n"
+
+
+async def install_server(
+    server_id: str,
+    registry_entry: Optional[Dict[str, Any]] = None,
+    config: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Install an MCP server from the GitHub MCP registry.
+
+    Auto-detects install method from repo metadata, runs the actual
+    package install command (pip/npm/go/cargo), and generates a valid
+    MCP manifest.yaml pointing to the installed binary.
+
+    Config can override auto-detection:
+      - ``method`` — force a specific install method type
+      - ``install_command`` — custom install command
+      - ``mcp_command`` — the command the MCP client should run
+      - ``transport`` — "stdio" (default) or "http"
+      - ``skip_install`` — only write manifest, don't run install
+    """
+    config = config or {}
+
+    # Resolve registry entry
+    if not registry_entry:
+        registry = get_cached_registry()
+        if registry:
+            for s in registry["servers"]:
+                if s["id"] == server_id or s["name"] == server_id:
+                    registry_entry = s
+                    break
+
+    # Derive server name
+    if registry_entry:
+        raw_name = registry_entry.get("name", server_id)
+        if "/" in raw_name:
+            server_name = raw_name.split("/")[-1]
+        else:
+            server_name = raw_name.replace("io.github.", "").replace(".", "-")
+    else:
+        server_name = server_id.replace("/", "-").replace("io.github.", "").replace(".", "-")
+
+    description = registry_entry.get("description", "") if registry_entry else ""
+    repo_url = registry_entry.get("url", "") if registry_entry else ""
+
+    # Auto-detect install method if no explicit config
+    method_config = config.get("method") if config.get("method") else None
+    install_results: List[Dict[str, Any]] = []
+
+    mcp_command = config.get("mcp_command", "")
+    transport = config.get("transport", "stdio")
+    install_command = config.get("install_command", "")
+
+    if not install_command and registry_entry and method_config != "manual":
+        # Auto-detect best install method
+        methods = detect_install_methods(registry_entry)
+        if methods:
+            chosen = next(
+                (m for m in methods if m["type"] == method_config),
+                methods[0],  # default to first/best
+            )
+            install_command = chosen.get("install_command", "")
+            mcp_command = mcp_command or chosen["mcp_config"].get("command", "")
+            transport = chosen["mcp_config"].get("transport", "stdio")
+
+    # Run the install command
+    skip_install = config.get("skip_install", False)
+    if install_command and not skip_install:
+        # Parse the install command into args
+        import shlex
+        cmd_parts = shlex.split(install_command)
+
+        result = await _run_command(cmd_parts, timeout=config.get("timeout", 120))
+        install_results.append({
+            "command": install_command,
+            "exit_code": result["exit_code"],
+            "stdout": result["stdout"][:2000],
+            "stderr": result["stderr"][:1000],
+        })
+
+        if result["exit_code"] != 0:
+            # If first method failed, try the second-best method
+            if registry_entry and method_config != "manual":
+                methods = detect_install_methods(registry_entry)
+                if len(methods) > 1:
+                    fallback = methods[1]
+                    fb_cmd = fallback.get("install_command", "")
+                    if fb_cmd and fb_cmd != install_command:
+                        fb_parts = shlex.split(fb_cmd)
+                        fb_result = await _run_command(fb_parts, timeout=120)
+                        install_results.append({
+                            "command": fb_cmd,
+                            "exit_code": fb_result["exit_code"],
+                            "stdout": fb_result["stdout"][:2000],
+                            "stderr": fb_result["stderr"][:1000],
+                        })
+                        if fb_result["exit_code"] == 0:
+                            install_command = fb_cmd
+                            mcp_command = fallback["mcp_config"].get("command", mcp_command)
+                            transport = fallback["mcp_config"].get("transport", transport)
+
+    # Determine if install succeeded
+    install_ok = skip_install or (
+        install_results and any(r["exit_code"] == 0 for r in install_results)
+    ) or not install_command  # empty command = manual config
+
+    # Build the server name from installed binary if install succeeded
+    if mcp_command and install_ok:
+        # Use the actual binary name as server_name for cleanliness
+        binary_name = mcp_command.split()[-1] if " " in mcp_command else mcp_command
+        binary_name = binary_name.replace("@", "").replace("/", "-")
+    else:
+        binary_name = server_name
+
+    # Write the manifest.yaml
+    server_dir = OPTIONAL_MCPS_DIR / binary_name
+    server_dir.mkdir(parents=True, exist_ok=True)
+
+    manifest: Dict[str, Any] = {
+        "name": binary_name,
+        "version": "1.0.0",
+        "description": description,
+        "transport": transport,
+        "installed_at": datetime.now(timezone.utc).isoformat(),
+        "source": server_id,
+    }
+
+    if transport == "stdio" and mcp_command:
+        cmd_parts = mcp_command.split()
+        manifest["command"] = cmd_parts[0]
+        if len(cmd_parts) > 1:
+            manifest["args"] = cmd_parts[1:]
+    elif transport == "http":
+        manifest["url"] = config.get("url", "")
+        if config.get("base_url"):
+            manifest["base_url"] = config["base_url"]
+    elif transport == "stdio" and config.get("command"):
+        manifest["command"] = config["command"]
+        if config.get("args"):
+            manifest["args"] = config["args"]
+
+    # Auth
+    if config.get("auth"):
+        manifest["auth"] = config["auth"]
+
+    # Tools placeholder
+    manifest["tools"] = config.get("tools", [
+        {"name": f"{binary_name}_help", "description": f"Tools provided by {binary_name}"},
+    ])
+
+    # Extra runtime config
+    if config.get("config"):
+        manifest["config"] = config["config"]
+
+    manifest_path = server_dir / "manifest.yaml"
+    manifest_path.write_text(_manifest_to_yaml(manifest), encoding="utf-8")
+
+    meta_path = server_dir / "meta.json"
+    meta_path.write_text(
+        json.dumps({
+            "name": binary_name,
+            "source": server_id,
+            "registry_entry": registry_entry,
+            "install_command": install_command,
+            "install_results": install_results,
+            "installed_at": manifest["installed_at"],
+        }, indent=2),
+        encoding="utf-8",
+    )
+
+    status = "installed" if install_ok else "install_failed"
+    logger.info(
+        "MCP server '%s' %s (method: %s)",
+        binary_name, status,
+        install_command or "manual",
+    )
+
+    return {
+        "name": binary_name,
+        "manifest": manifest,
+        "path": str(server_dir),
+        "transport": transport,
+        "installed_at": manifest["installed_at"],
+        "install_results": install_results,
+        "install_ok": install_ok,
+        "status": status,
+    }
+
+
+async def remove_server(server_name: str) -> bool:
+    """Remove an installed MCP server (manifest dir)."""
+    server_dir = OPTIONAL_MCPS_DIR / server_name
+    if not server_dir.exists():
+        logger.warning("MCP server '%s' not installed", server_name)
+        return False
+
+    shutil.rmtree(server_dir)
+    logger.info("Removed MCP server: %s", server_name)
+    return True
+
+
+def update_server_config(
+    server_name: str,
+    config: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """Update an installed server's runtime config (not the manifest)."""
+    server_dir = OPTIONAL_MCPS_DIR / server_name
+    manifest_file = server_dir / "manifest.yaml"
+    if not manifest_file.exists():
+        return None
+
+    # Read existing manifest
+    manifest = _parse_manifest(manifest_file)
+    if not manifest:
+        return None
+
+    # Update config
+    if "config" not in manifest:
+        manifest["config"] = {}
+    manifest["config"].update(config)
+
+    # Re-write manifest
+    manifest_file.write_text(_manifest_to_yaml(manifest), encoding="utf-8")
+    return manifest
+
+
+# ── Languages & topics index ───────────────────────────────────────────
+
+
+def list_available_languages() -> List[str]:
+    """Get sorted list of programming languages from the registry."""
+    registry = get_cached_registry()
+    if not registry:
+        return []
+    
+    langs: set = set()
+    for s in registry["servers"]:
+        lang = s.get("primary_language")
+        if lang:
+            langs.add(lang)
+    return sorted(langs)
+
+
+def list_available_topics() -> List[Dict[str, int]]:
+    """Get topic frequency from the registry."""
+    registry = get_cached_registry()
+    if not registry:
+        return []
+    
+    counts: Dict[str, int] = {}
+    for s in registry["servers"]:
+        for t in s.get("topics", []):
+            counts[t] = counts.get(t, 0) + 1
+    
+    return sorted(
+        [{"topic": k, "count": v} for k, v in counts.items()],
+        key=lambda x: -x["count"],
+    )

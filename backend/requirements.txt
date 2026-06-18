@@ -27,3 +27,4 @@ firecrawl-py>=4.28.3
 agent-reach @ git+https://github.com/Panniantong/Agent-Reach.git
 yt-dlp>=2026.6.9
 ollama>=0.4.0
+aiohttp>=3.9.0

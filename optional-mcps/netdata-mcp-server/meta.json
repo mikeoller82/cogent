@@ -1,0 +1,28 @@
+{
+  "name": "netdata-mcp-server",
+  "source": "netdata/netdata-mcp-server",
+  "registry_entry": {
+    "id": "netdata/netdata-mcp-server",
+    "name": "netdata/netdata-mcp-server",
+    "display_name": "Netdata",
+    "primary_language": "Python",
+    "url": "https://github.com/netdata/mcp-server",
+    "description": "Real-time infrastructure monitoring"
+  },
+  "install_command": "pip install netdata-mcp-server",
+  "install_results": [
+    {
+      "command": "pip install netdata-mcp-server",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "ERROR: Could not find a version that satisfies the requirement netdata-mcp-server (from versions: none)\nERROR: No matching distribution found for netdata-mcp-server\n"
+    },
+    {
+      "command": "uvx netdata-mcp-server",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "  \u00d7 No solution found when resolving tool dependencies:\n  \u2570\u2500\u25b6 Because netdata-mcp-server was not found in the package registry and\n      you require netdata-mcp-server, we can conclude that your requirements\n      are unsatisfiable.\n"
+    }
+  ],
+  "installed_at": "2026-06-18T08:15:15.007852+00:00"
+}

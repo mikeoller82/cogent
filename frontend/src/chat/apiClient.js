@@ -47,6 +47,28 @@ export const skillDetail = (name) => api.get(`/skills/${encodeURIComponent(name)
 export const deleteSkill = (name) => api.delete(`/skills/${encodeURIComponent(name)}`).then((r) => r.data);
 export const artifactUrl = (path) => `${API.replace(/\/api$/, "")}${path}`;
 
+// ── MCP Registry ────────────────────────────────────────────────────
+export const listMCPRegistry = (params = {}) =>
+  api.get("/mcp/registry", { params }).then((r) => r.data);
+export const syncMCPRegistry = () =>
+  api.post("/mcp/registry/sync").then((r) => r.data);
+export const listInstalledMCP = () =>
+  api.get("/mcp/installed").then((r) => r.data);
+export const installMCP = (serverId, config = {}) =>
+  api.post("/mcp/install", { server_id: serverId, ...config }).then((r) => r.data);
+export const getMCPServerDetail = (serverId) =>
+  api.get(`/mcp/server/${encodeURIComponent(serverId)}`).then((r) => r.data);
+export const removeMCP = (name) =>
+  api.post("/mcp/remove", { name }).then((r) => r.data);
+export const configMCP = (name, config) =>
+  api.post("/mcp/config", { name, config }).then((r) => r.data);
+export const getMCPLanguages = () =>
+  api.get("/mcp/languages").then((r) => r.data);
+export const getMCPTopics = () =>
+  api.get("/mcp/topics").then((r) => r.data);
+export const getMCPStatus = () =>
+  api.get("/mcp/servers/available").then((r) => r.data);
+
 /**
  * Stream a message. onEvent(event) is called for each parsed SSE event.
  * Returns the final 'done' event with the persisted assistant message.

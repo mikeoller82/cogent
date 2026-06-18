@@ -33,6 +33,7 @@ from file_extract import extract_text_from_file
 import scheduler as sched
 import skill_forge as skf
 import loop_engine as le
+import mcp_registry as mcp_reg
 
 cfg = get_config()
 setup_logging(level=cfg.log_level, log_dir=cfg.log_dir or None)
@@ -414,6 +415,164 @@ async def _legacy_render(artifact_id: str):
 
 
 
+
+
+# ---------------- MCP Registry ----------------
+class MCPInstallBody(BaseModel):
+    server_id: str
+    method: Optional[str] = None
+    install_command: Optional[str] = None
+    mcp_command: Optional[str] = None
+    transport: Optional[str] = "stdio"
+    url: Optional[str] = None
+    base_url: Optional[str] = None
+    auth: Optional[Dict[str, Any]] = None
+    args: Optional[List[str]] = None
+    skip_install: bool = False
+    config: Optional[Dict[str, Any]] = None
+
+
+class MCPRemoveBody(BaseModel):
+    name: str
+
+
+class MCPConfigBody(BaseModel):
+    name: str
+    config: Dict[str, Any]
+
+
+@api.get("/mcp/registry", summary="List GitHub MCP registry servers")
+async def list_mcp_registry(
+    query: str = "",
+    page: int = 1,
+    per_page: int = 30,
+    language: str = "",
+    topic: str = "",
+):
+    """Search and browse the GitHub MCP server registry."""
+    try:
+        return mcp_reg.search_registry(
+            query=query, page=page, per_page=per_page,
+            language=language, topic=topic,
+        )
+    except Exception as e:
+        logger.exception("MCP registry search failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api.post("/mcp/registry/sync", summary="Sync GitHub MCP registry")
+async def sync_mcp_registry():
+    """Fetch latest MCP server list from GitHub."""
+    try:
+        result = await mcp_reg.sync_registry()
+        return {"ok": True, "total": result["total"], "synced_at": result["synced_at"]}
+    except Exception as e:
+        logger.exception("MCP registry sync failed")
+        raise HTTPException(status_code=502, detail=str(e))
+@api.post("/mcp/install", summary="Install an MCP server")
+async def install_mcp(body: MCPInstallBody):
+    """Install an MCP server from the registry.
+
+    Auto-detects install method from repo metadata, runs the actual
+    install command (pip/npm/go), and generates MCP manifest.yaml.
+    """
+    try:
+        # Look up registry entry
+        registry_entry = None
+        registry = mcp_reg.get_cached_registry()
+        if registry:
+            for s in registry["servers"]:
+                if s["id"] == body.server_id or s["name"] == body.server_id:
+                    registry_entry = s
+                    break
+
+        config = {
+            "method": body.method or "",
+            "install_command": body.install_command or "",
+            "mcp_command": body.mcp_command or "",
+            "transport": body.transport or "stdio",
+            "url": body.url or "",
+            "base_url": body.base_url or "",
+            "auth": body.auth or None,
+            "args": body.args or [],
+            "skip_install": body.skip_install,
+            "config": body.config or {},
+        }
+        result = await mcp_reg.install_server(
+            body.server_id,
+            registry_entry=registry_entry,
+            config=config,
+        )
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.exception("MCP install failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api.post("/mcp/remove", summary="Remove an installed MCP server")
+async def remove_mcp(body: MCPRemoveBody):
+    """Remove an installed MCP server."""
+    ok = await mcp_reg.remove_server(body.name)
+    if not ok:
+        raise HTTPException(status_code=404, detail=f"MCP server '{body.name}' not found")
+    return {"ok": True, "name": body.name}
+
+
+@api.post("/mcp/config", summary="Update MCP server config")
+async def config_mcp(body: MCPConfigBody):
+    """Update runtime config for an installed MCP server."""
+    result = mcp_reg.update_server_config(body.name, body.config)
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"MCP server '{body.name}' not found")
+    return {"ok": True, "manifest": result}
+
+
+@api.get("/mcp/languages", summary="List available languages in registry")
+async def list_mcp_languages():
+    """Get programming language breakdown from the registry."""
+    return mcp_reg.get_languages()
+
+
+@api.get("/mcp/topics", summary="List available topics in registry")
+async def list_mcp_topics():
+    """Get topic frequency from the registry."""
+    return mcp_reg.list_available_topics()
+
+
+@api.get("/mcp/server/{server_id}", summary="Get server detail (README + install methods)")
+async def mcp_server_detail(server_id: str):
+    """Fetch full detail for a server: README, install methods, metadata."""
+    try:
+        detail = await mcp_reg.fetch_server_detail(server_id)
+        if not detail:
+            raise HTTPException(status_code=404, detail=f"Server '{server_id}' not found")
+        return detail
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("MCP server detail failed")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api.get("/mcp/servers/available", summary="Check Docker MCP availability")
+async def mcp_available():
+    """Check if the Docker MCP system is reachable for live management."""
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["docker", "info", "--format", "{{.ServerVersion}}"],
+            capture_output=True, text=True, timeout=5,
+        )
+        docker_ok = result.returncode == 0
+    except Exception:
+        docker_ok = False
+    return {
+        "docker_available": docker_ok,
+        "registry_synced": mcp_reg.get_cached_registry() is not None,
+        "installed_count": len(mcp_reg.get_installed_servers()),
+    }
 # ---------------- Skill Forge (import/forge skills from GitHub) ----------------
 class ImportSkillBody(BaseModel):
     repo_url: str
@@ -537,6 +696,12 @@ async def startup():
     discover_and_load()
     await sched.start_scheduler(db)
     await run_hooks("on_startup")
+    # Auto-sync MCP registry on startup (non-blocking)
+    try:
+        if not mcp_reg.get_cached_registry():
+            asyncio.create_task(mcp_reg.sync_registry())
+    except Exception:
+        pass
 
 @app.on_event("shutdown")
 async def shutdown():
