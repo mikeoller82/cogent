@@ -16,8 +16,8 @@ model:
 
 rate_limit:
   enabled: true
-  min_delay_ms: 5000          # Minimum gap between requests (5 s)
-  max_delay_ms: 7000          # Maximum gap (7 s) — randomized to avoid thundering herd
+  min_delay_ms: 30000          # Minimum gap between requests (30 s)
+  max_delay_ms: 60000          # Maximum gap (60 s) — randomized to avoid thundering herd
 
 # Virtual Provider — fallback chain when a provider returns 429 Rate Limited.
 # Providers are tried in priority order (lower = first). If one hits a 429,
@@ -56,9 +56,9 @@ providers:
     priority: 5
 
 agent:
-  max_turns: 15               # max tool-using turns per message
-  max_iterations: 20          # max Plan→Execute→Verify cycles
-  verbose: true              # when true, narrate every tool call
+  max_turns: 50               # max tool-using turns per message
+  max_iterations: 90         # max Plan→Execute→Verify cycles
+  verbose: false             # when true, narrate every tool call
   reasoning_effort: medium    # minimal | low | medium | high
 
 database:

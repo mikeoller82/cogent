@@ -38,7 +38,7 @@ PROJECT_ROOT = BACKEND_DIR.parent
 LOOP_STATE_DIR = PROJECT_ROOT / "memory" / "loops"
 
 MAX_ITERATIONS = 90         # max Plan->Execute->Verify cycles per task
-MAX_TOKENS_PER_TASK = 200_000  # rough budget ceiling
+MAX_TOKENS_PER_TASK = 100_000  # rough budget ceiling
 WARN_TOKEN_PCT = 0.75       # warn at 75% of budget
 CONTINUE_MAX = 90           # max auto-continuation re-prompts per session
 
@@ -67,8 +67,8 @@ CB_COOLDOWN_SECONDS = 1800       # 30 minutes before OPEN -> HALF_OPEN auto-reco
 
 # ── Exit detection constants (Ralph-style) ───────────────────────────────
 MAX_CONSECUTIVE_TEST_LOOPS = 3
-MAX_CONSECUTIVE_DONE_SIGNALS = 2
-SAFETY_CIRCUIT_BREAKER_LIMIT = 5  # force exit after 5 consecutive EXIT_SIGNAL=true
+MAX_CONSECUTIVE_DONE_SIGNALS = 8
+SAFETY_CIRCUIT_BREAKER_LIMIT = 12  # force exit after 12 consecutive EXIT_SIGNAL=true
 
 # ── Tool-loop guardrails (CowAgent-style) ───────────────────────
 MAX_SAME_ARGS_CALLS = 5      # Same tool + args called N times → stop
@@ -140,7 +140,8 @@ class LoopState:
     cb_opened_at: Optional[str] = None
 
     # Exit signal tracking
-    exit_signals: List[int] = field(default_factory=list)  # loop numbers where EXIT_SIGNAL=true
+    exit_signals: List[int] = field(default_factory=list)  # loop numbers where EXIT_SIGNAL=true (any source)
+    explicit_exit_signals: List[int] = field(default_factory=list)  # loop nums from RALPH_STATUS blocks only
     completion_indicators: List[int] = field(default_factory=list)  # loop numbers with strong completion
     done_signals: List[int] = field(default_factory=list)  # loop numbers with completion signals
     test_only_loops: List[int] = field(default_factory=list)  # loop numbers that were test-only
@@ -248,6 +249,7 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.cb_consecutive_same_error = 0
     state.cb_last_progress_loop = 0
     state.exit_signals = []
+    state.explicit_exit_signals = []
     state.completion_indicators = []
     state.done_signals = []
     state.test_only_loops = []
@@ -566,9 +568,10 @@ def analyze_response_text(text: str) -> dict:
             result["has_completion_signal"] = True
             result["confidence_score"] = 100
 
-    # 2. Detect completion keywords
+    # 2. Detect completion keywords (word-boundary anchored)
     for keyword in COMPLETION_KEYWORDS:
-        if keyword.lower() in text.lower():
+        pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+        if re.search(pattern, text.lower()):
             result["has_completion_signal"] = True
             result["confidence_score"] += 10
 
@@ -644,12 +647,15 @@ def update_exit_signals(state: LoopState, analysis: dict) -> None:
     if analysis.get("exit_signal"):
         state.completion_indicators.append(loop_num)
         state.exit_signals.append(loop_num)
+        if analysis.get("explicit_exit_signal"):
+            state.explicit_exit_signals.append(loop_num)
 
     # Rolling window: keep only last 5
     state.test_only_loops = state.test_only_loops[-5:]
     state.done_signals = state.done_signals[-5:]
     state.completion_indicators = state.completion_indicators[-5:]
     state.exit_signals = state.exit_signals[-5:]
+    state.explicit_exit_signals = state.explicit_exit_signals[-5:]
 
     save_state(state)  # debounced
 
@@ -663,22 +669,21 @@ def should_exit_gracefully(state: LoopState) -> Optional[str]:
     if state.tool_loop_detected_stop:
         return "tool_loop_guardrail"
 
-    # 1. Safety circuit breaker - 5+ consecutive EXIT_SIGNAL=true
-    if len(state.completion_indicators) >= SAFETY_CIRCUIT_BREAKER_LIMIT:
+    # 1. Safety circuit breaker — explicit EXIT_SIGNAL only (not heuristic)
+    if len(state.explicit_exit_signals) >= SAFETY_CIRCUIT_BREAKER_LIMIT:
         return "safety_circuit_breaker"
 
     # 2. Too many consecutive test-only loops
     if len(state.test_only_loops) >= MAX_CONSECUTIVE_TEST_LOOPS:
         return "test_saturation"
 
-    # 3. Multiple done signals
+    # 3. Multiple done signals (keyword-based — uses higher threshold)
     if len(state.done_signals) >= MAX_CONSECUTIVE_DONE_SIGNALS:
         return "completion_signals"
 
-    # 4. Dual-condition exit: completion_indicators >= 2 AND explicit EXIT_SIGNAL in latest
-    if len(state.completion_indicators) >= 2:
-        if state.exit_signals and state.iteration in state.exit_signals:
-            return "project_complete"
+    # 4. Dual-condition exit: explicit EXIT_SIGNAL in RALPH_STATUS block
+    if state.explicit_exit_signals and state.iteration in state.explicit_exit_signals:
+        return "project_complete"
 
     return None
 

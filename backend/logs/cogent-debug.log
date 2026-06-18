@@ -2363,3 +2363,140 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-18 04:03:48,095 INFO cogent.scheduler: Scheduler started
 2026-06-18 04:03:48,099 INFO cogent.scheduler: Loaded 0 scheduled tasks
 2026-06-18 04:09:06,314 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 09:29:07,112 DEBUG tzlocal: /etc/localtime found
+2026-06-18 09:29:07,113 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 09:29:07,114 INFO cogent.scheduler: Scheduler started
+2026-06-18 09:29:07,119 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 09:29:13,344 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 09:29:29,039 DEBUG tzlocal: /etc/localtime found
+2026-06-18 09:29:29,039 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 09:29:29,039 INFO cogent.scheduler: Scheduler started
+2026-06-18 09:29:29,044 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 09:30:25,599 INFO cogent.mcp_registry: MCP server 'notion-mcp-server' install_failed (method: git clone https://github.com/makenotion/notion-mcp-server && cd notion-mcp-server && make install)
+2026-06-18 09:48:11,521 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 09:48:13,984 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=77
+2026-06-18 09:48:21,129 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=210
+2026-06-18 09:48:29,947 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=376
+2026-06-18 09:48:35,573 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=283
+2026-06-18 09:49:08,239 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=221
+2026-06-18 09:49:14,893 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=174
+2026-06-18 09:49:20,189 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=233
+2026-06-18 09:50:07,208 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=322
+2026-06-18 09:50:10,103 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=162
+2026-06-18 09:50:15,667 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=130
+2026-06-18 09:50:21,673 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=172
+2026-06-18 09:50:26,497 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=125
+2026-06-18 09:50:32,246 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=126
+2026-06-18 09:50:38,337 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=123
+2026-06-18 09:51:15,228 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=9658
+2026-06-18 09:51:15,228 INFO [48179029-41a] cogent.agent.context_compressor: Compressed 31 messages to 4 (budget 64000 tokens)
+2026-06-18 09:51:15,231 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 09:51:27,543 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=330
+2026-06-18 09:51:27,543 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: verify -> plan -- Refining after FAIL
+2026-06-18 09:51:27,543 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 09:51:32,768 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=206
+2026-06-18 09:51:36,247 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=248
+2026-06-18 09:51:42,941 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=215
+2026-06-18 09:51:48,943 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=379
+2026-06-18 09:52:36,052 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=665
+2026-06-18 09:52:40,242 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=211
+2026-06-18 09:52:50,067 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=135
+2026-06-18 09:52:52,723 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=136
+2026-06-18 09:52:59,282 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=326
+2026-06-18 09:53:13,682 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=206
+2026-06-18 09:53:22,277 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=243
+2026-06-18 09:53:57,531 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=10188
+2026-06-18 09:53:57,534 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 09:54:05,587 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=333
+2026-06-18 09:54:05,587 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: verify -> plan -- Refining after FAIL
+2026-06-18 09:54:05,587 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 09:54:16,426 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=1392
+2026-06-18 09:54:16,427 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 09:54:32,626 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=686
+2026-06-18 09:54:32,627 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: verify -> plan -- Refining after PARTIAL
+2026-06-18 09:54:32,627 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 09:54:38,286 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=310
+2026-06-18 09:54:38,287 INFO [48179029-41a] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 09:54:44,676 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=365
+2026-06-18 09:54:44,676 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 09:54:48,714 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=196
+2026-06-18 09:56:56,129 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 09:57:03,600 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=409
+2026-06-18 09:57:03,600 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 09:57:11,585 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=260
+2026-06-18 09:58:18,135 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 09:58:20,919 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=157
+2026-06-18 09:58:27,698 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=202
+2026-06-18 09:58:33,299 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=291
+2026-06-18 09:58:33,299 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 09:58:49,335 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=4
+2026-06-18 10:03:01,670 INFO [48179029-41a] cogent.scheduler: Scheduler stopped
+2026-06-18 10:03:02,900 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:03:02,901 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:03:02,901 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:03:02,905 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:05:50,997 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 10:05:53,562 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=181
+2026-06-18 10:05:53,562 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 10:06:04,416 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=172
+2026-06-18 10:06:04,416 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: verify -> plan -- Refining after FAIL
+2026-06-18 10:06:04,416 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 10:06:08,361 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=148
+2026-06-18 10:06:13,881 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=144
+2026-06-18 10:06:13,881 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 10:06:46,396 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=250
+2026-06-18 10:06:46,396 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: verify -> plan -- Refining after FAIL
+2026-06-18 10:06:46,396 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 10:06:48,497 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=44
+2026-06-18 10:06:48,497 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 10:07:04,922 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=268
+2026-06-18 10:07:04,923 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: verify -> plan -- Refining after FAIL
+2026-06-18 10:07:04,923 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 10:07:11,776 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=177
+2026-06-18 10:07:14,506 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=83
+2026-06-18 10:07:14,506 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 10:07:29,435 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=234
+2026-06-18 10:07:29,435 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: verify -> plan -- Refining after FAIL
+2026-06-18 10:07:29,435 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: plan -> execute -- Starting execution turn
+2026-06-18 10:07:33,420 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=101
+2026-06-18 10:07:33,420 DEBUG [48179029-41a] cogent.loop_engine: Loop 48179029-41ae-4b36-824e-aa0663f0df63: execute -> verify -- Running verification pass
+2026-06-18 10:07:41,130 INFO [48179029-41a] cogent.providers: Provider opencode-zen returned type=str len=173
+2026-06-18 10:10:31,088 INFO [48179029-41a] cogent.scheduler: Scheduler stopped
+2026-06-18 10:10:32,238 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:10:32,239 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:10:32,239 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:10:32,244 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:10:38,357 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:10:39,479 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:10:39,480 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:10:39,480 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:10:39,485 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:10:51,510 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:10:52,707 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:10:52,708 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:10:52,708 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:10:52,713 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:10:54,818 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:10:55,995 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:10:55,996 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:10:55,996 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:10:56,001 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:10:58,507 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:10:59,798 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:10:59,799 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:10:59,799 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:10:59,803 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 10:11:04,214 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 10:11:05,062 DEBUG tzlocal: /etc/localtime found
+2026-06-18 10:11:05,063 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 10:11:05,063 INFO cogent.scheduler: Scheduler started
+2026-06-18 10:11:05,068 INFO cogent.scheduler: Loaded 0 scheduled tasks
