@@ -1,0 +1,52 @@
+{
+  "name": "context7",
+  "source": "upstash/context7",
+  "registry_entry": {
+    "id": "io.github.upstash/context7",
+    "name": "upstash/context7",
+    "display_name": "Context7",
+    "description": "Up-to-date code docs for any prompt",
+    "url": "https://github.com/upstash/context7",
+    "created_at": "1.0.31",
+    "updated_at": "2026-06-17T12:09:30Z",
+    "stargazer_count": 57596,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/74989412?v=4",
+    "primary_language": "TypeScript",
+    "primary_language_color": "#3178c6",
+    "repo_id": null,
+    "license": "MIT License",
+    "topics": [
+      "llm",
+      "mcp",
+      "mcp-server",
+      "vibe-coding"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/9d70a7088bfc2a065162ad016d6c11f170e6efcaeb9da29c31f2687867383f5d/upstash/context7",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "upstash/context7",
+    "is_in_organization": true,
+    "pushed_at": "2026-06-17T12:09:30Z",
+    "repository": {
+      "source": "github",
+      "url": "https://github.com/upstash/context7"
+    },
+    "full_name": "io.github.upstash/context7",
+    "api_name": "io.github.upstash/context7"
+  },
+  "install_command": "npx -y @upstash/context7",
+  "install_results": [
+    {
+      "command": "npx -y @upstash/context7",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@upstash%2fcontext7 - Not found\nnpm error 404\nnpm error 404  The requested resource '@upstash/context7@*' could not be found or you do not have permission to access it.\nnpm error 404\nnpm error 404 Note that you can also install from a\nnpm error 404 tarball, folder, http url, or git url.\nnpm error A complete log of this run can be found in: /home/mike/.npm/_logs/2026-06-18T08_26_35_741Z-debug-0.log\n"
+    },
+    {
+      "command": "npm install -g @upstash/context7",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/@upstash%2fcontext7 - Not found\nnpm error 404\nnpm error 404  The requested resource '@upstash/context7@*' could not be found or you do not have permission to access it.\nnpm error 404\nnpm error 404 Note that you can also install from a\nnpm error 404 tarball, folder, http url, or git url.\nnpm error A complete log of this run can be found in: /home/mike/.npm/_logs/2026-06-18T08_26_36_265Z-debug-0.log\n"
+    }
+  ],
+  "installed_at": "2026-06-18T08:26:36.610687+00:00"
+}

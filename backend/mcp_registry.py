@@ -78,15 +78,25 @@ class InstalledMCPServer:
 # ── Install Method Detection ──────────────────────────────────────
 
 
-def detect_install_methods(registry_entry: Dict[str, Any]) -> List[Dict[str, Any]]:
+def detect_install_methods(
+    registry_entry: Dict[str, Any],
+    manifest_info: Optional[Dict[str, Any]] = None,
+) -> List[Dict[str, Any]]:
     """Auto-detect how to install an MCP server from its registry metadata.
+
+    Uses GitHub API manifest data (package.json, pyproject.toml) when available
+    to determine the exact package name. Falls back to heuristics from the
+    repo name and language.
 
     Returns a list of possible install methods with commands and MCP configuration,
     ranked by likelihood (first = best guess).
     """
+    manifest_info = manifest_info or {}
+    real_pkg_name = (manifest_info.get("package_name") or "").strip()
+    has_real_name = bool(real_pkg_name)
+
     lang = (registry_entry.get("primary_language") or "").strip()
     raw_name = (registry_entry.get("name") or "").strip()
-    display_name = (registry_entry.get("display_name") or "").strip()
     topics = registry_entry.get("topics") or []
 
     if "/" in raw_name:
@@ -120,34 +130,69 @@ def detect_install_methods(registry_entry: Dict[str, Any]) -> List[Dict[str, Any
         method.update(extra)
         methods.append(method)
 
-    # ── Language-specific heuristics ──────────────────────────────
+    # ── Best: Use real package name from manifest ──────────────────
+    if has_real_name:
+        manifest_type = manifest_info.get("manifest_type", "")
+        pkg = real_pkg_name
+        scope_pkg = pkg
 
+        if manifest_type == "npm":
+            add_method("npx", f"npx {pkg}",
+                        f"npx -y {pkg}", f"npx -y {pkg}")
+            add_method("npm", f"npm install -g {pkg}",
+                        f"npm install -g {pkg}", pkg)
+        elif manifest_type == "pip":
+            add_method("pip", f"pip install {pkg}",
+                        f"pip install {pkg}", pkg)
+            add_method("uvx", f"uvx {pkg}",
+                        f"uvx {pkg}", f"uvx {pkg}")
+        elif manifest_type == "cargo":
+            add_method("cargo", f"cargo install {pkg}",
+                        f"cargo install {pkg}", pkg)
+        elif manifest_type == "go":
+            # Go module path is already the install path
+            add_method("go_install", f"go install {pkg}@latest",
+                        f"go install {pkg}@latest", repo_pkg)
+        elif manifest_type == "gem":
+            add_method("gem", f"gem install {pkg}",
+                        f"gem install {pkg}", pkg)
+
+        # Also add source and docker
+        git_url = f"https://github.com/{org}/{repo}" if org else registry_entry.get("url", "")
+        if git_url:
+            add_method("source", f"git clone + build ({org}/{repo})",
+                        f"git clone {git_url} && cd {repo} && make install", repo_pkg,
+                        requires_build=True)
+
+        docker_image = f"ghcr.io/{org}/{repo_pkg}:latest"
+        add_method("docker", f"docker pull {docker_image}",
+                    f"docker pull {docker_image}",
+                    f"docker run --rm -i {docker_image}",
+                    requires_build=False)
+
+        return methods
+
+    # ── Fallback: Heuristics from repo name + language ─────────────
     if lang == "Python":
-        # pip install using the repo name as package name
         add_method("pip", f"pip install ({repo_pkg})",
                     f"pip install {repo_pkg}", repo_pkg)
-        # uvx is zero-install for Python tools
         add_method("uvx", f"uvx {repo_pkg}",
                     f"uvx {repo_pkg}", f"uvx {repo_pkg}")
-        # Check if it might be a known pattern with org prefix
         if org:
             add_method("pip_org", f"pip install {org}-{repo_pkg}",
                         f"pip install {org}-{repo_pkg}", f"{org}-{repo_pkg}")
 
     elif lang in ("TypeScript", "JavaScript", "TypeScript/JavaScript"):
-        # npx is zero-install for npm packages
         scope = f"@{org_pkg}" if org else ""
         npx_pkg = f"{scope}/{repo_pkg}" if scope else repo_pkg
         add_method("npx", f"npx {npx_pkg}",
                     f"npx -y {npx_pkg}", f"npx -y {npx_pkg}")
-        # npm global install
         add_method("npm", f"npm install -g {npx_pkg}",
                     f"npm install -g {npx_pkg}", repo_pkg)
 
     elif lang == "Go":
         add_method("go_install", f"go install github.com/{org}/{repo}@latest",
                     f"go install github.com/{org}/{repo}@latest", repo_pkg)
-        # gh extension pattern
         if org == "github":
             add_method("gh_extension", f"gh extension install {org}/{repo_pkg}",
                         f"gh extension install {org}/{repo_pkg}", repo_pkg)
@@ -160,14 +205,13 @@ def detect_install_methods(registry_entry: Dict[str, Any]) -> List[Dict[str, Any
         add_method("gem", f"gem install {repo_pkg}",
                     f"gem install {repo_pkg}", repo_pkg)
 
-    # Fallback: clone from source
+    # Source and docker fallback for all
     git_url = f"https://github.com/{org}/{repo}" if org else registry_entry.get("url", "")
     if git_url:
         add_method("source", f"git clone + build ({org}/{repo})",
                     f"git clone {git_url} && cd {repo} && make install", repo_pkg,
                     requires_build=True)
 
-    # Docker fallback
     docker_image = f"ghcr.io/{org}/{repo_pkg}:latest"
     add_method("docker", f"docker pull {docker_image}",
                 f"docker pull {docker_image}",
@@ -228,17 +272,137 @@ async def fetch_server_detail(server_id: str) -> Optional[Dict[str, Any]]:
     except Exception as e:
         logger.warning("Failed to fetch server detail for %s: %s", server_id, e)
 
-    # Detect install methods
-    install_methods = detect_install_methods(registry_entry)
+    # Fetch actual package manifest from GitHub repo to get real package name
+    repo_url = registry_entry.get("url", "")
+    manifest_info: Dict[str, Any] = {}
+    try:
+        manifest_info = await _fetch_package_manifest(repo_url)
+    except Exception as e:
+        logger.debug("Failed to fetch manifest for %s: %s", server_id, e)
+
+    # Detect install methods (with real package names from manifest)
+    install_methods = detect_install_methods(registry_entry, manifest_info)
 
     return {
         "server": registry_entry,
         "readme": readme_text[:10000] if readme_text else "",
         "install_methods": install_methods,
-        "repo_url": registry_entry.get("url", ""),
+        "repo_url": repo_url,
         "detail_url": detail_url,
+        "manifest_info": manifest_info,
     }
 
+async def _fetch_package_manifest(repo_url: str) -> Dict[str, Any]:
+    """Fetch package.json / pyproject.toml from a GitHub repo to determine exact package name.
+
+    Uses the GitHub raw content API. Returns parsed manifest data.
+    """
+    result: Dict[str, Any] = {}
+    if not repo_url:
+        return result
+
+    import re
+    match = re.match(r"https://github\.com/([^/]+/[^/]+?)(?:/|$)", repo_url)
+    if not match:
+        logger.debug("_fetch_package_manifest: could not extract owner/repo from %s", repo_url)
+        return result
+    full_name = match.group(1)
+    logger.debug("_fetch_package_manifest: scanning %s for %s", full_name, repo_url)
+    # Extract owner/repo from URL
+    files_to_check = [
+        # Monorepo sub-paths (MCP server is often in a subpackage) - check first
+        ("packages/mcp/package.json", "npm"),
+        ("packages/server/package.json", "npm"),
+        ("packages/context7-mcp/package.json", "npm"),
+        ("mcp/package.json", "npm"),
+        ("server/package.json", "npm"),
+        # Common monorepo Python
+        ("packages/markitdown/pyproject.toml", "pip"),
+        ("packages/mcp/pyproject.toml", "pip"),
+        ("packages/server/pyproject.toml", "pip"),
+        ("packages/mcp/setup.py", "pip"),
+        ("packages/server/setup.py", "pip"),
+        # Root-level manifests
+        ("package.json", "npm"),
+        ("pyproject.toml", "pip"),
+        ("setup.py", "pip"),
+        ("Cargo.toml", "cargo"),
+        ("go.mod", "go"),
+        ("Gemfile", "gem"),
+    ]
+
+    async with aiohttp.ClientSession() as session:
+        for filename, pkg_type in files_to_check:
+            for branch in ("main", "master"):
+                raw_url = f"https://raw.githubusercontent.com/{full_name}/{branch}/{filename}"
+                try:
+                    async with session.get(
+                        raw_url,
+                        headers={"User-Agent": "Cogent/1.0"},
+                        timeout=aiohttp.ClientTimeout(total=5),
+                    ) as resp:
+                        if resp.status != 200:
+                            continue
+                        content = await resp.text()
+                        result["manifest_type"] = pkg_type
+                        result["manifest_file"] = filename
+
+                        parsed = _parse_manifest_content(filename, content)
+                        result.update(parsed)
+
+                        if result.get("package_name"):
+                            break
+                except Exception as e:
+                    logger.debug("manifest fetch failed for %s: %s", raw_url, e)
+                    continue
+            if result.get("package_name"):
+                break
+
+    return result
+
+
+
+def _parse_manifest_content(filename: str, content: str) -> Dict[str, Any]:
+    """Parse a manifest file content and extract package name + binary name.
+
+    Uses endswith() matching so monorepo sub-path filenames like
+    ``packages/mcp/package.json`` are handled correctly.
+    """
+    result: Dict[str, Any] = {}
+
+    if filename.endswith("package.json"):
+        try:
+            data = json.loads(content)
+            result["package_name"] = data.get("name", "")
+            result["bin"] = data.get("bin", {})
+            if isinstance(result["bin"], str):
+                result["bin_name"] = result["bin"]
+            elif isinstance(result["bin"], dict):
+                result["bin_name"] = next(iter(result["bin"].values()), "")
+        except json.JSONDecodeError:
+            pass
+
+    elif filename.endswith("pyproject.toml"):
+        name_match = re.search(r'^name\s*=\s*["\']([^"\']+)["\']', content, re.MULTILINE)
+        if name_match:
+            result["package_name"] = name_match.group(1)
+
+    elif filename.endswith("setup.py"):
+        name_match = re.search(r'''name\s*=\s*['"]([^'"]+)['"]''', content)
+        if name_match:
+            result["package_name"] = name_match.group(1)
+
+    elif filename.endswith("Cargo.toml"):
+        name_match = re.search(r'^name\s*=\s*["\']([^"\']+)["\']', content, re.MULTILINE)
+        if name_match:
+            result["package_name"] = name_match.group(1)
+
+    elif filename.endswith("go.mod"):
+        module_match = re.search(r'^module\s+(.+)$', content, re.MULTILINE)
+        if module_match:
+            result["package_name"] = module_match.group(1)
+
+    return result
 
 async def _run_command(
     cmd: List[str],
@@ -649,9 +813,17 @@ async def install_server(
     transport = config.get("transport", "stdio")
     install_command = config.get("install_command", "")
 
+    # Fetch package manifest from GitHub API for more accurate install commands
+    manifest_info: Dict[str, Any] = {}
+    if registry_entry and not install_command:
+        repo_url = registry_entry.get("url", "")
+        try:
+            manifest_info = await _fetch_package_manifest(repo_url)
+        except Exception:
+            manifest_info = {}
+
     if not install_command and registry_entry and method_config != "manual":
-        # Auto-detect best install method
-        methods = detect_install_methods(registry_entry)
+        methods = detect_install_methods(registry_entry, manifest_info)
         if methods:
             chosen = next(
                 (m for m in methods if m["type"] == method_config),
@@ -679,7 +851,7 @@ async def install_server(
         if result["exit_code"] != 0:
             # If first method failed, try the second-best method
             if registry_entry and method_config != "manual":
-                methods = detect_install_methods(registry_entry)
+                methods = detect_install_methods(registry_entry, manifest_info)
                 if len(methods) > 1:
                     fallback = methods[1]
                     fb_cmd = fallback.get("install_command", "")
