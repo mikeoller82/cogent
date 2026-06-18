@@ -317,7 +317,7 @@ function AttachmentChip({ a, onRemove }) {
 
 function UserBubble({ m }) {
   return (
-    <div className="flex justify-end">
+    <div className="flex justify-end msg-enter-user">
       <div className="max-w-[78%] flex flex-col items-end gap-2">
         {m.attachments && m.attachments.length > 0 && (
           <div className="flex flex-wrap gap-1.5 justify-end">
@@ -325,7 +325,7 @@ function UserBubble({ m }) {
           </div>
         )}
         {m.content && (
-          <div className="px-4 py-2.5 rounded-2xl bg-[#b5a8f5]/15 border border-[#b5a8f5]/20 text-[#f5ede0]">
+          <div className="px-4 py-2.5 rounded-2xl bg-[#b5a8f5]/15 border border-[#b5a8f5]/20 text-[#f5ede0] bubble-user">
             <MarkdownRenderer content={m.content} />
           </div>
         )}
@@ -419,8 +419,8 @@ function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, l
   const tools = isStreaming ? liveTools : (m.tool_uses || []);
   const arts = isStreaming ? liveArtifacts : (m.artifacts || []);
   return (
-    <div className="flex gap-3">
-      <div className="w-8 h-8 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center flex-shrink-0">
+    <div className="flex gap-3 msg-enter-assistant">
+      <div className="w-8 h-8 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center flex-shrink-0 glow-accent">
         <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
           <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
           <path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
@@ -683,7 +683,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               </p>
               <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-2">
                 {SUGGESTIONS.map((s, i) => (
-                  <button key={i} onClick={() => setInput(s.text)} className="group text-left px-4 py-3 rounded-lg bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#b5a8f5]/30 transition-colors">
+                  <button key={i} onClick={() => setInput(s.text)} className="group text-left px-4 py-3 rounded-lg bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#b5a8f5]/30 suggestion-card depth-1">
                     <s.icon className="w-4 h-4 text-[#b5a8f5] mb-2" />
                     <div className="text-[13px] text-[#d8d0c2] leading-[1.5]">{s.text}</div>
                   </button>
@@ -715,7 +715,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
         </div>
       </div>
 
-      <div className="border-t border-[#f5ede0]/8 bg-[#16110c]">
+      <div className="border-t border-[#f5ede0]/8 bg-[#16110c] glass-heavy depth-0">
         <div className="max-w-[820px] mx-auto px-6 py-4">
           {attachments.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-2">
@@ -724,7 +724,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               ))}
             </div>
           )}
-          <div className="flex items-end gap-2 bg-[#1d1813] border border-[#f5ede0]/10 rounded-xl p-2 focus-within:border-[#b5a8f5]/40 transition-colors">
+          <div className="flex items-end gap-2 bg-[#1d1813] border border-[#f5ede0]/10 rounded-xl p-2 focus-within:border-[#b5a8f5]/40 glow-input depth-2">
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
@@ -753,7 +753,7 @@ export default function ChatThread({ sessionId, refreshSessions }) {
             <button
               onClick={handleSend}
               disabled={(!input.trim() && attachments.length === 0) || sending}
-              className="h-10 w-10 rounded-lg bg-[#f5ede0] text-[#15110d] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center hover:bg-white transition-colors"
+              className="h-10 w-10 rounded-lg bg-[#f5ede0] text-[#15110d] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center hover:bg-white btn-cinema transition-colors"
             >
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </button>

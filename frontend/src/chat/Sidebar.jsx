@@ -12,9 +12,9 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
     return (
       <Link
         to={to}
-        className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-colors ${
+        className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] transition-colors sidebar-item ${
           active
-            ? "bg-[#f5ede0]/10 text-[#f5ede0]"
+            ? "bg-[#f5ede0]/10 text-[#f5ede0] sidebar-item--active"
             : "text-[#a8a092] hover:bg-[#f5ede0]/5 hover:text-[#f5ede0]"
         }`}
       >
@@ -24,7 +24,7 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
   };
 
   return (
-    <aside className="w-[280px] flex-shrink-0 h-screen flex flex-col border-r border-[#f5ede0]/8 bg-[#16110c]">
+    <aside className="w-[280px] flex-shrink-0 h-screen flex flex-col border-r border-[#f5ede0]/8 bg-[#16110c] glass-heavy depth-1 z-10">
       <div className="px-4 py-4 border-b border-[#f5ede0]/8">
         <Link to="/" className="flex items-center gap-2 mb-4">
           <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
@@ -38,7 +38,7 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
         </Link>
         <button
           onClick={onNew}
-          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-md bg-[#f5ede0] text-[#15110d] text-[12px] font-mono uppercase tracking-wider hover:bg-white transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-md bg-[#f5ede0] text-[#15110d] text-[12px] font-mono uppercase tracking-wider hover:bg-white btn-cinema transition-colors"
         >
           <Plus className="w-4 h-4" /> New chat
         </button>

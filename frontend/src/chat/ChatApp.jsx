@@ -83,7 +83,7 @@ export default function ChatApp() {
   };
 
   return (
-    <div className="h-screen w-screen flex bg-[#15110d] text-[#f5ede0] overflow-hidden">
+    <div className="h-screen w-screen flex bg-[#15110d] text-[#f5ede0] overflow-hidden cinema-bg">
       <Sidebar
         sessions={sessions}
         loading={loading}

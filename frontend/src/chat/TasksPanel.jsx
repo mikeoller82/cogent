@@ -50,7 +50,7 @@ export default function TasksPanel() {
     <div className="flex-1 overflow-y-auto">
       <div className="max-w-[820px] mx-auto px-6 py-10">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-9 h-9 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center glow-accent">
             <Calendar className="w-4 h-4 text-[#b5a8f5]" />
           </div>
           <h1 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">Scheduled tasks</h1>
@@ -67,14 +67,14 @@ export default function TasksPanel() {
             </div>
           )}
           {items.map((t) => (
-            <div key={t.id} className="group px-5 py-4 rounded-xl bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#f5ede0]/15 transition-colors">
+            <div key={t.id} className="group px-5 py-4 rounded-xl glass-card border border-[#f5ede0]/8 hover:border-[#f5ede0]/15 transition-colors">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-[15px] font-medium text-[#f5ede0]">{t.name}</div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleRunNow(t.id)}
                     disabled={running[t.id]}
-                    className="px-2.5 py-1 rounded-md bg-[#f5ede0]/5 hover:bg-[#b5a8f5]/15 text-[11px] font-mono uppercase tracking-wider text-[#b5a8f5] inline-flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                    className="px-2.5 py-1 rounded-md bg-[#f5ede0]/5 hover:bg-[#b5a8f5]/15 text-[11px] font-mono uppercase tracking-wider text-[#b5a8f5] inline-flex items-center gap-1.5 transition-colors disabled:opacity-50 btn-cinema"
                   >
                     {running[t.id] ? <Loader2 className="w-3 h-3 animate-spin" /> : <Play className="w-3 h-3" />}
                     Run now

@@ -1915,3 +1915,15 @@ TypeError: expected string or bytes-like object, got 'NoneType'
  {'/etc/localtime is a symlink to': 'America/Chicago'}
 2026-06-17 20:32:04,881 INFO cogent.scheduler: Scheduler started
 2026-06-17 20:32:04,885 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 20:35:10,984 INFO cogent.scheduler: Scheduler stopped
+2026-06-17 21:18:11,984 DEBUG tzlocal: /etc/localtime found
+2026-06-17 21:18:11,985 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-17 21:18:11,985 INFO cogent.scheduler: Scheduler started
+2026-06-17 21:18:11,990 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 21:18:20,720 INFO cogent.scheduler: Scheduler stopped
+2026-06-17 21:51:36,216 DEBUG tzlocal: /etc/localtime found
+2026-06-17 21:51:36,216 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-17 21:51:36,226 INFO cogent.scheduler: Scheduler started
+2026-06-17 21:51:36,231 INFO cogent.scheduler: Loaded 0 scheduled tasks

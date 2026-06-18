@@ -14,6 +14,8 @@ import sys
 # Ensure backend/ is importable
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import display as D
+
 
 def _add_server_subparser(subparsers) -> None:
     p = subparsers.add_parser("server", help="Manage the Cogent API server")
@@ -191,9 +193,9 @@ def _cmd_server(args: argparse.Namespace) -> None:
         port = args.port
         try:
             r = requests.get(f"http://localhost:{port}/api/sessions", timeout=3)
-            print(f"Cogent server running on port {port} (HTTP {r.status_code})")
+            D.success(f"Cogent server running on port {port} (HTTP {r.status_code})")
         except requests.ConnectionError:
-            print(f"Cogent server not running on port {port}")
+            D.error(f"Cogent server not running on port {port}")
     elif action == "start":
         import subprocess
         cmd = [
@@ -204,7 +206,7 @@ def _cmd_server(args: argparse.Namespace) -> None:
         ]
         if args.reload:
             cmd.append("--reload")
-        print(f"Starting Cogent server on {args.host}:{args.port}...")
+        D.info(f"Starting Cogent server on {args.host}:{args.port}...")
         subprocess.Popen(cmd)
     elif action == "stop":
         import signal
@@ -214,9 +216,9 @@ def _cmd_server(args: argparse.Namespace) -> None:
                 pid = int(f.read().strip())
             os.kill(pid, signal.SIGTERM)
             os.unlink(pid_file)
-            print(f"Cogent server (PID {pid}) stopped")
+            D.success(f"Cogent server (PID {pid}) stopped")
         else:
-            print("No PID file found. Use --pid or kill manually.")
+            D.error("No PID file found. Use --pid or kill manually.")
 
 
 def _cmd_tools(args: argparse.Namespace) -> None:
@@ -224,9 +226,9 @@ def _cmd_tools(args: argparse.Namespace) -> None:
     if args.json:
         print(json.dumps(TOOL_SPECS, indent=2))
         return
-    print(f"Available tools ({len(TOOL_SPECS)}):")
+    D.subheader(f"Available tools ({len(TOOL_SPECS)})")
     for spec in TOOL_SPECS:
-        print(f"  {spec['name']} — {spec['description'][:80]}")
+        D.item(f"{spec['name']} — {spec['description'][:80]}")
 
 
 def _cmd_auth(args: argparse.Namespace) -> None:
@@ -237,19 +239,19 @@ def _cmd_auth(args: argparse.Namespace) -> None:
         if args.json:
             print(json.dumps(creds))
             return
-        print(f"Credentials ({len(creds)}):")
+        D.subheader(f"Credentials ({len(creds)})")
         for c in creds:
-            print(f"  - {c}")
+            D.item(f"{c}")
     elif args.action == "set":
         if not args.service or not args.key:
-            print("--service and --key are required for set")
+            D.error("--service and --key are required for set")
             sys.exit(1)
         value = {args.key: args.value or ""}
         set_credential(args.service, value)
-        print(f"Credential set: {args.service}")
+        D.success(f"Credential set: {args.service}")
     elif args.action == "get":
         if not args.service:
-            print("--service is required for get")
+            D.error("--service is required for get")
             sys.exit(1)
         cred = get_credential(args.service)
         if args.json:
@@ -257,17 +259,17 @@ def _cmd_auth(args: argparse.Namespace) -> None:
             return
         if cred:
             for k, v in cred.items():
-                print(f"{k}={v}")
+                D.keyval(k, str(v))
         else:
-            print(f"No credential found: {args.service}")
+            D.warning(f"No credential found: {args.service}")
     elif args.action == "delete":
         if not args.service:
-            print("--service is required for delete")
+            D.error("--service is required for delete")
             sys.exit(1)
         if delete_credential(args.service):
-            print(f"Deleted: {args.service}")
+            D.success(f"Deleted: {args.service}")
         else:
-            print(f"Not found: {args.service}")
+            D.error(f"Not found: {args.service}")
 
 
 def _cmd_cron(args: argparse.Namespace) -> None:
@@ -280,17 +282,17 @@ def _cmd_cron(args: argparse.Namespace) -> None:
                      "description": bp.description} for bp in bps]
             print(json.dumps(data, indent=2))
             return
-        print(f"Available task blueprints ({len(bps)}):")
+        D.subheader(f"Available task blueprints ({len(bps)})")
         for bp in bps:
-            print(f"  {bp.name} ({bp.category}) — {bp.description}")
+            D.item(f"{bp.name} ({bp.category}) — {bp.description}")
     elif args.action == "run":
         if not args.id:
-            print("--id is required for run")
+            D.error("--id is required for run")
             sys.exit(1)
         from scheduler import run_task_now
         import asyncio
         result = asyncio.run(run_task_now(args.id))
-        print(f"Task {args.id} triggered: {result}")
+        D.success(f"Task {args.id} triggered: {result}")
 
 
 def _cmd_kanban(args: argparse.Namespace) -> None:
@@ -302,9 +304,10 @@ def _cmd_kanban(args: argparse.Namespace) -> None:
                      "priority": t.priority} for t in tasks]
             print(json.dumps(data, indent=2))
             return
-        print(f"Tasks ({len(tasks)}):")
+        D.subheader(f"Tasks ({len(tasks)})")
         for t in tasks:
-            print(f"  [{t.column}] {t.title[:60]} ({t.priority})")
+            col_badge = D.badge(f"[{t.column}]", D.CYAN if t.column == "active" else D.PURPLE)
+            print(f"  {D.DIM}•{D.RESET} {col_badge} {D.WARM}{t.title[:60]}{D.RESET} ({D.DIM}{t.priority}{D.RESET})")
     elif args.action == "count":
         counts = {}
         for col in COLUMNS:
@@ -314,9 +317,9 @@ def _cmd_kanban(args: argparse.Namespace) -> None:
         if args.json:
             print(json.dumps(counts))
             return
-        print("Task counts:")
+        D.subheader("Task counts")
         for col, n in counts.items():
-            print(f"  {col}: {n}")
+            print(f"  {D.DIM}•{D.RESET} {D.CYAN if col == 'active' else D.PURPLE}{col}{D.RESET}: {D.WARM}{n}{D.RESET}")
     elif args.action == "summary":
         from cogent_kanban import kanban_summary
         print(kanban_summary())
@@ -330,15 +333,18 @@ def _cmd_cache(args: argparse.Namespace) -> None:
             print(json.dumps(entries, indent=2))
             return
         if not entries:
-            print("Cache is empty")
+            D.info("Cache is empty")
             return
-        print(f"Cache entries ({len(entries)}):")
+        D.subheader(f"Cache entries ({len(entries)})")
         for e in entries:
-            expired = " (expired)" if e["expired"] else ""
-            print(f"  {e['key']} — {e['age']}s / {e['ttl']}s TTL{expired}")
+            expired = f" {D.AMBER}(expired){D.RESET}" if e["expired"] else ""
+            print(f"  {D.DIM}•{D.RESET} {D.WARM}{e['key']}{D.RESET} — {D.DIM}{e['age']}s / {e['ttl']}s TTL{D.RESET}{expired}")
     elif args.action == "clear":
         count = cache_clear()
-        print(f"Cleared {count} expired cache entries")
+        if count:
+            D.success(f"Cleared {count} expired cache entries")
+        else:
+            D.info("No expired cache entries to clear")
 
 
 def _cmd_processes(args: argparse.Namespace) -> None:
@@ -351,14 +357,18 @@ def _cmd_processes(args: argparse.Namespace) -> None:
             print(json.dumps(data, indent=2))
             return
         if not procs:
-            print("No processes")
+            D.info("No processes")
             return
-        print(f"Processes ({len(procs)}):")
-        for p in procs:
-            print(f"  {p.pid:>6d}  {p.status:<10s}  {p.label or p.command[:40]}")
+        D.table(
+            [[str(p.pid), D.status_dot(p.status) + " " + p.status, p.label or p.command[:40]] for p in procs],
+            headers=["PID", "Status", "Command"]
+        )
     elif args.action == "reap":
         count = reap_stale()
-        print(f"Reaped {count} stale processes")
+        if count:
+            D.success(f"Reaped {count} stale processes")
+        else:
+            D.info("No stale processes to reap")
 
 
 def _cmd_status(args: argparse.Namespace) -> None:
@@ -389,14 +399,14 @@ def _cmd_status(args: argparse.Namespace) -> None:
         print(json.dumps(info, indent=2))
         return
 
-    print("Cogent Status")
-    print(f"  Root:     {info['cogent_root']}")
-    print(f"  Model:    {info['model']}")
-    print(f"  DB:       {info['db_name']}")
-    print(f"  Log:      {info['log_level']}")
-    print(f"  Max turn: {info['max_turns']}")
+    D.header("Cogent Status")
+    D.keyval("Root", info["cogent_root"], 14)
+    D.keyval("Model", info["model"], 14)
+    D.keyval("DB", info["db_name"], 14)
+    D.keyval("Log", info["log_level"], 14)
+    D.keyval("Max turn", str(info["max_turns"]), 14)
     for name, size in dirs.items():
-        print(f"  {name}: {size / 1024:.0f} KB")
+        D.keyval(name, f"{size / 1024:.0f} KB", 14)
 
 
 if __name__ == "__main__":
@@ -414,7 +424,7 @@ def _cmd_config(args: argparse.Namespace) -> None:
             if args.json:
                 print(json.dumps({args.key: val}, indent=2, default=str))
                 return
-            print(f"{args.key}: {val}")
+            D.keyval(args.key, str(val))
         else:
             info = {"model_name": cfg.model_name, "model_base_url": cfg.model_base_url,
                     "db_name": cfg.db_name, "mongo_url": cfg.mongo_url,
@@ -422,11 +432,12 @@ def _cmd_config(args: argparse.Namespace) -> None:
             if args.json:
                 print(json.dumps(info, indent=2, default=str))
                 return
+            D.subheader("Configuration")
             for k, v in info.items():
-                print(f"  {k}: {v}")
+                D.keyval(k, str(v))
     elif args.action == "set" and args.key and args.value:
         set_override(args.key, args.value)
-        print(f"Set {args.key} = {args.value}")
+        D.success(f"Set {args.key} = {args.value}")
     elif args.action == "get" and args.key:
         val = getattr(cfg, args.key, None)
         if args.json:
@@ -440,28 +451,30 @@ def _cmd_logs(args: argparse.Namespace) -> None:
     from cogent_constants import PROJECT_ROOT
     log_dir = PROJECT_ROOT / "backend" / "logs"
     if not log_dir.is_dir():
-        print("No logs directory found")
+        D.warning("No logs directory found")
         return
 
     log_files = sorted(log_dir.glob("*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
     if not log_files:
-        print("No log files found")
+        D.info("No log files found")
         return
 
     if args.action == "clear":
         import shutil
         for f in log_files:
             f.unlink()
-        print(f"Cleared {len(log_files)} log files")
+        D.success(f"Cleared {len(log_files)} log files")
         return
 
     latest = log_files[0]
     if args.action == "show":
         lines = latest.read_text(encoding="utf-8").splitlines()
+        D.header(f"Log: {latest.name}")
         for line in lines[-args.lines:]:
-            print(line)
+            print(f"  {line}")
     elif args.action == "tail":
         import subprocess
+        D.info(f"Tailing {latest.name} (Ctrl+C to stop)...")
         subprocess.run(["tail", "-n", str(args.lines), "-f", str(latest)])
 
 
@@ -473,19 +486,21 @@ def _cmd_memory(args: argparse.Namespace) -> None:
         if args.json:
             print(json.dumps({"memory": text}, indent=2))
             return
-        print(text or "No memory stored")
+        D.header("Memory")
+        print(f"  {text or 'No memory stored'}")
     elif args.action == "set" and args.key and args.value:
         remember(args.key, args.value)
-        print(f"Stored memory: {args.key}")
+        D.success(f"Stored memory: {args.key}")
     elif args.action == "delete" and args.key:
         remember(args.key, "")  # Overwrite with empty
-        print(f"Deleted memory: {args.key}")
+        D.success(f"Deleted memory: {args.key}")
     elif args.action == "list":
         text = memory_summary()
         if args.json:
             print(json.dumps({"memory": text}, indent=2))
             return
-        print(text or "No memory stored")
+        D.subheader("Memory entries")
+        print(f"  {text or 'No memory stored'}")
 
 
 def _cmd_checkpoints(args: argparse.Namespace) -> None:
@@ -497,19 +512,22 @@ def _cmd_checkpoints(args: argparse.Namespace) -> None:
             print(json.dumps(snaps, indent=2, default=str))
             return
         if not snaps:
-            print("No snapshots")
+            D.info("No snapshots")
             return
-        print(f"Snapshots ({len(snaps)}):")
+        D.subheader(f"Snapshots ({len(snaps)})")
         for s in snaps[-20:]:
             label = s.get("label", "") or s.get("name", "")
-            print(f"  {label}")
+            D.item(label)
     elif args.action == "create":
         name = args.name or f"manual-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
         result = create_snapshot(name)
-        print(f"Created snapshot: {result}")
+        D.success(f"Created snapshot: {result}")
     elif args.action == "clean":
         count = clean_snapshots(keep=args.keep)
-        print(f"Cleaned, keeping {args.keep} snapshots")
+        if count:
+            D.success(f"Cleaned, keeping {args.keep} snapshots")
+        else:
+            D.info("Nothing to clean")
 
 
 def _cmd_blueprints(args: argparse.Namespace) -> None:
@@ -520,18 +538,18 @@ def _cmd_blueprints(args: argparse.Namespace) -> None:
             print(json.dumps([{"name": b["name"], "description": b["description"]}
                              for b in BLUEPRINTS], indent=2))
             return
-        print(f"Blueprints ({len(BLUEPRINTS)}):")
+        D.subheader(f"Blueprints ({len(BLUEPRINTS)})")
         for b in BLUEPRINTS:
-            print(f"  {b['name']} — {b['description'][:80]}")
+            D.item(f"{b['name']} — {b['description'][:80]}")
     elif args.action == "show" and args.name:
         for b in BLUEPRINTS:
             if b["name"] == args.name:
                 if args.json:
                     print(json.dumps(b, indent=2, default=str))
                     return
-                print(json.dumps(b, indent=2, default=str))
+                D.plain(json.dumps(b, indent=2, default=str))
                 return
-        print(f"Blueprint '{args.name}' not found")
+        D.error(f"Blueprint '{args.name}' not found")
 
 
 def _cmd_skills(args: argparse.Namespace) -> None:
@@ -544,31 +562,31 @@ def _cmd_skills(args: argparse.Namespace) -> None:
                 print(json.dumps(skills, indent=2))
                 return
             if not skills:
-                print("No skills installed")
+                D.info("No skills installed")
                 return
-            print(f"Installed skills ({len(skills)}):")
+            D.subheader(f"Installed skills ({len(skills)})")
             for s in skills:
                 name = s.get("name", s.get("title", "?"))
-                print(f"  {name}")
+                D.item(name)
         except Exception as e:
-            print(f"Error reading skills: {e}")
+            D.error(f"Error reading skills: {e}")
     elif args.action == "install" and args.repo:
         try:
             import skill_forge as sf
             result = sf.import_skill(args.repo, force=("--force" in (args.extra or "")))
-            print(f"Installed skill from {args.repo}: {result}")
+            D.success(f"Installed skill from {args.repo}: {result}")
         except Exception as e:
-            print(f"Error installing skill: {e}")
+            D.error(f"Error installing skill: {e}")
     elif args.action == "remove" and args.name:
         try:
             import skill_forge as sf
             sf.delete_skill(args.name)
-            print(f"Removed skill: {args.name}")
+            D.success(f"Removed skill: {args.name}")
         except Exception as e:
-            print(f"Error removing skill: {e}")
+            D.error(f"Error removing skill: {e}")
     elif args.action == "catalog":
         try:
             from skills_catalog import catalog_summary
             print(catalog_summary())
         except ImportError:
-            print("Skills catalog not available")
+            D.error("Skills catalog not available")

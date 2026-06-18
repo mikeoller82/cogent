@@ -112,7 +112,7 @@ export default function SkillsPanel() {
     }
     const { data } = result;
     return (
-      <div className="rounded-xl bg-[#1d1813] border border-[#f5ede0]/8 overflow-hidden">
+      <div className="rounded-xl glass-card border border-[#f5ede0]/8 overflow-hidden">        {/* result card */}
         {/* header */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-[#f5ede0]/8">
           {result.mode === "import" ? (
@@ -198,7 +198,7 @@ export default function SkillsPanel() {
       <div className="max-w-[820px] mx-auto px-6 py-10">
         {/* Header */}
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-9 h-9 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-md bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center glow-accent">
             <Wrench className="w-4 h-4 text-[#b5a8f5]" />
           </div>
           <h1 className="text-[26px] tracking-[-0.02em] text-[#f5ede0]">
@@ -211,7 +211,7 @@ export default function SkillsPanel() {
         </p>
 
         {/* URL input + action buttons */}
-        <div className="bg-[#1d1813] border border-[#f5ede0]/8 rounded-xl p-4 mb-6">
+        <div className="glass-card rounded-xl p-4 mb-6">          {/* URL input card */}
           <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-2">
             <div className="relative">
               <Github className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6e6760]" />
@@ -227,14 +227,14 @@ export default function SkillsPanel() {
             <button
               onClick={handleImport}
               disabled={busy || !url.trim()}
-              className="px-4 py-2 rounded-md bg-[#f5ede0] text-[#15110d] text-[12px] font-mono uppercase tracking-wider hover:bg-white inline-flex items-center gap-2 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-md bg-[#f5ede0] text-[#15110d] text-[12px] font-mono uppercase tracking-wider hover:bg-white inline-flex items-center gap-2 transition-colors disabled:opacity-40 disabled:cursor-not-allowed btn-cinema"
             >
               <Search className="w-3.5 h-3.5" /> Import
             </button>
             <button
               onClick={handleForge}
               disabled={busy || !url.trim()}
-              className="px-4 py-2 rounded-md border border-[#b5a8f5]/40 text-[#b5a8f5] text-[12px] font-mono uppercase tracking-wider hover:bg-[#b5a8f5]/10 inline-flex items-center gap-2 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-4 py-2 rounded-md border border-[#b5a8f5]/40 text-[#b5a8f5] text-[12px] font-mono uppercase tracking-wider hover:bg-[#b5a8f5]/10 inline-flex items-center gap-2 transition-colors disabled:opacity-40 disabled:cursor-not-allowed btn-cinema"
             >
               <Hammer className="w-3.5 h-3.5" /> Forge
             </button>
@@ -295,7 +295,7 @@ export default function SkillsPanel() {
           {skills.map((s) => (
             <div
               key={s.name}
-              className="group flex items-start gap-3 px-4 py-3 rounded-lg bg-[#1d1813] border border-[#f5ede0]/8 hover:border-[#f5ede0]/15 transition-colors"
+              className="group flex items-start gap-3 px-4 py-3 rounded-lg glass-card border border-[#f5ede0]/8 hover:border-[#f5ede0]/15 transition-colors"
             >
               <div className="w-7 h-7 rounded-md bg-[#b5a8f5]/10 border border-[#b5a8f5]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <FileText className="w-3.5 h-3.5 text-[#b5a8f5]" />
