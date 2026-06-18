@@ -191,11 +191,13 @@ def _cmd_server(args: argparse.Namespace) -> None:
     if action == "status":
         import requests
         port = args.port
+        D.subheader("Server Status")
         try:
             r = requests.get(f"http://localhost:{port}/api/sessions", timeout=3)
-            D.success(f"Cogent server running on port {port} (HTTP {r.status_code})")
+            D.badge("running", D.GREEN), D.ok(f"HTTP {r.status_code} on port {port}")
         except requests.ConnectionError:
-            D.error(f"Cogent server not running on port {port}")
+            D.warning("Not running")
+            D.fail(f"No server on port {port}")
     elif action == "start":
         import subprocess
         cmd = [
@@ -206,8 +208,11 @@ def _cmd_server(args: argparse.Namespace) -> None:
         ]
         if args.reload:
             cmd.append("--reload")
-        D.info(f"Starting Cogent server on {args.host}:{args.port}...")
+        D.subheader("Starting Server")
+        D.keyval("Host", f"{args.host}:{args.port}")
+        D.keyval("Reload", "yes" if args.reload else "no")
         subprocess.Popen(cmd)
+        D.ok("Server launched")
     elif action == "stop":
         import signal
         pid_file = "/tmp/cogent-server.pid"
@@ -216,9 +221,9 @@ def _cmd_server(args: argparse.Namespace) -> None:
                 pid = int(f.read().strip())
             os.kill(pid, signal.SIGTERM)
             os.unlink(pid_file)
-            D.success(f"Cogent server (PID {pid}) stopped")
+            D.ok(f"PID {pid} stopped")
         else:
-            D.error("No PID file found. Use --pid or kill manually.")
+            D.fail("No PID file found")
 
 
 def _cmd_tools(args: argparse.Namespace) -> None:
@@ -304,10 +309,13 @@ def _cmd_kanban(args: argparse.Namespace) -> None:
                      "priority": t.priority} for t in tasks]
             print(json.dumps(data, indent=2))
             return
-        D.subheader(f"Tasks ({len(tasks)})")
-        for t in tasks:
-            col_badge = D.badge(f"[{t.column}]", D.CYAN if t.column == "active" else D.PURPLE)
-            print(f"  {D.DIM}•{D.RESET} {col_badge} {D.WARM}{t.title[:60]}{D.RESET} ({D.DIM}{t.priority}{D.RESET})")
+        if not tasks:
+            D.hint("No tasks")
+            return
+        D.table(
+            [[t.id, D.status_badge(t.column), t.title[:60], t.priority] for t in tasks],
+            headers=["ID", "Column", "Title", "Priority"]
+        )
     elif args.action == "count":
         counts = {}
         for col in COLUMNS:
@@ -317,12 +325,11 @@ def _cmd_kanban(args: argparse.Namespace) -> None:
         if args.json:
             print(json.dumps(counts))
             return
-        D.subheader("Task counts")
         for col, n in counts.items():
-            print(f"  {D.DIM}•{D.RESET} {D.CYAN if col == 'active' else D.PURPLE}{col}{D.RESET}: {D.WARM}{n}{D.RESET}")
+            print(f"  {D.status_badge(col)} {D.WARM}{n}{D.RESET} task(s)")
     elif args.action == "summary":
         from cogent_kanban import kanban_summary
-        print(kanban_summary())
+        D.panel("Kanban Summary", kanban_summary())
 
 
 def _cmd_cache(args: argparse.Namespace) -> None:
@@ -357,18 +364,18 @@ def _cmd_processes(args: argparse.Namespace) -> None:
             print(json.dumps(data, indent=2))
             return
         if not procs:
-            D.info("No processes")
+            D.hint("No processes")
             return
         D.table(
-            [[str(p.pid), D.status_dot(p.status) + " " + p.status, p.label or p.command[:40]] for p in procs],
+            [[str(p.pid), D.status_badge(p.status), p.label or p.command[:40]] for p in procs],
             headers=["PID", "Status", "Command"]
         )
     elif args.action == "reap":
         count = reap_stale()
         if count:
-            D.success(f"Reaped {count} stale processes")
+            D.ok(f"Reaped {count} stale processes")
         else:
-            D.info("No stale processes to reap")
+            D.hint("No stale processes to reap")
 
 
 def _cmd_status(args: argparse.Namespace) -> None:
@@ -377,36 +384,38 @@ def _cmd_status(args: argparse.Namespace) -> None:
     from cogent_constants import PROJECT_ROOT, MEMORY_DIR
 
     cfg = get_config()
-    info = {
-        "cogent_root": str(PROJECT_ROOT),
-        "model": cfg.model_name,
-        "db_name": cfg.db_name,
-        "log_level": cfg.log_level,
-        "max_turns": cfg.max_turns,
-    }
 
-    # Add directory sizes
-    dirs = {}
+    if args.json:
+        info = {
+            "cogent_root": str(PROJECT_ROOT),
+            "model": cfg.model_name,
+            "db_name": cfg.db_name,
+            "log_level": cfg.log_level,
+            "max_turns": cfg.max_turns,
+        }
+        print(json.dumps(info, indent=2))
+        return
+
+    D.banner("Cogent Status", "system overview")
+
+    D.section("Runtime", [
+        ("Root", str(PROJECT_ROOT)),
+        ("Model", cfg.model_name),
+        ("DB", cfg.db_name),
+        ("Log", str(cfg.log_level)),
+        ("Max turns", str(cfg.max_turns)),
+        ("Memory dir", str(MEMORY_DIR)),
+    ])
+
+    # Directory sizes
+    sizes = []
     for d in [PROJECT_ROOT / "memory" / "cache",
               PROJECT_ROOT / "memory" / "sessions",
               PROJECT_ROOT / "memory" / "loops"]:
         if d.is_dir():
             size = sum(f.stat().st_size for f in d.glob("**/*") if f.is_file())
-            dirs[d.name] = size
-    info["directories"] = dirs
-
-    if args.json:
-        print(json.dumps(info, indent=2))
-        return
-
-    D.header("Cogent Status")
-    D.keyval("Root", info["cogent_root"], 14)
-    D.keyval("Model", info["model"], 14)
-    D.keyval("DB", info["db_name"], 14)
-    D.keyval("Log", info["log_level"], 14)
-    D.keyval("Max turn", str(info["max_turns"]), 14)
-    for name, size in dirs.items():
-        D.keyval(name, f"{size / 1024:.0f} KB", 14)
+            sizes.append((d.name, f"{size / 1024:.0f} KB"))
+    D.section("Storage", sizes)
 
 
 if __name__ == "__main__":

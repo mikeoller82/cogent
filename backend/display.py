@@ -94,22 +94,25 @@ def panel(title: str, content: str, accent: str = PURPLE) -> None:
     tl, tr, bl, br = "╔", "╗", "╚", "╝"
     hbar, vbar = "═", "║"
 
-    # Title
-    title_text = f" {title} " if title else ""
-    title_len = _strip(title_text).len()
-    top_len = w - title_len
-
-    print(f"  {accent}{tl}{hbar * (title_len + 2) if title else hbar * w}{tr}{RS}")
+    # Title line — ╔═ Title ═══════════════╗
     if title:
-        print(f"  {accent}{vbar}{RS} {BD}{accent}{title}{RS} {' ' * (w - title_len - 2)}{accent}{vbar}{RS}")
-        print(f"  {accent}{vbar}{RS}{DM}{hbar * w}{RS}{accent}{vbar}{RS}")
+        header_text = f" {title} "
+        header_clean = _strip(header_text)
+        remaining = w - len(header_clean)
+        left = remaining // 2
+        right = remaining - left
+        print(f"  {accent}{tl}{hbar * left}{header_text}{hbar * right}{tr}{RS}")
+    else:
+        print(f"  {accent}{tl}{hbar * w}{tr}{RS}")
+
+    # Separator line
+    print(f"  {accent}{vbar}{RS}{DM}{hbar * w}{RS}{accent}{vbar}{RS}")
 
     for line in content.split("\n"):
         clean = _strip(line)
         if len(clean) > w:
-            # Overflow: split
-            print(f"  {accent}{vbar}{RS} {line[:w]}")
-            print(f"  {accent}{vbar}{RS} {line[w:]}{' ' * (w - _strip(line[w:]).len())}{accent}{vbar}{RS}")
+            # Overflow: truncate
+            print(f"  {accent}{vbar}{RS} {line[:w]}{accent}{vbar}{RS}")
         else:
             print(f"  {accent}{vbar}{RS} {line}{' ' * (w - len(clean))}{accent}{vbar}{RS}")
 
@@ -251,6 +254,3 @@ def raw(text: str) -> None:
 def json_out(data: Any) -> None:
     """Pretty JSON (for --json flag paths — no ANSI)."""
     print(json.dumps(data, indent=2, default=str))
-
-def _len(text: str) -> int:
-    return len(_strip(text))
