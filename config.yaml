@@ -9,9 +9,9 @@
 
 model:
   # Default LLM — OpenAI-compatible chat completions
-  provider: kilocode
-  base_url: https://api.kilo.ai/api/gateway/chat/completions
-  default: nex-agi/nex-n2-pro:free
+  provider: opencode-zen
+  base_url: https://opencode.ai/zen/v1/chat/completions
+  default: deepseek-v4-flash-free
   # api_key: read from KILOCODE_API_KEY env var
 
 rate_limit:
@@ -47,17 +47,17 @@ providers:
     library: ollama
     model: qwen3.6
     api_key_env: OLLAMA_API_KEY
-    priority: 5
+    priority: 6
   - name: ollama-cloud
     library: ollama-cloud
     base_url: https://cloud.ollama.ai
     model: glm-5.2:cloud
     api_key_env: OLLAMA_API_KEY
-    priority: 6
+    priority: 5
 
 agent:
-  max_turns: 50               # max tool-using turns per message
-  max_iterations: 90          # max Plan→Execute→Verify cycles
+  max_turns: 15               # max tool-using turns per message
+  max_iterations: 20          # max Plan→Execute→Verify cycles
   verbose: true              # when true, narrate every tool call
   reasoning_effort: medium    # minimal | low | medium | high
 

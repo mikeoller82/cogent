@@ -1332,3 +1332,9 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-17 21:18:20,720 INFO cogent.scheduler: Scheduler stopped
 2026-06-17 21:51:36,226 INFO cogent.scheduler: Scheduler started
 2026-06-17 21:51:36,231 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 22:10:58,337 INFO cogent.scheduler: Scheduler started
+2026-06-17 22:10:58,341 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-17 22:11:54,701 INFO cogent.skill_forge: Cloning https://github.com/shadcn/improve.git -> /tmp/cogent-skf-xbwkexg5/repo (depth=1)
+2026-06-17 22:11:55,234 INFO cogent.skill_forge: Clone complete: /tmp/cogent-skf-xbwkexg5/repo
+2026-06-17 22:11:55,238 INFO cogent.skill_forge: Skill 'improve' installed -> /home/mike/cogent/.cogent/skills/improve (created)
+2026-06-17 22:13:23,539 INFO cogent.scheduler: Scheduler stopped
