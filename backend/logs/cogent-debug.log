@@ -2570,3 +2570,11 @@ TypeError: expected string or bytes-like object, got 'NoneType'
  {'/etc/localtime is a symlink to': 'America/Chicago'}
 2026-06-18 10:58:30,688 INFO cogent.scheduler: Scheduler started
 2026-06-18 10:58:30,693 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 11:01:31,680 INFO cogent.mcp_registry: MCP server 'ghcr.io-github-github-mcp-server:latest' installed (method: docker pull ghcr.io/github/github-mcp-server:latest)
+2026-06-18 11:01:49,485 INFO cogent.mcp_registry: MCP server 'notionhq-notion-mcp-server' installed (method: npm install -g @notionhq/notion-mcp-server)
+2026-06-18 11:04:26,946 INFO cogent.scheduler: Scheduler stopped
+2026-06-18 11:04:28,052 DEBUG tzlocal: /etc/localtime found
+2026-06-18 11:04:28,053 DEBUG tzlocal: 1 found:
+ {'/etc/localtime is a symlink to': 'America/Chicago'}
+2026-06-18 11:04:28,053 INFO cogent.scheduler: Scheduler started
+2026-06-18 11:04:28,058 INFO cogent.scheduler: Loaded 0 scheduled tasks

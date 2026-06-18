@@ -969,7 +969,7 @@ def _manifest_to_yaml(manifest: Dict[str, Any]) -> str:
     lines = []
     
     # Basic fields
-    for key in ("name", "version", "description", "transport"):
+    for key in ("name", "version", "description", "transport", "source", "installed_at"):
         if manifest.get(key):
             lines.append(f"{key}: {manifest[key]}")
     

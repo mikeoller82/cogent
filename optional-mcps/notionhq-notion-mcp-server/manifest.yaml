@@ -1,0 +1,10 @@
+name: notionhq-notion-mcp-server
+version: 1.0.0
+description: Official MCP server for Notion API
+transport: stdio
+command: npx
+args:
+  - @notionhq/notion-mcp-server
+tools:
+  - name: notionhq-notion-mcp-server_help
+    description: Tools provided by notionhq-notion-mcp-server

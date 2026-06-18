@@ -37,9 +37,9 @@
     {
       "command": "docker pull ghcr.io/github/github-mcp-server:latest",
       "exit_code": 0,
-      "stdout": "latest: Pulling from github/github-mcp-server\nfa105e07bfd6: Pulling fs layer\n990a9c434e5e: Pulling fs layer\n2780920e5dbf: Pulling fs layer\ndd64bf2dd177: Pulling fs layer\n39dc083afc39: Pulling fs layer\nc195c9094e4a: Pulling fs layer\ndc0fb75e565a: Pulling fs layer\nb839dfae01f6: Pulling fs layer\n875ea9878944: Pulling fs layer\ndcaa5a89b0cc: Pulling fs layer\n52630fc75a18: Pulling fs layer\n7c12895b777b: Pulling fs layer\nbf7a4185f015: Pulling fs layer\n069d1e267530: Pulling fs layer\n235c3625d753: Pulling fs layer\n3214acf345c0: Pulling fs layer\nc6be7da9aec3: Download complete\n3214acf345c0: Download complete\ndd64bf2dd177: Download complete\n875ea9878944: Download complete\n990a9c434e5e: Download complete\n2780920e5dbf: Download complete\nb839dfae01f6: Download complete\n875ea9878944: Pull complete\n990a9c434e5e: Pull complete\nbf7a4185f015: Download complete\nc195c9094e4a: Download complete\n39dc083afc39: Download complete\n7c12895b777b: Download complete\n069d1e267530: Download complete\n52630fc75a18: Download complete\ndcaa5a89b0cc: Download complete\nbf7a4185f015: Pull complete\n39dc083afc39: Pull complete\n3214acf345c0: Pull complete\n2780920e5dbf: Pull complete\n7c12895b777b: Pull complete\n52630fc75a18: Pull complete\ndd64bf2dd177: Pull complete\nb839dfae01f6: Pull complete\n069d1e267530: Pull complete\ndcaa5a89b0cc: Pull complete\nfa105e07bfd6: Download complete\ndc0fb75e565a: Download complete\n235c3625d753: Download complete\n235c3625d753: Pull complete\nc195c9094e4a: Pull complete\ndc0fb75e565a: Pull complete\nfa105e07bfd6: Pull complete\nDigest: sha256:2afb26356481d1a350e14544a6e160f7f7ec1561a1ea309b823665abf0309036\nStatus: Downloaded newer image for ghcr.io/github/github-mcp-server:latest\nghcr.io/github/github-mcp-server:latest\n",
+      "stdout": "latest: Pulling from github/github-mcp-server\nDigest: sha256:2afb26356481d1a350e14544a6e160f7f7ec1561a1ea309b823665abf0309036\nStatus: Image is up to date for ghcr.io/github/github-mcp-server:latest\nghcr.io/github/github-mcp-server:latest\n",
       "stderr": ""
     }
   ],
-  "installed_at": "2026-06-18T15:51:40.462530+00:00"
+  "installed_at": "2026-06-18T16:01:31.680273+00:00"
 }

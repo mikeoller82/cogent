@@ -1,0 +1,42 @@
+{
+  "name": "notionhq-notion-mcp-server",
+  "source": "makenotion/notion-mcp-server",
+  "registry_entry": {
+    "id": "makenotion/notion-mcp-server",
+    "name": "makenotion/notion-mcp-server",
+    "display_name": "Notion",
+    "description": "Official MCP server for Notion API",
+    "url": "https://github.com/makenotion/notion-mcp-server",
+    "created_at": "1.0.0",
+    "updated_at": "2026-06-17T22:14:11Z",
+    "stargazer_count": 4434,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/4792552?v=4",
+    "primary_language": "TypeScript",
+    "primary_language_color": "#3178c6",
+    "repo_id": "946169991",
+    "license": "MIT License",
+    "topics": [],
+    "opengraph_image_url": "https://opengraph.githubassets.com/1824ffae4009e04d394d6cfe473d23f7a93f7435bbde3d8996a00794e842a4c7/makenotion/notion-mcp-server",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "makenotion/notion-mcp-server",
+    "is_in_organization": true,
+    "pushed_at": "2026-06-17T22:14:11Z",
+    "repository": {
+      "id": "946169991",
+      "source": "github",
+      "url": "https://github.com/makenotion/notion-mcp-server"
+    },
+    "full_name": "io.github.makenotion/notion-mcp-server",
+    "api_name": "makenotion/notion-mcp-server"
+  },
+  "install_command": "npm install -g @notionhq/notion-mcp-server",
+  "install_results": [
+    {
+      "command": "npm install -g @notionhq/notion-mcp-server",
+      "exit_code": 0,
+      "stdout": "\nadded 174 packages in 3s\n\n43 packages are looking for funding\n  run `npm fund` for details\n",
+      "stderr": "npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead\n"
+    }
+  ],
+  "installed_at": "2026-06-18T16:01:49.485370+00:00"
+}
