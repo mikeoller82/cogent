@@ -6,6 +6,7 @@ import os
 import re
 import json
 import asyncio
+import logging
 from datetime import datetime
 from typing import List, Dict, Any, AsyncGenerator
 
@@ -27,6 +28,8 @@ load_dotenv()
 _cfg = get_config()
 KILOCODE_MODEL_NAME = _cfg.model_name
 KILOCODE_CHAT_COMPLETIONS_URL = _cfg.model_base_url
+
+logger = logging.getLogger("cogent.llm_service")
 
 # Message compression threshold: auto-compress when messages exceed this count
 COMPRESS_AFTER_TURNS = 30  # compress messages after this many exchange turns
@@ -226,17 +229,21 @@ def _parse_tool_call(text: str):
     before = text[: m.start()].strip()
     return parsed, before
 
-def _call_llm(messages: List[Dict[str, str]], **kwargs) -> str:
-    """Send a chat-completion request via the VirtualProvider fallback chain.
+async def _call_llm(messages: List[Dict[str, str]], **kwargs) -> str:
+    """Send a chat-completion request via the VirtualProvider fallback chain (async).
 
     Returns the response text.  Raises RuntimeError when all providers
     are exhausted or a non-retryable error occurs.
     """
     vp = get_provider()
-    content = vp.chat(messages, **kwargs)
+    content = await vp.chat(messages, **kwargs)
     if content is None:
         raise RuntimeError("Provider returned None content")
     return content
+
+
+async def _send_kilocode_chat(messages: List[Dict[str, str]]) -> str:
+    return await _call_llm(messages)
 
 
 def _collect_provider_events() -> List[str]:
@@ -245,9 +252,11 @@ def _collect_provider_events() -> List[str]:
     return vp.drain_fallback_events()
 
 
-async def _send_kilocode_chat(messages: List[Dict[str, str]]) -> str:
-    return await asyncio.to_thread(_call_llm, messages)
-
+# backward-compatible alias for existing callers
+# backward-compatible sync wrapper for existing tests / callers
+def _post_kilocode_chat(messages: List[Dict[str, str]], **kwargs) -> str:
+    """Synchronous wrapper around ``_send_kilocode_chat``."""
+    return asyncio.run(_send_kilocode_chat(messages))
 
 async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
     name = call.get("name")
@@ -329,8 +338,21 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
                 mode=args.get("mode", "w"),
             )
         return {"result": f"Unknown tool: {name}"}
+    except (ValueError, TypeError, KeyError) as e:
+        # Validation / bad-args errors — tell the LLM clearly so it can fix the call
+        logger.warning("Tool %s validation error: %s", name, e)
+        return {"result": f"Tool '{name}' received invalid arguments: {e}"}
+    except (requests.ConnectionError, requests.Timeout, OSError) as e:
+        # Network / resource errors — may be transient
+        logger.warning("Tool %s network error: %s", name, e)
+        return {"result": f"Tool '{name}' failed with network error: {e}"}
+    except asyncio.TimeoutError as e:
+        logger.warning("Tool %s timed out: %s", name, e)
+        return {"result": f"Tool '{name}' timed out. The operation may still be running."}
     except Exception as e:
-        return {"result": f"Tool error: {e}"}
+        # Unexpected errors — log full traceback for debugging
+        logger.exception("Tool %s unexpected error", name)
+        return {"result": f"Tool '{name}' failed: {type(e).__name__}: {e}"}
 
 
 async def _load_memory_facts(db, workspace_id: str) -> str:

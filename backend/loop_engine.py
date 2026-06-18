@@ -26,6 +26,12 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("cogent.loop_engine")
 
+# ── Debounce constants ────────────────────────────────────────────────────
+# save_state writes to disk at most once per N non-critical transitions,
+# reducing synchronous disk-write churn on the event-loop thread.
+SAVE_DEBOUNCE_LIMIT = 5
+_pending_save_count: Dict[str, int] = {}
+
 # ── Constants ────────────────────────────────────────────────────────────
 BACKEND_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BACKEND_DIR.parent
@@ -183,17 +189,26 @@ def load_state(session_id: str) -> LoopState:
     return LoopState(session_id=session_id)
 
 
-def save_state(state: LoopState) -> None:
-    """Persist loop state to disk."""
+def save_state(state: LoopState, force: bool = False) -> None:
+    """Persist loop state to disk (debounced when *force* is False).
+
+    Non-critical writes (attempt records, tool results, exit-signal updates)
+    are batched so only every N-th call actually flushes to disk.  Critical
+    transitions (phase change, task complete/fail/escalate, circuit-breaker
+    state change) MUST pass *force* = ``True``.
+    """
+    sid = state.session_id
+    count = _pending_save_count.get(sid, 0) + 1
+    _pending_save_count[sid] = count
+
+    if not force and count < SAVE_DEBOUNCE_LIMIT:
+        return  # skip write; accumulate more changes
+
+    # Flush to disk
+    _pending_save_count[sid] = 0
     state.updated_at = datetime.utcnow().isoformat() + "Z"
     path = _state_path(state.session_id)
     path.write_text(json.dumps(asdict(state), indent=2, default=str), encoding="utf-8")
-
-
-def delete_state(session_id: str) -> None:
-    path = _state_path(session_id)
-    if path.is_file():
-        path.unlink()
 
 
 # ── State transitions ────────────────────────────────────────────────────
@@ -244,7 +259,7 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.last_output_length = 0
     state.last_asking_questions = False
     state.decisions.append(f"Task started: {task[:80]}")
-    save_state(state)
+    save_state(state, force=True)
 
 
 def record_attempt(state: LoopState, phase: str, summary: str) -> None:
@@ -254,7 +269,7 @@ def record_attempt(state: LoopState, phase: str, summary: str) -> None:
         "summary": summary[:200],
         "timestamp": datetime.utcnow().isoformat() + "Z",
     })
-    save_state(state)
+    save_state(state)  # debounced
 
 
 def complete_task(state: LoopState, summary: str = "") -> None:
@@ -262,19 +277,19 @@ def complete_task(state: LoopState, summary: str = "") -> None:
     state.completed_at = datetime.utcnow().isoformat() + "Z"
     if summary:
         state.last_output_summary = summary[:200]
-    save_state(state)
+    save_state(state, force=True)
 
 
 def fail_task(state: LoopState, error: str) -> None:
     state.phase = PHASE_ERROR
     state.errors.append(error[:200])
-    save_state(state)
+    save_state(state, force=True)
 
 
 def escalate_task(state: LoopState, reason: str) -> None:
     state.phase = PHASE_ESCALATE
     state.decisions.append(f"Escalated: {reason[:200]}")
-    save_state(state)
+    save_state(state, force=True)
 
 
 # ── Circuit Breaker (Ralph-style) ────────────────────────────────────────
@@ -292,7 +307,7 @@ def init_circuit_breaker(state: LoopState) -> None:
                 state.decisions.append(
                     f"CB {old_state} -> {CB_HALF_OPEN}: cooldown elapsed ({int(elapsed)}s >= {CB_COOLDOWN_SECONDS}s)"
                 )
-                save_state(state)
+                save_state(state, force=True)
         except (ValueError, TypeError):
             pass
 
@@ -366,7 +381,7 @@ def record_loop_result(
         state.decisions.append(f"CB {old_state} -> {state.cb_state}: {reason}")
         logger.info("Circuit breaker %s -> %s: %s", old_state, state.cb_state, reason)
 
-    save_state(state)
+    save_state(state, force=True)
     return state.cb_state
 
 
@@ -406,7 +421,7 @@ def record_tool_result(state: LoopState, tool_name: str, args: dict, success: bo
     state.tool_failure_history.append((tool_name, args_hash, success))
     if len(state.tool_failure_history) > TOOL_FAILURE_HISTORY_MAX:
         state.tool_failure_history = state.tool_failure_history[-TOOL_FAILURE_HISTORY_MAX:]
-    save_state(state)
+    save_state(state)  # debounced
 
 
 def check_tool_loop(state: LoopState, tool_name: str, args: dict) -> tuple[bool, str, bool]:
@@ -636,7 +651,7 @@ def update_exit_signals(state: LoopState, analysis: dict) -> None:
     state.completion_indicators = state.completion_indicators[-5:]
     state.exit_signals = state.exit_signals[-5:]
 
-    save_state(state)
+    save_state(state)  # debounced
 
 def should_exit_gracefully(state: LoopState) -> Optional[str]:
     """Check exit conditions — Ralph-style + CowAgent-style guardrails.

@@ -1,0 +1,66 @@
+{
+  "session_id": "session-stream-2",
+  "phase": "done",
+  "iteration": 2,
+  "task_description": "Remember this",
+  "verification_criteria": [
+    "Addresses: Remember this"
+  ],
+  "continue_count": 0,
+  "last_plan_text": "",
+  "attempts": [
+    {
+      "phase": "execute",
+      "summary": "All done.",
+      "timestamp": "2026-06-18T06:52:39.373719Z"
+    },
+    {
+      "phase": "execute",
+      "summary": "All done.",
+      "timestamp": "2026-06-18T06:52:39.373942Z"
+    }
+  ],
+  "tokens_estimated": 23,
+  "errors": [],
+  "decisions": [
+    "Task started: Remember this",
+    "[plan->execute] Starting execution turn",
+    "[execute->verify] Running verification pass",
+    "[verify->plan] Refining after FAIL",
+    "[plan->execute] Starting execution turn",
+    "[execute->verify] Running verification pass"
+  ],
+  "last_output_summary": "All done.",
+  "verification_result": "FAIL",
+  "verification_notes": "done.",
+  "budget_max": 200000,
+  "budget_warn_pct": 0.75,
+  "started_at": "2026-06-18T06:52:39.308115Z",
+  "updated_at": "2026-06-18T06:52:39.373971Z",
+  "completed_at": "2026-06-18T06:52:39.373968Z",
+  "cb_state": "CLOSED",
+  "cb_consecutive_no_progress": 0,
+  "cb_consecutive_same_error": 0,
+  "cb_last_progress_loop": 0,
+  "cb_total_opens": 0,
+  "cb_opened_at": null,
+  "exit_signals": [],
+  "completion_indicators": [],
+  "done_signals": [
+    1,
+    2
+  ],
+  "test_only_loops": [],
+  "tool_failure_history": [
+    [
+      "save_memory",
+      "82bf2994",
+      true
+    ]
+  ],
+  "tool_loop_detected_stop": false,
+  "last_files_changed": 0,
+  "last_errors_detected": false,
+  "last_output_length": 0,
+  "last_asking_questions": false
+}

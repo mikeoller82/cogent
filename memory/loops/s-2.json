@@ -1,27 +1,24 @@
 {
-  "session_id": "session-1",
-  "phase": "error",
+  "session_id": "s-2",
+  "phase": "plan",
   "iteration": 0,
-  "task_description": "Hello",
+  "task_description": "Build a PDF report",
   "verification_criteria": [],
   "continue_count": 0,
   "last_plan_text": "",
   "attempts": [],
   "tokens_estimated": 0,
-  "errors": [
-    "LLM error: Missing KILOCODE_API_KEY"
-  ],
+  "errors": [],
   "decisions": [
-    "Task started: Hello",
-    "[plan->execute] Starting execution turn"
+    "Task started: Build a PDF report"
   ],
   "last_output_summary": "",
   "verification_result": null,
   "verification_notes": "",
   "budget_max": 200000,
   "budget_warn_pct": 0.75,
-  "started_at": "2026-06-18T06:47:14.361092Z",
-  "updated_at": "2026-06-18T06:47:14.431035Z",
+  "started_at": "2026-06-18T06:52:39.211360Z",
+  "updated_at": "2026-06-18T06:52:39.211369Z",
   "completed_at": null,
   "cb_state": "CLOSED",
   "cb_consecutive_no_progress": 0,

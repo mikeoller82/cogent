@@ -51,6 +51,28 @@ class DiscoveredSkill:
 
 # ── URL parsing ──────────────────────────────────────────────────────────
 
+
+
+_GITHUB_OWNER_RE = re.compile(r"^[\w.-]+$")
+_GITHUB_REPO_RE  = re.compile(r"^[\w.-]+$")
+
+
+def _validate_github_path(owner: str, repo: str) -> None:
+    """Validate that owner and repo match GitHub's allowed character set.
+
+    Raises ValueError if either segment contains characters outside
+    ``[\\w.-]`` — no slashes, colons, or path-traversal sequences.
+    """
+    if not _GITHUB_OWNER_RE.match(owner):
+        raise ValueError(
+            f"Invalid GitHub owner {owner!r}: only alphanumeric, dots, and dashes allowed"
+        )
+    if not _GITHUB_REPO_RE.match(repo):
+        raise ValueError(
+            f"Invalid GitHub repo {repo!r}: only alphanumeric, dots, and dashes allowed"
+        )
+
+
 def parse_github_url(url: str) -> Tuple[str, str, Optional[str], Optional[str]]:
     """Parse a GitHub URL into (owner, repo, subpath, ref).
 
@@ -82,7 +104,7 @@ def parse_github_url(url: str) -> Tuple[str, str, Optional[str], Optional[str]]:
     )
     if m:
         owner, repo = m.group(1), m.group(2)
-        ref = m.group(3)  # branch / tag
+        ref = m.group(3)
         subpath = m.group(4).lstrip("/") if m.group(4) else None
         return owner, repo, subpath, ref
 
@@ -116,20 +138,23 @@ async def _run_git(*args: str, cwd: Optional[Path] = None,
 
 
 async def clone_repo(url: str, dest: Path, ref: Optional[str] = None,
-                     depth: int = 1) -> None:
-    """Clone a GitHub repo into *dest*."""
+                     depth: int = 1, timeout: int = 120) -> None:
+    """Clone a GitHub repo into *dest*.
+
+    Raises RuntimeError on failure or timeout.
+    """
     if dest.exists():
         shutil.rmtree(dest)
     dest.mkdir(parents=True, exist_ok=True)
 
     logger.info("Cloning %s -> %s (depth=%d)", url, dest, depth)
-    rc, out, err = await _run_git("clone", "--depth", str(depth), url, str(dest))
+    rc, out, err = await _run_git("clone", "--depth", str(depth), url, str(dest), timeout=timeout)
     if rc != 0:
         raise RuntimeError(f"git clone failed:\n{err}")
 
     if ref:
         logger.info("Checking out ref=%s", ref)
-        rc, out, err = await _run_git("checkout", ref, cwd=dest)
+        rc, out, err = await _run_git("checkout", ref, cwd=dest, timeout=timeout)
         if rc != 0:
             raise RuntimeError(f"git checkout {ref} failed:\n{err}")
 
@@ -288,6 +313,7 @@ async def import_from_url(url: str, force: bool = False) -> Dict[str, Any]:
       repo, skills (list of install results), errors (list of strings)
     """
     owner, repo_name, subpath, ref = parse_github_url(url)
+    _validate_github_path(owner, repo_name)
     clone_url = build_clone_url(owner, repo_name)
 
     with tempfile.TemporaryDirectory(prefix="cogent-skf-") as tmp:
@@ -420,6 +446,7 @@ async def forge_skill(repo_url: str, llm_complete_fn, force: bool = False) -> Di
     *llm_complete_fn* is an async callable:  llm_complete_fn(prompt: str) -> str
     """
     owner, repo_name, subpath, ref = parse_github_url(url=repo_url)
+    _validate_github_path(owner, repo_name)
     clone_url = build_clone_url(owner, repo_name)
 
     with tempfile.TemporaryDirectory(prefix="cogent-skf-") as tmp:

@@ -40,6 +40,7 @@ The provider list sorted by priority forms the fallback chain.
 
 from __future__ import annotations
 
+import asyncio
 import os
 import time
 import random
@@ -91,8 +92,8 @@ class RateLimiter:
         self.max_delay = max_delay_ms / 1000.0
         self._last_ts: float = 0.0
 
-    def wait_if_needed(self) -> float:
-        """Block until the minimum inter-request delay has elapsed.
+    async def wait_if_needed(self) -> float:
+        """Wait (non-blocking) until the minimum inter-request delay has elapsed.
 
         Returns the delay that was actually applied (seconds).
         """
@@ -105,7 +106,7 @@ class RateLimiter:
 
         if elapsed < target:
             sleep_for = target - elapsed
-            time.sleep(sleep_for)
+            await asyncio.sleep(sleep_for)
             self._last_ts = time.monotonic()
             return sleep_for
 
@@ -132,8 +133,8 @@ class VirtualProvider:
 
     # ── Public API ──────────────────────────────────────────────────────
 
-    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
-        """Send a chat-completion request through the provider chain.
+    async def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+        """Send a chat-completion request through the provider chain (async).
 
         Returns the response text.
 
@@ -150,15 +151,15 @@ class VirtualProvider:
             if not api_key:
                 logger.warning("Provider %s skipped — no API key", entry.get("name"))
                 if attempt == 0:
-                    # Try next provider immediately
                     self._fallback(entry.get("name", "?"), "missing API key")
                 continue
 
-            # Rate limit before hitting this provider
-            self._rate_limiter.wait_if_needed()
+            # Rate limit before hitting this provider (non-blocking)
+            await self._rate_limiter.wait_if_needed()
 
+            # Post is sync (requests / ollama); run in thread to avoid blocking the event loop
             try:
-                result = self._post(entry, api_key, messages, **kwargs)
+                result = await asyncio.to_thread(self._post, entry, api_key, messages, **kwargs)
                 logger.info("Provider %s returned type=%s len=%d",
                             entry.get("name"), type(result).__name__,
                             len(result) if isinstance(result, str) else -1)
@@ -172,20 +173,17 @@ class VirtualProvider:
                 )
 
                 if status == 429:
-                    # Rate limited — fall back to next provider
                     reason = f"429 rate limited: {body}"
                     last_error = f"{entry.get('name', '?')}: {reason}"
                     self._fallback(entry.get("name", "?"), reason)
                     continue
 
                 if status >= 500:
-                    # Server error — also try next provider
                     reason = f"{status} server error"
                     last_error = f"{entry.get('name', '?')}: {reason}"
                     self._fallback(entry.get("name", "?"), reason)
                     continue
 
-                # Other 4xx — fatal
                 raise
 
             except requests.ConnectionError as exc:
@@ -196,9 +194,6 @@ class VirtualProvider:
                 continue
 
             except RuntimeError as exc:
-                # Malformed response (e.g. missing choices[0].message.content)
-                # indicates the model is overwhelmed or returning empty results.
-                # Fall back to the next provider rather than crashing the turn.
                 logger.warning("Provider %s RuntimeError — %s", entry.get("name"), exc)
                 last_error = f"{entry.get('name', '?')}: malformed response: {exc}"
                 self._fallback(entry.get("name", "?"), f"malformed response: {exc}")
