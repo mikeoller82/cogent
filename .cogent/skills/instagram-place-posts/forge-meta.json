@@ -1,0 +1,10 @@
+{
+  "name": "instagram-place-posts",
+  "description": "Scrapes Instagram posts tagged at a specific location or place, returning media items with captions, like/comment counts, media URLs and user info. Use when user mentions Instagram location posts, posts from a place on Instagram, Instagram geotag scraping, posts tagged at location, Instagram place feed, get posts from a venue on Instagram, Instagram location data, posts near me Instagram, place-based Instagram content, tagged location posts.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/get-place-posts.py",
+    "scripts/search-location.py"
+  ]
+}

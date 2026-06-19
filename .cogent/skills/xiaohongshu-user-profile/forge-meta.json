@@ -1,0 +1,10 @@
+{
+  "name": "xiaohongshu-user-profile",
+  "description": "Fetch Xiaohongshu (RedNote / xhs) user profile information and their published notes list by user ID, returning nickname, bio, follower/following counts, engagement totals, tags, and paginated notes with engagement stats. Use when user mentions user profile xiaohongshu, rednote creator profile, xhs influencer data, scrape xiaohongshu user, get blogger notes, xiaohongshu author info, KOL discovery xiaohongshu, rednote user stats, creator profile rednote, xiaohongshu blogger analysis, get xhs user followers, rednote influencer profile, xiaohongshu account info, xhs creator data, user notes list xiaohongshu, rednote account scrape, xiaohongshu KOL research.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/extract-user-notes.py",
+    "scripts/extract-user-profile.py"
+  ]
+}

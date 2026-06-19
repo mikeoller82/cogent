@@ -1,0 +1,9 @@
+{
+  "name": "tiktok-hashtag-videos",
+  "description": "TikTok hashtag video scraper: input a hashtag name \u2192 output paginated video list with full metadata (author profile, engagement stats, music, video meta, hashtag list). Use when user mentions TikTok hashtag scraping, TikTok tag videos, scrape TikTok by hashtag, extract TikTok hashtag data, TikTok challenge videos, get videos from a TikTok tag, bulk collect TikTok hashtag posts, TikTok video collection by tag, TikTok topic videos, collect TikTok tag data, batch fetch TikTok videos by hashtag, tiktok tag scraper, tiktok challenge scraper. Also applies to competitive research on TikTok trending topics, influencer discovery by hashtag, content monitoring for specific TikTok tags, or any task requiring video lists from a specific TikTok hashtag or challenge.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/get-challenge-id.py"
+  ]
+}

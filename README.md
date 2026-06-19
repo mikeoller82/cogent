@@ -1,194 +1,264 @@
-# Cogent — the AI coworker
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/Cogent-AI%20Coworker-7c5cf5?style=for-the-badge&logo=python&logoColor=white">
+    <img alt="Cogent" src="https://img.shields.io/badge/Cogent-AI%20Coworker-7c5cf5?style=for-the-badge&logo=python&logoColor=white">
+  </picture>
+</p>
 
-An AI-powered coworker that ships real work. Not a chatbot — a colleague who researches, writes documents, builds web apps, remembers facts, schedules recurring tasks, reads your files, and refines its output through a Plan→Execute→Verify loop.
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/github/stars/mike/cogent?style=flat&logo=github" alt="Stars"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Python-3.12+-blue?logo=python" alt="Python"></a>
+  <a href="#"><img src="https://img.shields.io/badge/React-19-61DAFB?logo=react" alt="React"></a>
+  <a href="#"><img src="https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi" alt="FastAPI"></a>
+  <a href="#"><img src="https://img.shields.io/badge/MongoDB-Motor-47A248?logo=mongodb" alt="MongoDB"></a>
+  <a href="#"><img src="https://img.shields.io/badge/MCP-Registry-000000?logo=github" alt="MCP"></a>
+  <a href="#"><img src="https://img.shields.io/badge/SSE-Streaming-FF6B6B" alt="SSE"></a>
+  <a href="#"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
+</p>
 
-Built on **FastAPI** + **MongoDB** + **React** (shadcn/ui). Driven by KiloCode-hosted LLMs via OpenAI-compatible API.
+<p align="center">
+  <b>Cogent</b> — An AI-powered coworker that ships real work.<br>
+  Not a chatbot. A colleague who researches, writes documents, builds web apps,<br>
+  remembers facts, schedules recurring tasks, deploys MCP servers,<br>
+  activates skills, and refines output through a Plan→Execute→Verify loop.
+</p>
 
 ---
 
 ## Features
 
-### Core AI interactions
-- **Chat with tool-use** — Cogent uses tools autonomously (web search, PDF generation, web app deployment, memory, scheduling) via a multi-turn tool-calling loop
-- **Streaming responses (SSE)** — real-time streaming with granular events: status updates, tool calls, tool results, artifacts, and loop phase transitions
-- **File attachments** — upload PDF, CSV, Excel, images, or code files; extracted text is inlined into the LLM context
-- **Conversation history** — persisted per-session, reloaded across page visits
+### Core AI Loop
 
-### Tools (LLM-operated)
-| Tool | What it does |
-|---|---|
-| `web_search` | Live internet search via DuckDuckGo |
-| `generate_pdf` | Designed PDF reports with KPIs, tables, callouts, charts |
-| `generate_webapp` | Build and deploy single-file HTML web apps |
-| `save_memory` | Persist facts about the user across sessions |
-| `recall_memory` | Retrieve stored facts in future conversations |
-| `schedule_task` | Set up recurring tasks (cron-based) that Cogent runs autonomously |
-| `activate_skill` | Load and activate an installed agent skill |
-| `read_skill_resource` | Read reference files bundled with a skill |
-| `get_loop_state` | Return the current loop-engineering state for the session |
+- **Plan→Execute→Verify** — every task runs through an iterative refinement loop with maker/checker split, budget management, and circuit-breaker stagnation detection
+- **Multi-turn tool use** — Cogent uses tools autonomously (web search, PDF generation, webapp deployment, memory, scheduling, skills, MCP) via OpenAI-compatible function calling
+- **SSE streaming** — granular real-time events: `status`, `tool`, `tool_result`, `artifact`, `reasoning`, `provider`, `loop`, `final`, `done`
+- **Provider fallback chain** — VirtualProvider auto-fails over on 429/5xx across 6 providers (KiloCode, OpenRouter, OpenCode Zen, Ollama local/cloud)
+- **Headroom compression** — optional 60–95% token reduction before LLM calls (CCR-reversible)
+- **Context compression** — token-aware summarization of old turns to stay within budget
 
-### Loop engineering (Plan→Execute→Verify)
-Every task runs through an iterative refinement loop:
-1. **Plan** — the task is accepted and criteria established
-2. **Execute** — Cogent works (tool calls, thinking, generating)
-3. **Verify** — a maker/checker split self-verifies the output against criteria
-4. **Refine** — on partial/fail, Cogent incorporates verification feedback and retries (up to 5 iterations)
+### GUI + TUI
 
-The loop state is tracked per session and visible in the UI as phase badges with iteration counters and verdict indicators.
+| Interface | Stack | Purpose |
+|-----------|-------|---------|
+| **React UI** | React 19 + shadcn/ui + Tailwind + CRACO | Full chat interface at `localhost:3000/app` |
+| **Terminal TUI** | OpenTUI (TypeScript + Zig core) | Terminal client at `tui/`, `cogent` CLI |
+
+### Agent Skills System
+
+- **Discover** skills from `.cogent/skills/` (portable SKILL.md format per agentskills.io)
+- **Import** from any GitHub repo that contains SKILL.md files
+- **Forge** new skills via LLM analysis of any code repository
+- **Activate** skills at runtime via `activate_skill` tool call
+- **Resource bundles** — skills carry scripts, references, and assets in subdirectories
+- **Optional catalog** — `optional-skills/` with curated categories: security (code-audit, threat-model), devops (docker-management), research (web-research)
+- **Dual discovery** — system skills in `.agents/skills/` + `.cogent/skills/`, configurable via `COGENT_SKILLS_PATHS`
+
+### GitHub MCP Registry Integration
+
+Cogent integrates directly with [github.com/mcp](https://github.com/mcp) — the official GitHub MCP server registry:
+
+- **Browse & search** — 350+ servers with language/topic filtering, pagination
+- **Auto-detect install** — reads `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod` to determine the exact install method
+- **Multi-method fallback** — npx → npm → pip → uvx → cargo → go install → source → docker
+- **One-click install** — runs the package manager, writes `manifest.yaml` with MCP config
+- **Runtime config** — update server configs post-install via the UI
+- **Installed server catalog** — 12 pre-installed servers (Linear, n8n, Playwright, Notion, Context7, netdata, markitdown, GitHub MCP, Apify, Upstash)
+
+### File Extraction
+
+| Format | Library | Notes |
+|--------|---------|-------|
+| PDF | `pypdf` | Full text extraction |
+| CSV/TSV | Native | Capped at 200 rows |
+| Excel | `openpyxl` | Up to 5 sheets, 150 rows each |
+| Code/text | Native | `.py`, `.js`, `.ts`, `.md`, `.json`, `.html`, `.log`, `.yaml`, `.css` |
+
+### Scheduled Tasks
+
+- APScheduler-backed recurring tasks (`daily`, `weekly`, `monthly`)
+- Cron storage with output history in `memory/cron/`
+- Blueprint catalog with 8 templates (news briefing, market report, etc.)
+- Manual "Run now" trigger from UI
 
 ### Memory
-- Persist key-value facts (`save_memory` / `recall_memory`)
-- CRUD API for managing stored memories
-- Cross-session recall — facts saved in one session are available in future ones
 
-### Scheduled tasks
-- Create recurring tasks with a prompt, cadence (`daily`, `weekly`, `monthly`), and time
-- APScheduler-backed execution: Cogent runs the task autonomously on schedule
-- Manual "Run now" trigger via the UI
+- File-based long-term memory (`memory/memories/MEMORY.md`, `USER.md`)
+- Cross-session key-value recall
+- CRUD API for management
+- Auth token store (`memory/auth.json`)
+- Cache layer (`memory/cache/`) with TTL support
 
-### Agent skills system
-- Discover and catalog skills from `.cogent/skills/` directories
-- Install skills by importing from GitHub repos (auto-detect `SKILL.md`)
-- Forge new skills by analyzing any code repository via LLM
-- Import/forge endpoints for programmatic skill management
+### Kanban Task Board
 
-### File extraction
-Extracts text from:
-- **PDF** (via `pypdf`)
-- **CSV / TSV** (capped at 200 rows)
-- **Excel** `.xlsx` / `.xls` (via `openpyxl`, up to 5 sheets, 150 rows each)
-- **Plain text**: `.txt`, `.md`, `.json`, `.html`, `.log`, `.py`, `.js`, `.jsx`, `.ts`, `.tsx`, `.css`, `.yaml`, `.yml`
-
-### Frontend
-- Dark-themed chat UI with shadcn/ui components
-- Session management (create, list, delete conversations)
-- Real-time streaming with status indicators, tool badges, artifact cards, and loop phase visualization
-- Sidebar panels for memory, scheduled tasks, and installed skills
-- Drag-and-drop file attachments
+- Columns: backlog → ready → in_progress → review → done → archived
+- Priorities: critical, high, medium, low, none
+- Comments, tags, event history, lifecycle tracking
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                   Frontend                       │
-│    React + shadcn/ui + Tailwind + CRACO          │
-│    Port 3000 (dev)                               │
-│    REACT_APP_BACKEND_URL → backend               │
-└────────────────┬────────────────────────────────┘
-                 │ HTTP / SSE
-                 ▼
-┌─────────────────────────────────────────────────┐
-│                 Backend (FastAPI)                 │
-│    Port 8000                                     │
-│                                                   │
-│    server.py       — routes, CORS, middleware     │
-│    llm_service.py  — LLM loop, tool parsing, SSE  │
-│    tools.py        — tool implementations         │
-│    loop_engine.py  — Plan→Execute→Verify state    │
-│    skill_forge.py  — import/forge skills          │
-│    agent_skills.py — skill discovery & catalog    │
-│    scheduler.py    — APScheduler recurring tasks  │
-│    file_extract.py — document text extraction     │
-└────────────────┬────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                     Frontend (React 19 + shadcn/ui)              │
+│  Port 3000 · Dark theme · SSE streaming · Drag-drop uploads      │
+│  Panels: Chat, Memory, Tasks, Skills, MCP Registry               │
+│  gateway.ts — SSE event client (Fetch + ReadableStream)          │
+└────────────────────────────┬─────────────────────────────────────┘
+                             │ HTTP / SSE
+                             ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                    Backend (FastAPI + Python 3.12)                │
+│  Port 8000                                                       │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  Core Layer                                              │    │
+│  │  server.py        — Routes, CORS, middleware             │    │
+│  │  llm_service.py   — LLM loop, SSE streaming, tool parse  │    │
+│  │  tools.py         — 18+ tool implementations             │    │
+│  │  loop_engine.py   — Plan→Execute→Verify state machine    │    │
+│  │  cogent_prompt.py — Structured system prompt builder     │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  Infrastructure Layer                                   │    │
+│  │  cogent_config.py     — 3-layer config (YAML+env+override) │  │
+│  │  cogent_providers.py  — VirtualProvider + fallback chain │    │
+│  │  cogent_gateway.py    — SSE delivery router              │    │
+│  │  cogent_acp.py        — Agent Communication Protocol     │    │
+│  │  cogent_hooks.py      — 9 lifecycle hook points          │    │
+│  │  cogent_services.py   — Auxiliary service router         │    │
+│  │  cogent_headroom.py   — Headroom compression integration │    │
+│  │  cogent_logging.py    — Rotating file handlers           │    │
+│  │  cogent_budget.py     — Iteration + token budget tracker │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  State & Persistence Layer                              │    │
+│  │  cogent_state.py      — JSON-file-backed sessions       │    │
+│  │  cogent_memory.py     — §-delimited markdown KV store   │    │
+│  │  cogent_kanban.py     — Task board                      │    │
+│  │  cogent_cron.py       — Cron jobs + output history      │    │
+│  │  cogent_auth.py       — Credential token store          │    │
+│  │  cogent_cache.py      — TTL-based file cache            │    │
+│  │  cogent_checkpoints.py — State snapshots for rollback   │    │
+│  │  cogent_processes.py  — Background process registry     │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  Agent & Tools Layer                                    │    │
+│  │  agent/              — TurnContext, ContextCompressor   │    │
+│  │  agent_skills.py     — Skill discovery + activation     │    │
+│  │  skills_catalog.py   — Installed + optional skills      │    │
+│  │  skill_forge.py      — Import/forge skills from GitHub  │    │
+│  │  tools_registry.py   — Hermes-style tool registry       │    │
+│  │  agent_reach_tools.py— YouTube, GitHub, RSS, V2EX,Bili  │    │
+│  │  firecrawl_service.py— Web search + scrape via Firecrawl│    │
+│  │  blueprint_catalog.py— 8 task blueprint templates       │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  MCP Registry Layer                                     │    │
+│  │  mcp_registry.py   — GitHub MCP registry fetch + cache  │    │
+│  │                     Auto-detect install methods         │    │
+│  │                     Install + remove + config MCP servers│    │
+│  │  optional-mcps/    — 12 pre-installed server manifests  │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  CLI Layer                                              │    │
+│  │  cli/main.py — server, tools, auth, cron, kanban,       │    │
+│  │                cache, processes, status, config, logs,   │    │
+│  │                memory, checkpoints, blueprints, skills   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└────────────────┬────────────────────────────────────────────────┘
                  │
           ┌──────┴──────┐
           ▼              ▼
-     ┌──────────┐  ┌──────────┐
-     │ MongoDB  │  │ KiloCode │
-     │ (Motor)  │  │  (LLM)   │
-     └──────────┘  └──────────┘
+    ┌──────────┐   ┌──────────┐
+    │ MongoDB  │   │ KiloCode │
+    │ (Motor)  │   │  (LLM)   │
+    └──────────┘   └──────────┘
 ```
 
-### Backend modules
+### Persistence Layout
 
-| Module | Responsibility |
-|---|---|
-| `server.py` | FastAPI app, route definitions, upload handling, artifact serving |
-| `llm_service.py` | LLM chat loop, tool-call parsing, SSE event streaming, loop integration |
-| `tools.py` | All tool implementations (web search, PDF, webapp, memory, schedule, skills) |
-| `loop_engine.py` | Loop state machine, maker/checker verification, budget management |
-| `skill_forge.py` | GitHub repo parsing, SKILL.md scanning, LLM-assisted skill generation |
-| `agent_skills.py` | Skill discovery from `.cogent/skills/`, frontmatter parsing, resource serving |
-| `scheduler.py` | APScheduler integration for recurring task execution |
-| `file_extract.py` | Document text extraction for attachment processing |
+```
+memory/
+├── loops/            # Loop state (per-session JSON)
+├── sessions/         # Session index + metadata
+├── memories/         # Long-term memory (MEMORY.md, USER.md)
+├── kanban.json       # Task board
+├── auth.json         # Stored credentials
+├── processes.json    # Process registry
+├── cache/            # TTL-based file cache
+├── snapshots/        # State snapshots
+├── cron/             # Cron job definitions + output history
+│   ├── jobs.json
+│   └── output/
+└── cogent.json       # General state
+
+optional-skills/      # Curated skill catalog (security, devops, research)
+optional-mcps/        # MCP server catalog entries (12 servers)
+datagen/              # Batch data generation configs
+scripts/              # Install, setup, test, and utility scripts
+sandboxes/            # Container sandbox staging
+```
 
 ---
 
-## Prerequisites
+## Quick Start
+
+### Prerequisites
 
 - **Python** 3.10+
 - **Node.js** 18+ / npm 9+
-- **MongoDB** — local or remote (Atlas)
+- **MongoDB** — local or Atlas
 - **KiloCode API key** — from [kilo.app](https://kilo.app) (or any OpenAI-compatible endpoint)
 
----
-
-## Quick start
-
-### 1. Clone and set up the backend
+### 1. Backend
 
 ```bash
 cd backend
-python -m venv .venv
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env   # add KILOCODE_API_KEY and MONGO_URL
 ```
 
-### 2. Configure environment
+### 2. MongoDB
 
 ```bash
-cp .env.example .env     # create if it doesn't exist
-```
-
-Edit `.env`:
-
-```env
-KILOCODE_API_KEY=sk-...          # required — KiloCode or OpenAI-compatible key
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=cogent
-```
-
-### 3. Start MongoDB
-
-```bash
-# local install
-mongod --dbpath /var/lib/mongodb
-
-# or via Docker
 docker run -d -p 27017:27017 --name cogent-mongo mongo:7
 ```
 
-### 4. Start the backend
+### 3. Start Backend
 
 ```bash
 cd backend
 uvicorn server:app --reload --host 0.0.0.0 --port 8000
 ```
 
-API available at `http://localhost:8000/api`
+API: `http://localhost:8000/api`
 
-### 5. Set up and start the frontend
+### 4. Frontend
 
 ```bash
 cd frontend
 npm install --legacy-peer-deps
-```
-
-Create `frontend/.env.local`:
-
-```env
-REACT_APP_BACKEND_URL=http://localhost:8000
-```
-
-```bash
+echo "REACT_APP_BACKEND_URL=http://localhost:8000" > .env.local
 npm start
 ```
 
-Opens at `http://localhost:3000`. Navigate to `/app` for the chat interface.
+Opens at `http://localhost:3000`. Navigate to `/app` for the chat.
 
-### 6. Verify it works
+### 5. TUI (optional)
+
+```bash
+cd tui && bun install && bun run build
+./bin/cogent --url http://localhost:8000
+```
+
+### 6. Verify
 
 ```bash
 curl http://localhost:8000/api/
@@ -197,53 +267,111 @@ curl http://localhost:8000/api/
 
 ---
 
-## Project structure
+## Virtual Provider Chain
 
-```
-cogent/
-├── backend/
-│   ├── server.py              # FastAPI app + routes
-│   ├── llm_service.py         # LLM loop + SSE streaming
-│   ├── tools.py               # tool implementations
-│   ├── loop_engine.py         # Plan→Execute→Verify state machine
-│   ├── skill_forge.py         # import/forge skills from GitHub
-│   ├── agent_skills.py        # skill discovery and catalog
-│   ├── scheduler.py           # recurring task scheduler
-│   ├── file_extract.py        # document extraction
-│   ├── requirements.txt
-│   ├── .env                   # backend config
-│   ├── artifacts/             # generated PDFs and web apps
-│   └── uploads/               # uploaded files
-├── frontend/
-│   ├── src/
-│   │   ├── chat/              # chat UI (ChatThread, Sidebar, SkillsPanel…)
-│   │   ├── components/        # shared UI (Navbar, Hero, Feature sections…)
-│   │   ├── hooks/             # React hooks
-│   │   ├── lib/               # utilities
-│   │   ├── App.js             # router (landing + /app/*)
-│   │   └── index.js           # entry point
-│   ├── public/
-│   ├── package.json
-│   ├── craco.config.js
-│   └── tailwind.config.js
-├── .cogent/
-│   └── skills/                # installed agent skill definitions
-├── memory/
-│   └── loops/                 # loop state persistence (per-session JSON)
-├── tests/
-│   ├── test_agent_skills.py
-│   └── test_llm_service.py
-└── test_result.md             # testing protocol + results log
-```
+Cogent routes LLM calls through a priority-ordered fallback chain. When one provider returns 429 or 5xx, the next is tried automatically.
+
+| Priority | Provider | Model | API Key Env |
+|----------|----------|-------|-------------|
+| 1 | KiloCode | `nex-agi/nex-n2-pro:free` | `KILOCODE_API_KEY` |
+| 2 | OpenRouter | `openrouter/owl-alpha` | `OPENROUTER_API_KEY` |
+| 3 | OpenCode Zen | `deepseek-v4-flash-free` | `OPENCODE_API_KEY` |
+| 4 | KiloCode (alt) | `nvidia/nemotron-3-ultra` | `KILOCODE_API_KEY` |
+| 5 | Ollama Cloud | `glm-5.2:cloud` | `OLLAMA_API_KEY` |
+| 6 | Ollama Local | `qwen3.6` | `OLLAMA_API_KEY` |
+
+Rate limiting (5–7s randomized delay) prevents free-tier quota exhaustion.
 
 ---
 
-## API reference
+## MCP Registry
+
+### API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/mcp/registry` | Browse GitHub MCP registry (search, filter by language/topic) |
+| `POST` | `/api/mcp/registry/sync` | Sync latest server list from GitHub |
+| `GET` | `/api/mcp/server/{id}` | Server detail + README + install methods |
+| `GET` | `/api/mcp/installed` | List installed MCP servers |
+| `POST` | `/api/mcp/install` | Install an MCP server (auto-detect method) |
+| `POST` | `/api/mcp/remove` | Remove an installed MCP server |
+| `POST` | `/api/mcp/config` | Update runtime config |
+| `GET` | `/api/mcp/languages` | Language breakdown |
+| `GET` | `/api/mcp/topics` | Topic frequency |
+| `GET` | `/api/mcp/servers/available` | Registry sync status + Docker availability |
+
+### Install Methods
+
+Cogent auto-detects the best install method from the GitHub package manifest:
+
+- **npx** → auto-converted to `npm install -g` for install, npx for runtime
+- **pip / uvx** — Python packages
+- **cargo** — Rust crates
+- **go install** — Go modules
+- **gem** — Ruby gems
+- **source** — git clone + build
+- **docker** — ghcr.io container
+
+### Pre-Installed Servers
+
+Apify, Context7, GitHub MCP, Linear, markitdown, n8n, netdata, Notion, Playwright, Upstash Context7
+
+---
+
+## Agent Skills
+
+### Quick Start
+
+```bash
+# Import skills from any GitHub repo
+curl -X POST /api/skills/import -d '{"repo_url": "https://github.com/user/skill-repo"}'
+
+# Forge a new skill from a code repo (LLM-generates SKILL.md)
+curl -X POST /api/skills/forge -d '{"repo_url": "https://github.com/user/code-repo"}'
+
+# List installed skills
+curl /api/skills
+```
+
+### Skill Structure
+
+Each skill lives in its own directory with a `SKILL.md` file:
+
+```
+.cogent/skills/
+└── my-skill/
+    ├── SKILL.md          # Instructions + YAML frontmatter (name, description)
+    ├── references/       # Reference files (loaded via read_skill_resource)
+    ├── scripts/          # Helper scripts
+    └── assets/           # Images, templates, etc.
+```
+
+Skill format follows the [agentskills.io](https://agentskills.io) portable specification.
+
+---
+
+## Loop Engineering
+
+Every task runs through Cogent's Plan→Execute→Verify state machine:
+
+| Phase | Purpose |
+|-------|---------|
+| **Plan** | Accept task, establish criteria |
+| **Execute** | Work via tool calls, thinking, generation |
+| **Verify** | Maker/checker split self-verifies against criteria |
+| **Refine** | On partial/fail, incorporates feedback and retries (up to 90 iterations) |
+
+Safety features: circuit breaker (CLOSED/HALF_OPEN/OPEN), same-args detection, consecutive-failure guard, token budget enforcement (~100K per task).
+
+---
+
+## API Reference
 
 ### Sessions
 
 | Method | Path | Description |
-|---|---|---|
+|--------|------|-------------|
 | `GET` | `/api/sessions` | List all sessions |
 | `POST` | `/api/sessions` | Create session |
 | `DELETE` | `/api/sessions/{id}` | Delete session and messages |
@@ -251,206 +379,152 @@ cogent/
 ### Messages
 
 | Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/sessions/{id}/messages` | List messages in session |
-| `POST` | `/api/sessions/{id}/messages` | Send message (non-streaming) |
-| `POST` | `/api/sessions/{id}/messages/stream` | Send message (SSE streaming) |
+|--------|------|-------------|
+| `GET` | `/api/sessions/{id}/messages` | List messages |
+| `POST` | `/api/sessions/{id}/messages` | Send (non-streaming) |
+| `POST` | `/api/sessions/{id}/messages/stream` | Send (SSE streaming) |
 
-### Memory
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/memory` | List all stored memories |
-| `POST` | `/api/memory` | Create/update memory `{key, value}` |
-| `DELETE` | `/api/memory/{key}` | Delete memory |
-
-### Scheduled tasks
+### Memory & Tasks
 
 | Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/tasks` | List all scheduled tasks |
-| `DELETE` | `/api/tasks/{id}` | Remove task |
+|--------|------|-------------|
+| `GET/POST/DELETE` | `/api/memory` | Key-value memory CRUD |
+| `GET/DELETE` | `/api/tasks` | List/delete scheduled tasks |
 | `POST` | `/api/tasks/{id}/run` | Trigger immediate execution |
+
+### Loop Engineering
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET/DELETE` | `/api/sessions/{id}/loop` | Get/reset loop state |
+| `GET` | `/api/loops` | All active loops |
+
+### Files & Artifacts
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/uploads` | Upload file (multipart) |
+| `GET` | `/api/artifact/{id}` | Serve artifact (PDF inline, `?dl=1` download) |
 
 ### Skills
 
 | Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/skills` | List installed skills |
-| `GET` | `/api/skills/{name}` | Get skill detail |
-| `DELETE` | `/api/skills/{name}` | Remove skill |
-| `POST` | `/api/skills/import` | Import skills from a GitHub repo |
-| `POST` | `/api/skills/forge` | Generate skill from repo analysis |
+|--------|------|-------------|
+| `GET` | `/api/skills` | List installed |
+| `GET/DELETE` | `/api/skills/{name}` | Detail / remove |
+| `POST` | `/api/skills/import` | Import from GitHub repo |
+| `POST` | `/api/skills/forge` | Forge from repo analysis |
 
-### Loop engineering
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/api/sessions/{id}/loop` | Get loop state for session |
-| `DELETE` | `/api/sessions/{id}/loop` | Reset loop state |
-| `GET` | `/api/loops` | List all active loop states |
-
-### Files & artifacts
-
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/api/uploads` | Upload file (multipart) |
-| `GET` | `/api/artifact/{id}` | Serve artifact (PDF inline, ?dl=1 to download) |
-
-### SSE event format
+### SSE Event Types
 
 ```json
-{"type": "status",   "content": "thinking"}
-{"type": "loop",     "data": {"phase": "execute", "iteration": 1}}
-{"type": "tool",     "data": {"tool": "web_search", "args": {...}, "summary": ""}}
-{"type": "tool_result", "data": {"tool": "web_search", "summary": "..."}}
-{"type": "artifact", "data": {"id": "...", "type": "pdf", "title": "...", "url": "/api/artifact/...", "size_kb": 42}}
-{"type": "loop",     "data": {"phase": "verify", "verdict": "PASS", "notes": "...", "iteration": 1}}
-{"type": "final",    "content": "Here's the result..."}
-{"type": "loop",     "data": {"phase": "done"}}
-{"type": "done",     "data": {"message": {...}}}    // persisted message object
+{"type": "status",     "content": "thinking"}
+{"type": "loop",       "data": {"phase": "execute", "iteration": 1}}
+{"type": "tool",       "data": {"tool": "web_search", "args": {...}}}
+{"type": "tool_result","data": {"tool": "web_search", "summary": "..."}}
+{"type": "artifact",   "data": {"id": "...", "type": "pdf", "url": "/api/artifact/..."}}
+{"type": "reasoning",  "content": "thinking step..."}
+{"type": "provider",   "data": {"from": "kilocode", "to": "openrouter", "reason": "429 rate limited"}}
+{"type": "final",      "content": "Here's the result..."}
+{"type": "done",       "data": {"message": {...}}}
 ```
 
 ---
 
 ## Configuration
 
-### Backend (`backend/.env`)
+### `config.yaml` (3-layer: defaults → YAML → env)
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `KILOCODE_API_KEY` | yes | — | KiloCode or OpenAI-compatible API key |
-| `MONGO_URL` | yes | — | MongoDB connection string |
-| `DB_NAME` | no | `cogent` | MongoDB database name |
+| Section | Key | Default | Description |
+|---------|-----|---------|-------------|
+| `model` | `provider` | `kilocode` | Default LLM provider |
+| `model` | `base_url` | KiloCode API | OpenAI-compatible endpoint |
+| `agent` | `max_turns` | `50` | Max tool-using turns per message |
+| `agent` | `max_iterations` | `90` | Max Plan→Execute→Verify cycles |
+| `rate_limit` | `min/max_delay_ms` | `5000/7000` | Inter-request delay range |
+| `web` | `search_backend` | `firecrawl` | Web search engine |
+| `headroom` | `enabled` | `true` | Enable Headroom compression |
+| `mcp` | `enabled` | `true` | MCP registry integration |
 
-### Frontend (`frontend/.env.local`)
+See `config.yaml` for the full 114-line configuration reference.
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `REACT_APP_BACKEND_URL` | yes | — | Backend base URL (e.g. `http://localhost:8000`) |
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python 3.12, FastAPI, Motor (async MongoDB) |
+| LLM | KiloCode API, OpenRouter, OpenCode Zen, Ollama |
+| Frontend | React 19, shadcn/ui, Tailwind CSS, CRACO |
+| TUI | OpenTUI (TypeScript + Zig) |
+| Scheduler | APScheduler (asyncio) |
+| PDF | ReportLab |
+| Web search | Firecrawl (cloud or self-hosted) |
+| File extract | pypdf, openpyxl |
+| Web scraping | Firecrawl |
+| Content channels | yt-dlp, gh CLI, feedparser, bili-cli |
+| Compression | Headroom (CCR) |
 
 ---
 
 ## Development
 
-### Running tests
-
 ```bash
-cd backend
-python -m pytest tests/ -v
-```
+# Run tests
+cd backend && python -m pytest tests/ -v
 
-### Creating agent skills
-
-Cogent discovers skills from `.cogent/skills/` directories. Each skill is a directory containing a `SKILL.md` file with YAML frontmatter. Skills can be:
-
-- **Imported** from a GitHub repo containing `SKILL.md` files
-- **Forged** via LLM analysis of a code repository
-
-```bash
+# Create a skill
 POST /api/skills/import  {"repo_url": "https://github.com/user/repo"}
 POST /api/skills/forge   {"repo_url": "https://github.com/user/repo"}
 ```
 
-### Loop engineering
+### Project Structure
 
-The loop state persists to `memory/loops/{session_id}.json`. Reset with:
-
-```bash
-DELETE /api/sessions/{id}/loop
 ```
-
-Each session's loop operates independently with:
-- Max 5 iterations per task
-- Token budget of ~200K tokens per task
-- Maker/checker verification against criteria
+cogent/
+├── AGENT.md               # AI agent instructions
+├── AGENTS.md               # Agent topology & delegation protocols
+├── SOUL.md                 # Agent personality definition
+├── config.yaml             # 114-line central configuration
+├── backend/
+│   ├── server.py           # FastAPI + 40+ route endpoints
+│   ├── llm_service.py      # LLM loop + SSE streaming
+│   ├── tools.py            # 18 tool implementations
+│   ├── loop_engine.py      # Plan→Execute→Verify state machine
+│   ├── cogent_config.py    # 3-layer config loader
+│   ├── cogent_providers.py # VirtualProvider + fallback chain
+│   ├── cogent_memory.py    # File-based KV memory
+│   ├── cogent_gateway.py   # SSE delivery router
+│   ├── cogent_acp.py       # ACP adapter
+│   ├── cogent_hooks.py     # 9 lifecycle hook points
+│   ├── cogent_services.py  # Auxiliary service router
+│   ├── mcp_registry.py     # GitHub MCP registry integration
+│   ├── agent_skills.py     # Skill discovery + activation
+│   ├── skills_catalog.py   # Catalog installed + optional skills
+│   ├── skill_forge.py      # Import/forge skills from GitHub
+│   ├── tools_registry.py   # Hermes-style tool registry
+│   ├── agent_reach_tools.py# YouTube, GitHub, RSS, V2EX, Bilibili
+│   ├── firecrawl_service.py# Web search + scrape
+│   ├── blueprint_catalog.py# 8 task blueprint templates
+│   ├── agent/              # TurnContext, ContextCompressor
+│   ├── cli/                # 14 management commands
+│   └── hooks/              # Auto-discovered hook scripts
+├── frontend/
+│   ├── src/chat/           # ChatApp, Sidebar, MCPPanel, SkillsPanel
+│   └── src/lib/gateway.ts  # SSE gateway client
+├── tui/                    # Terminal UI (OpenTUI)
+├── .cogent/skills/         # Installed agent skills
+├── optional-skills/        # Curated skill catalog
+├── optional-mcps/          # MCP server manifests
+├── memory/                 # All state persistence
+├── datagen/                # Batch generation configs
+├── scripts/                # Utility scripts
+└── tests/                  # Python test suite
+```
 
 ---
 
-## Tech stack
+## License
 
-| Layer | Technology |
-|---|---|
-| Backend | Python 3, FastAPI, Motor (async MongoDB driver) |
-| LLM | KiloCode API (OpenAI-compatible), Claude Sonnet |
-| Frontend | React 19, shadcn/ui, Tailwind CSS, CRACO, axios |
-| Scheduler | APScheduler (async) |
-| PDF | ReportLab |
-| Web search | DuckDuckGo (via duckduckgo_search) |
-| File extract | pypdf, openpyxl |
-
----
-
-## Terminal UI (OpenTUI)
-
-Cogent includes a terminal-based user interface powered by [OpenTUI](https://opentui.com) — a TypeScript library on a native Zig core. Use it as an alternative to the React web UI when working in the terminal.
-
-### Quick start
-
-```bash
-# From the project root
-cd tui && bun install && bun run build
-
-# Run the TUI (server must be running separately)
-./bin/cogent
-# or
-bun run start
-
-# Start with an explicit server URL
-./bin/cogent --url http://localhost:8000
-
-# Global install via bun link
-cd tui && bun run link
-# Now `cogent` is available anywhere
-```
-
-### Usage
-
-```
-cogent [options]
-
-  -u, --url <url>     Server URL (default: http://localhost:8000)
-  -s, --server        Auto-start the Cogent backend server
-  -h, --help          Show this help message
-  -v, --version       Show version
-```
-
-### TUI commands
-
-| Command | Action |
-|---|---|
-| `/help` | Show available commands |
-| `/clear` | Clear the conversation |
-| `/connect` | Reconnect to server |
-| `/quit` | Exit Cogent |
-
-| Key | Action |
-|---|---|
-| `Ctrl+C` | Exit Cogent |
-
-### Architecture
-
-The TUI is a standalone bundle in `tui/`:
-
-```
-tui/
-├── bin/cogent              # Global launcher script
-├── src/
-│   ├── cli.tsx             # Thin entrypoint (--help/--version before OpenTUI)
-│   ├── runner/main.tsx     # Main runner (creates renderer, renders App)
-│   ├── App.tsx             # Root layout component
-│   ├── theme.ts            # Color palette
-│   ├── types.ts            # Message type definitions
-│   ├── client/gateway.ts   # SSE gateway client
-│   ├── hooks/useConversation.ts  # Stateful conversation management
-│   └── components/
-│       ├── Header.tsx      # ASCII logo + branding
-│       ├── ChatArea.tsx    # Scrollable message list
-│       ├── InputBar.tsx    # Prompt input
-│       └── StatusBar.tsx   # Connection info, counters
-├── dist/                   # Built output (cli.js + native .so)
-├── package.json
-└── tsconfig.json
-```
-
-The TUI connects to the Cogent backend via SSE streaming at `/api/sessions/{id}/messages/stream`. It renders chat messages, tool calls, status updates, and loop-engineering events into a scrollable terminal interface.
+MIT

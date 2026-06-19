@@ -1,0 +1,28 @@
+[
+  {
+    "tag": "div",
+    "id": "",
+    "cls": "logo",
+    "text": null,
+    "type": null,
+    "src": null,
+    "data-testid": null,
+    "w": 48,
+    "h": 48,
+    "y": 368,
+    "x": 696
+  },
+  {
+    "tag": "svg",
+    "id": "",
+    "cls": "[object SVGAnimatedString]",
+    "text": null,
+    "type": null,
+    "src": null,
+    "data-testid": null,
+    "w": 48,
+    "h": 48,
+    "y": 368,
+    "x": 696
+  }
+]

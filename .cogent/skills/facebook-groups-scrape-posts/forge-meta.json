@@ -1,0 +1,9 @@
+{
+  "name": "facebook-groups-scrape-posts",
+  "description": "Scrapes posts from a Facebook group given a group URL, sort order, and desired count \u2014 returns structured post metadata including post_id, permalink, author, timestamp, body text, images/videos, reaction counts, reaction type breakdown, comment count, and share count. Use when: user wants to scrape/extract Facebook group posts, collect FB group content, harvest group data, get posts from a Facebook group, monitor Facebook group activity, bulk export group posts, facebook groups scraping, facebook-groups-scrape-posts, fetch FB group feed.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/scrape-posts.py"
+  ]
+}

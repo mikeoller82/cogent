@@ -1,0 +1,9 @@
+{
+  "name": "instagram-profile-meta",
+  "description": "Fetches Instagram user profile metadata including bio, follower count, following count, post count, verification status and other profile details. Use when user mentions Instagram profile info, user stats, account details, follower count, bio scraping, Instagram user data, IG profile, check Instagram account, Instagram user info, how many followers does someone have on Instagram, get Instagram profile, Instagram account metadata.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/get-profile-meta.py"
+  ]
+}

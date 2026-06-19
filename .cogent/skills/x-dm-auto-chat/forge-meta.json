@@ -1,0 +1,17 @@
+{
+  "name": "x-dm-auto-chat",
+  "description": "X (Twitter) DM automated chat end-to-end Skill: scan DM inbox to identify pending-reply conversations, read message history, generate persona-based replies and send; also supports searching users and starting new conversations. Built-in E2E passcode unlock, DM permission filtering, and rate control. Use when user mentions X auto-reply DMs, Twitter DM automated chat, auto-handle unread DMs, reply to X private messages with persona, X DM outreach campaign, batch send DMs to Twitter users, auto-process pending DM replies, Twitter DM bot, automated Twitter outreach, X direct message automation.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/check-composer.py",
+    "scripts/check-page-state.py",
+    "scripts/fetch-inbox-api.py",
+    "scripts/open-conversation-by-user.py",
+    "scripts/read-conversation.py",
+    "scripts/scan-inbox-merged.py",
+    "scripts/scroll-load-history.py",
+    "scripts/search-users.py",
+    "scripts/verify-sent.py"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "goofish-item-detail",
+  "description": "Extracts full detail data from a single Goofish (\u95f2\u9c7c/xianyu, goofish.com) second-hand item page. Input: item URL or item ID. Output: title, price, seller info (name, labels), full description, image gallery, item tags/attributes, want-count. Use when user mentions goofish item detail, \u95f2\u9c7c\u5546\u54c1\u8be6\u60c5, xianyu item page, \u4e8c\u624b\u5546\u54c1\u8be6\u60c5, get goofish product info, \u91c7\u96c6\u95f2\u9c7c\u5355\u54c1\u6570\u636e, \u6293\u53d6\u95f2\u9c7c\u5546\u54c1, scrape goofish item, xianyu product detail, \u83b7\u53d6\u95f2\u9c7c\u5356\u5bb6\u4fe1\u606f, seller info goofish, item description goofish, \u95f2\u9c7c\u8be6\u60c5\u9875, \u60f3\u8981\u4eba\u6570, \u95f2\u9c7c\u56fe\u7247. Also applies to: verifying a specific listing before purchase, extracting seller contact/rating information, bulk item detail enrichment from a list of item IDs.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/extract-item-detail.py"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "instagram-post-comments",
+  "description": "Fetches comments from an Instagram post including comment text, username, timestamp, like count and reply count. Use when user mentions Instagram comments scraping, get comments from Instagram post, Instagram comment list, pull Instagram comments, read Instagram comments, Instagram post discussion, extract Instagram comments, comment data from Instagram, IG post replies, who commented on Instagram.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/get-media-id.py",
+    "scripts/get-post-comments.py"
+  ]
+}

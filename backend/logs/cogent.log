@@ -1736,3 +1736,634 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-18 11:04:26,946 INFO cogent.scheduler: Scheduler stopped
 2026-06-18 11:04:28,053 INFO cogent.scheduler: Scheduler started
 2026-06-18 11:04:28,058 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 11:05:30,613 INFO cogent.mcp_registry: MCP server 'notionhq-notion-mcp-server' installed (method: npm install -g @notionhq/notion-mcp-server)
+2026-06-18 11:05:54,420 INFO cogent.mcp_registry: MCP server 'ghcr.io-github-github-mcp-server:latest' installed (method: docker pull ghcr.io/github/github-mcp-server:latest)
+2026-06-18 11:08:12,447 INFO [9465506a-399] headroom.transforms.pipeline: Pipeline using ContentRouter for intelligent content-aware compression
+2026-06-18 11:08:12,667 INFO [9465506a-399] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 unchanged (ratio>=0.79), 1 cache misses, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:08:12,667 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 59953 -> 59953 tokens (saved 0) [210.0ms]
+2026-06-18 11:08:12,678 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:08:15,513 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=79
+2026-06-18 11:08:15,627 INFO [9465506a-399] headroom.transforms.content_router: content_router: 4 msgs — 2 skipped (user), 1 skipped (<50 words), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:08:15,627 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 62302 -> 62302 tokens (saved 0) [31.5ms]
+2026-06-18 11:08:15,638 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:08:21,953 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=265
+2026-06-18 11:08:58,040 INFO [9465506a-399] headroom.transforms.content_router: content_router: 6 msgs — 3 skipped (user), 2 skipped (<50 words), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:08:58,040 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 63927 -> 63927 tokens (saved 0) [33.6ms]
+2026-06-18 11:08:58,052 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:09:00,517 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=123
+2026-06-18 11:10:15,072 INFO [9465506a-399] headroom.transforms.content_router: content_router: 8 msgs — 4 skipped (user), 3 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:10:15,072 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 65149 -> 65149 tokens (saved 0) [33.2ms]
+2026-06-18 11:10:15,084 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:10:17,462 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=126
+2026-06-18 11:10:55,815 INFO [9465506a-399] headroom.transforms.content_router: content_router: 10 msgs — 5 skipped (user), 4 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:10:55,815 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 66807 -> 66807 tokens (saved 0) [33.4ms]
+2026-06-18 11:10:55,827 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:10:58,664 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=247
+2026-06-18 11:12:44,275 INFO [9465506a-399] headroom.transforms.content_router: content_router: 12 msgs — 6 skipped (user), 5 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:12:44,275 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 71125 -> 71125 tokens (saved 0) [34.3ms]
+2026-06-18 11:12:44,288 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:12:47,396 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=198
+2026-06-18 11:12:50,201 INFO [9465506a-399] headroom.transforms.content_router: content_router: 14 msgs — 7 skipped (user), 6 skipped (<50 words), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:12:50,201 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 75675 -> 75675 tokens (saved 0) [35.5ms]
+2026-06-18 11:12:50,215 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:12:53,269 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=111
+2026-06-18 11:13:10,025 INFO [9465506a-399] headroom.transforms.content_router: content_router: 16 msgs — 8 skipped (user), 7 skipped (<50 words), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:13:10,025 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 79885 -> 79885 tokens (saved 0) [36.9ms]
+2026-06-18 11:13:10,040 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:13:12,954 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=125
+2026-06-18 11:13:12,955 INFO [9465506a-399] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:13:12,955 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 200 -> 200 tokens (saved 0) [0.2ms]
+2026-06-18 11:13:12,955 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:13:23,360 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=347
+2026-06-18 11:13:23,410 INFO [9465506a-399] headroom.transforms.content_router: content_router: 18 msgs — 9 skipped (user), 8 skipped (<50 words), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:13:23,410 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 80089 -> 80089 tokens (saved 0) [38.2ms]
+2026-06-18 11:13:23,425 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:13:27,375 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=520
+2026-06-18 11:14:07,299 INFO [9465506a-399] headroom.transforms.content_router: content_router: 20 msgs — 10 skipped (user), 9 skipped (<50 words), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:14:07,299 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 81753 -> 81753 tokens (saved 0) [37.2ms]
+2026-06-18 11:14:07,314 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:14:10,299 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=208
+2026-06-18 11:14:39,489 INFO [9465506a-399] headroom.transforms.content_router: content_router: 22 msgs — 11 skipped (user), 10 skipped (<50 words), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:14:39,489 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 83335 -> 83335 tokens (saved 0) [37.6ms]
+2026-06-18 11:14:39,504 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:14:42,210 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=113
+2026-06-18 11:14:50,548 INFO [9465506a-399] headroom.transforms.content_router: content_router: 24 msgs — 12 skipped (user), 11 skipped (<50 words), 1 unchanged (ratio>=0.76), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:14:50,548 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 87235 -> 87235 tokens (saved 0) [39.0ms]
+2026-06-18 11:14:50,564 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:14:59,294 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=205
+2026-06-18 11:14:59,295 INFO [9465506a-399] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:14:59,295 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 220 -> 220 tokens (saved 0) [0.2ms]
+2026-06-18 11:14:59,296 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:15:07,354 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=443
+2026-06-18 11:15:07,407 INFO [9465506a-399] headroom.transforms.content_router: content_router: 26 msgs — 13 skipped (user), 12 skipped (<50 words), 1 unchanged (ratio>=0.76), 1 cache hits, cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:15:07,407 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 87512 -> 87512 tokens (saved 0) [39.5ms]
+2026-06-18 11:15:07,423 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:15:25,499 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=3501
+2026-06-18 11:15:25,502 INFO [9465506a-399] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 1 skips, 939ns avg]
+2026-06-18 11:15:25,502 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 1044 -> 1044 tokens (saved 0) [0.5ms]
+2026-06-18 11:15:25,502 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:15:37,430 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=411
+2026-06-18 11:15:37,491 INFO [9465506a-399] headroom.transforms.content_router: content_router: 28 msgs — 14 skipped (user), 12 skipped (<50 words), 2 unchanged (ratio>=0.76), 1 cache hits, 1 cache misses, cache[0 results, 2 skips, 1713ns avg]
+2026-06-18 11:15:37,491 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 88604 -> 88604 tokens (saved 0) [47.6ms]
+2026-06-18 11:15:37,508 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:15:44,268 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=662
+2026-06-18 11:15:44,393 INFO [9465506a-399] headroom.transforms.content_router: content_router: 30 msgs — 15 skipped (user), 13 skipped (<50 words), 2 unchanged (ratio>=0.76), 2 cache hits, cache[0 results, 2 skips, 1713ns avg]
+2026-06-18 11:15:44,393 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 91096 -> 91096 tokens (saved 0) [42.9ms]
+2026-06-18 11:15:44,410 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:15:57,754 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=5076
+2026-06-18 11:15:57,754 INFO [9465506a-399] cogent.agent.context_compressor: Compressed 31 messages to 4 (budget 64000 tokens)
+2026-06-18 11:15:57,757 INFO [9465506a-399] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 2 skips, 1713ns avg]
+2026-06-18 11:15:57,757 INFO [9465506a-399] headroom.transforms.pipeline: Transform content_router: 1438 -> 1438 tokens (saved 0) [0.6ms]
+2026-06-18 11:15:57,757 INFO [9465506a-399] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 11:16:13,334 INFO [9465506a-399] cogent.providers: Provider opencode-zen returned type=str len=4
+2026-06-18 11:30:27,912 INFO [9465506a-399] cogent.scheduler: Scheduler stopped
+2026-06-18 21:23:43,756 INFO cogent.scheduler: Scheduler started
+2026-06-18 21:23:43,761 INFO cogent.scheduler: Loaded 0 scheduled tasks
+2026-06-18 21:32:24,223 INFO [c05cc096-d85] headroom.transforms.pipeline: Pipeline using ContentRouter for intelligent content-aware compression
+2026-06-18 21:32:24,472 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 unchanged (ratio>=0.79), 1 cache misses, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:32:24,472 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 59900 -> 59900 tokens (saved 0) [239.5ms]
+2026-06-18 21:32:24,483 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:32:27,125 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=127
+2026-06-18 21:32:27,272 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 4 msgs — 2 skipped (user), 1 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:32:27,272 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 68475 -> 68475 tokens (saved 0) [33.7ms]
+2026-06-18 21:32:27,284 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:32:37,651 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=109
+2026-06-18 21:32:37,696 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 6 msgs — 3 skipped (user), 2 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:32:37,696 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 68523 -> 68523 tokens (saved 0) [34.0ms]
+2026-06-18 21:32:37,708 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:32:43,022 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=253
+2026-06-18 21:32:43,127 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 8 msgs — 4 skipped (user), 3 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:32:43,128 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 69202 -> 69202 tokens (saved 0) [35.6ms]
+2026-06-18 21:32:43,140 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:32:47,947 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=256
+2026-06-18 21:32:47,999 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 10 msgs — 5 skipped (user), 4 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:32:47,999 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70351 -> 70351 tokens (saved 0) [34.7ms]
+2026-06-18 21:32:48,012 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:32:53,511 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=342
+2026-06-18 21:32:53,563 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 12 msgs — 6 skipped (user), 5 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:32:53,563 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70780 -> 70780 tokens (saved 0) [34.0ms]
+2026-06-18 21:32:53,575 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:33:00,572 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=543
+2026-06-18 21:33:15,618 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 14 msgs — 7 skipped (user), 6 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:33:15,618 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70987 -> 70987 tokens (saved 0) [34.1ms]
+2026-06-18 21:33:15,630 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:33:23,353 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=511
+2026-06-18 21:33:38,400 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 16 msgs — 8 skipped (user), 7 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:33:38,400 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 71186 -> 71186 tokens (saved 0) [34.0ms]
+2026-06-18 21:33:38,413 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:33:43,331 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=250
+2026-06-18 21:33:43,381 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 18 msgs — 9 skipped (user), 8 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:33:43,381 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 71869 -> 71869 tokens (saved 0) [34.7ms]
+2026-06-18 21:33:43,394 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:33:48,875 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=204
+2026-06-18 21:33:48,926 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 20 msgs — 10 skipped (user), 9 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:33:48,926 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 71950 -> 71950 tokens (saved 0) [37.3ms]
+2026-06-18 21:33:48,939 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:33:57,075 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=504
+2026-06-18 21:33:57,145 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 22 msgs — 11 skipped (user), 10 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:33:57,145 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72278 -> 72278 tokens (saved 0) [34.9ms]
+2026-06-18 21:33:57,158 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:34:05,475 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=324
+2026-06-18 21:34:20,527 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 24 msgs — 12 skipped (user), 11 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:34:20,527 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72418 -> 72418 tokens (saved 0) [40.7ms]
+2026-06-18 21:34:20,540 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:34:25,435 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=244
+2026-06-18 21:34:25,486 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 26 msgs — 13 skipped (user), 12 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:34:25,486 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72893 -> 72893 tokens (saved 0) [36.9ms]
+2026-06-18 21:34:25,499 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:34:29,895 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=233
+2026-06-18 21:34:30,410 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 28 msgs — 14 skipped (user), 13 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:34:30,410 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 73097 -> 73097 tokens (saved 0) [34.9ms]
+2026-06-18 21:34:30,424 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:34:48,686 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=6525
+2026-06-18 21:34:48,740 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 30 msgs — 15 skipped (user), 13 skipped (<50 words), 1 protected (recent code), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:34:48,741 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 74983 -> 74983 tokens (saved 0) [37.4ms]
+2026-06-18 21:34:48,754 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:34:52,026 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=135
+2026-06-18 21:34:52,026 INFO [c05cc096-d85] cogent.agent.context_compressor: Compressed 31 messages to 6 (budget 64000 tokens)
+2026-06-18 21:34:52,087 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 7 msgs — 3 skipped (user), 2 skipped (<50 words), 1 protected (recent code), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:34:52,087 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 62214 -> 62214 tokens (saved 0) [33.7ms]
+2026-06-18 21:34:52,098 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:34:58,434 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=131
+2026-06-18 21:34:58,553 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 9 msgs — 4 skipped (user), 3 skipped (<50 words), 1 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 1 skips, 1534ns avg]
+2026-06-18 21:34:58,553 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70790 -> 70790 tokens (saved 0) [36.3ms]
+2026-06-18 21:34:58,566 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:35:12,305 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=223
+2026-06-18 21:35:12,362 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 11 msgs — 5 skipped (user), 4 skipped (<50 words), 2 unchanged (ratio>=0.78), 1 cache hits, 1 cache misses, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:35:12,362 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70974 -> 70974 tokens (saved 0) [41.1ms]
+2026-06-18 21:35:12,375 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:35:15,781 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=290
+2026-06-18 21:35:15,841 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 13 msgs — 6 skipped (user), 5 skipped (<50 words), 1 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:35:15,841 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 71898 -> 71898 tokens (saved 0) [41.2ms]
+2026-06-18 21:35:15,854 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:35:30,760 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=300
+2026-06-18 21:37:30,808 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 15 msgs — 7 skipped (user), 6 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:37:30,809 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72025 -> 72025 tokens (saved 0) [36.2ms]
+2026-06-18 21:37:30,821 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:37:36,987 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=144
+2026-06-18 21:37:39,222 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 17 msgs — 8 skipped (user), 7 skipped (<50 words), 1 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:37:39,222 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72142 -> 72142 tokens (saved 0) [36.7ms]
+2026-06-18 21:37:39,234 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:37:41,796 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=164
+2026-06-18 21:37:45,018 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 19 msgs — 9 skipped (user), 8 skipped (<50 words), 1 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:37:45,018 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72263 -> 72263 tokens (saved 0) [40.4ms]
+2026-06-18 21:37:45,031 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:37:49,720 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=155
+2026-06-18 21:38:03,166 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 21 msgs — 10 skipped (user), 9 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:38:03,166 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72588 -> 72588 tokens (saved 0) [36.5ms]
+2026-06-18 21:38:03,178 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:38:07,581 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=315
+2026-06-18 21:38:07,640 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 23 msgs — 11 skipped (user), 10 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:38:07,640 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72711 -> 72711 tokens (saved 0) [40.1ms]
+2026-06-18 21:38:07,653 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:38:32,581 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=8845
+2026-06-18 21:38:32,585 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:38:32,585 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2675 -> 2675 tokens (saved 0) [0.8ms]
+2026-06-18 21:38:32,586 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:38:38,192 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=278
+2026-06-18 21:38:38,243 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 25 msgs — 12 skipped (user), 10 skipped (<50 words), 1 protected (recent code), 1 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:38:38,243 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 75384 -> 75384 tokens (saved 0) [39.5ms]
+2026-06-18 21:38:38,256 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:38:44,427 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=258
+2026-06-18 21:38:44,499 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 27 msgs — 13 skipped (user), 11 skipped (<50 words), 1 protected (recent code), 1 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:38:44,499 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 75662 -> 75662 tokens (saved 0) [42.3ms]
+2026-06-18 21:38:44,512 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:38:56,240 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=4790
+2026-06-18 21:38:56,242 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:38:56,242 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 1516 -> 1516 tokens (saved 0) [0.5ms]
+2026-06-18 21:38:56,243 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:39:02,218 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=237
+2026-06-18 21:39:02,272 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 29 msgs — 14 skipped (user), 11 skipped (<50 words), 1 protected (recent code), 2 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 2 skips, 1588ns avg]
+2026-06-18 21:39:02,272 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 77165 -> 77165 tokens (saved 0) [42.2ms]
+2026-06-18 21:39:02,286 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:39:06,595 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=301
+2026-06-18 21:39:06,657 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 31 msgs — 15 skipped (user), 12 skipped (<50 words), 1 protected (recent code), 3 unchanged (ratio>=0.77), 2 cache hits, 1 cache misses, cache[0 results, 3 skips, 1280ns avg]
+2026-06-18 21:39:06,657 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 77285 -> 77285 tokens (saved 0) [46.4ms]
+2026-06-18 21:39:06,671 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:39:20,026 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=3434
+2026-06-18 21:39:20,027 INFO [c05cc096-d85] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 21:39:20,077 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 7 msgs — 3 skipped (user), 2 skipped (<50 words), 1 protected (recent code), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 3 skips, 1280ns avg]
+2026-06-18 21:39:20,077 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 61159 -> 61159 tokens (saved 0) [34.4ms]
+2026-06-18 21:39:20,088 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:39:23,357 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=74
+2026-06-18 21:39:23,478 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 9 msgs — 4 skipped (user), 3 skipped (<50 words), 1 protected (recent code), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 3 skips, 1280ns avg]
+2026-06-18 21:39:23,478 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 69719 -> 69719 tokens (saved 0) [38.5ms]
+2026-06-18 21:39:23,490 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:39:30,097 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=261
+2026-06-18 21:39:30,156 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 11 msgs — 5 skipped (user), 4 skipped (<50 words), 2 unchanged (ratio>=0.78), 1 cache hits, 1 cache misses, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:39:30,156 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 69954 -> 69954 tokens (saved 0) [40.4ms]
+2026-06-18 21:39:30,168 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:39:36,663 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=182
+2026-06-18 21:39:36,719 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 13 msgs — 6 skipped (user), 5 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:39:36,719 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70391 -> 70391 tokens (saved 0) [38.6ms]
+2026-06-18 21:39:36,732 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:39:45,453 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=121
+2026-06-18 21:40:15,501 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 15 msgs — 7 skipped (user), 6 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:40:15,501 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70459 -> 70459 tokens (saved 0) [36.0ms]
+2026-06-18 21:40:15,514 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:40:18,693 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=241
+2026-06-18 21:40:18,746 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 17 msgs — 8 skipped (user), 7 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:40:18,746 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70578 -> 70578 tokens (saved 0) [35.8ms]
+2026-06-18 21:40:18,759 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:40:24,689 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=223
+2026-06-18 21:40:25,176 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 19 msgs — 9 skipped (user), 8 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:40:25,176 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70738 -> 70738 tokens (saved 0) [36.2ms]
+2026-06-18 21:40:25,189 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:40:31,258 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=328
+2026-06-18 21:40:31,309 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 21 msgs — 10 skipped (user), 9 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:40:31,309 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70851 -> 70851 tokens (saved 0) [36.6ms]
+2026-06-18 21:40:31,321 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:40:37,424 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=186
+2026-06-18 21:41:37,793 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 23 msgs — 11 skipped (user), 10 skipped (<50 words), 1 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:41:37,793 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 71003 -> 71003 tokens (saved 0) [36.9ms]
+2026-06-18 21:41:37,806 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:41:54,829 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=5196
+2026-06-18 21:41:54,890 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 25 msgs — 12 skipped (user), 10 skipped (<50 words), 1 protected (recent code), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:41:54,890 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72510 -> 72510 tokens (saved 0) [39.3ms]
+2026-06-18 21:41:54,902 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:41:58,380 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=137
+2026-06-18 21:42:07,058 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 27 msgs — 13 skipped (user), 11 skipped (<50 words), 1 protected (recent code), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:42:07,058 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72846 -> 72846 tokens (saved 0) [38.8ms]
+2026-06-18 21:42:07,071 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:42:18,070 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=331
+2026-06-18 21:42:39,698 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 29 msgs — 14 skipped (user), 12 skipped (<50 words), 2 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 4 skips, 1094ns avg]
+2026-06-18 21:42:39,698 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 73600 -> 73600 tokens (saved 0) [40.3ms]
+2026-06-18 21:42:39,711 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:42:52,901 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=3567
+2026-06-18 21:42:52,964 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 31 msgs — 15 skipped (user), 12 skipped (<50 words), 1 protected (recent code), 3 unchanged (ratio>=0.78), 2 cache hits, 1 cache misses, cache[0 results, 5 skips, 993ns avg]
+2026-06-18 21:42:52,964 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 74641 -> 74641 tokens (saved 0) [48.1ms]
+2026-06-18 21:42:52,977 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:42:56,766 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=137
+2026-06-18 21:42:56,766 INFO [c05cc096-d85] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 21:43:21,739 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 7 msgs — 3 skipped (user), 2 skipped (<50 words), 1 protected (recent code), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 5 skips, 993ns avg]
+2026-06-18 21:43:21,739 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 62158 -> 62158 tokens (saved 0) [33.6ms]
+2026-06-18 21:43:21,750 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:43:28,034 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=309
+2026-06-18 21:43:28,091 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 9 msgs — 4 skipped (user), 3 skipped (<50 words), 2 unchanged (ratio>=0.79), 1 cache hits, 1 cache misses, cache[0 results, 6 skips, 945ns avg]
+2026-06-18 21:43:28,091 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 62348 -> 62348 tokens (saved 0) [37.9ms]
+2026-06-18 21:43:28,102 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:43:30,585 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=134
+2026-06-18 21:43:30,713 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 11 msgs — 5 skipped (user), 4 skipped (<50 words), 1 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 6 skips, 945ns avg]
+2026-06-18 21:43:30,713 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70925 -> 70925 tokens (saved 0) [39.6ms]
+2026-06-18 21:43:30,726 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:43:40,565 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=298
+2026-06-18 21:43:40,620 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 13 msgs — 6 skipped (user), 5 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 6 skips, 945ns avg]
+2026-06-18 21:43:40,620 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 71749 -> 71749 tokens (saved 0) [36.4ms]
+2026-06-18 21:43:40,633 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:43:46,135 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=264
+2026-06-18 21:43:46,188 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 15 msgs — 7 skipped (user), 6 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 6 skips, 945ns avg]
+2026-06-18 21:43:46,188 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72719 -> 72719 tokens (saved 0) [36.9ms]
+2026-06-18 21:43:46,201 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:43:56,475 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=320
+2026-06-18 21:44:03,177 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 17 msgs — 8 skipped (user), 7 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 6 skips, 945ns avg]
+2026-06-18 21:44:03,177 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72952 -> 72952 tokens (saved 0) [39.0ms]
+2026-06-18 21:44:03,190 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:44:19,116 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=5836
+2026-06-18 21:44:19,170 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 19 msgs — 9 skipped (user), 7 skipped (<50 words), 1 protected (recent code), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 6 skips, 945ns avg]
+2026-06-18 21:44:19,170 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 74645 -> 74645 tokens (saved 0) [39.2ms]
+2026-06-18 21:44:19,183 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:44:22,425 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=142
+2026-06-18 21:45:50,915 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 21 msgs — 10 skipped (user), 8 skipped (<50 words), 1 protected (recent code), 2 unchanged (ratio>=0.77), 2 cache hits, cache[0 results, 6 skips, 945ns avg]
+2026-06-18 21:45:50,915 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 75674 -> 75674 tokens (saved 0) [39.7ms]
+2026-06-18 21:45:50,929 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:45:59,779 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=378
+2026-06-18 21:46:29,164 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 23 msgs — 11 skipped (user), 9 skipped (<50 words), 3 unchanged (ratio>=0.77), 2 cache hits, 1 cache misses, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:46:29,164 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 76471 -> 76471 tokens (saved 0) [44.7ms]
+2026-06-18 21:46:29,177 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:46:33,107 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=144
+2026-06-18 21:46:47,154 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 25 msgs — 12 skipped (user), 10 skipped (<50 words), 2 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:46:47,154 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 77183 -> 77183 tokens (saved 0) [39.8ms]
+2026-06-18 21:46:47,169 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:46:57,185 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=149
+2026-06-18 21:46:57,186 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:46:57,186 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 166 -> 166 tokens (saved 0) [0.2ms]
+2026-06-18 21:46:57,186 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:47:02,312 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=209
+2026-06-18 21:47:02,367 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 27 msgs — 13 skipped (user), 11 skipped (<50 words), 2 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:47:02,367 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 77335 -> 77335 tokens (saved 0) [40.1ms]
+2026-06-18 21:47:02,381 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:47:10,101 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=343
+2026-06-18 21:47:10,158 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 29 msgs — 14 skipped (user), 12 skipped (<50 words), 3 unchanged (ratio>=0.77), 3 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:47:10,158 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 77453 -> 77453 tokens (saved 0) [40.0ms]
+2026-06-18 21:47:10,172 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:47:15,280 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=217
+2026-06-18 21:48:11,937 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 31 msgs — 15 skipped (user), 13 skipped (<50 words), 2 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:48:11,937 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 78805 -> 78805 tokens (saved 0) [40.6ms]
+2026-06-18 21:48:11,951 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:48:16,661 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=186
+2026-06-18 21:48:16,662 INFO [c05cc096-d85] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 21:48:17,162 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 7 msgs — 3 skipped (user), 3 skipped (<50 words), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:48:17,162 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 61466 -> 61466 tokens (saved 0) [31.4ms]
+2026-06-18 21:48:17,173 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:48:48,408 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=8970
+2026-06-18 21:48:48,412 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:48:48,412 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2380 -> 2380 tokens (saved 0) [0.9ms]
+2026-06-18 21:48:48,412 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:48:55,412 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=185
+2026-06-18 21:48:55,456 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 9 msgs — 4 skipped (user), 3 skipped (<50 words), 1 protected (recent code), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:48:55,456 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 63821 -> 63821 tokens (saved 0) [34.5ms]
+2026-06-18 21:48:55,468 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:49:18,868 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=10855
+2026-06-18 21:49:18,874 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:49:18,874 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2851 -> 2851 tokens (saved 0) [1.1ms]
+2026-06-18 21:49:18,874 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:49:35,107 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=204
+2026-06-18 21:49:35,156 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 11 msgs — 5 skipped (user), 3 skipped (<50 words), 2 protected (recent code), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:49:35,156 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 66651 -> 66651 tokens (saved 0) [37.7ms]
+2026-06-18 21:49:35,169 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:49:39,300 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=144
+2026-06-18 21:49:39,350 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 13 msgs — 6 skipped (user), 4 skipped (<50 words), 1 protected (recent code), 1 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:49:39,350 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 66727 -> 66727 tokens (saved 0) [37.7ms]
+2026-06-18 21:49:39,362 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:50:05,726 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=11247
+2026-06-18 21:50:05,732 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:50:05,732 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2949 -> 2949 tokens (saved 0) [1.2ms]
+2026-06-18 21:50:05,732 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:50:12,014 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=206
+2026-06-18 21:50:12,069 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 15 msgs — 7 skipped (user), 4 skipped (<50 words), 1 protected (recent code), 2 protected (analysis ctx), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:50:12,069 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 69656 -> 69656 tokens (saved 0) [41.5ms]
+2026-06-18 21:50:12,082 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:50:16,332 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=156
+2026-06-18 21:50:16,458 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 17 msgs — 8 skipped (user), 5 skipped (<50 words), 1 protected (recent code), 2 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:50:16,458 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 78240 -> 78240 tokens (saved 0) [44.3ms]
+2026-06-18 21:50:16,472 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:50:44,015 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=9598
+2026-06-18 21:50:44,019 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:50:44,019 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2537 -> 2537 tokens (saved 0) [1.0ms]
+2026-06-18 21:50:44,020 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:51:09,441 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=276
+2026-06-18 21:51:09,505 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 19 msgs — 9 skipped (user), 5 skipped (<50 words), 1 protected (recent code), 3 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:51:09,505 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 80774 -> 80774 tokens (saved 0) [48.7ms]
+2026-06-18 21:51:09,519 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:51:33,994 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=9814
+2026-06-18 21:51:34,003 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:51:34,003 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2591 -> 2591 tokens (saved 0) [2.1ms]
+2026-06-18 21:51:34,003 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:51:40,266 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=240
+2026-06-18 21:51:40,331 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 21 msgs — 10 skipped (user), 5 skipped (<50 words), 2 protected (recent code), 3 protected (analysis ctx), 1 unchanged (ratio>=0.77), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:51:40,331 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 83353 -> 83353 tokens (saved 0) [49.2ms]
+2026-06-18 21:51:40,346 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:52:04,970 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=9798
+2026-06-18 21:52:04,979 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:52:04,980 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2587 -> 2587 tokens (saved 0) [1.0ms]
+2026-06-18 21:52:04,980 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:52:13,710 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=215
+2026-06-18 21:52:13,776 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 23 msgs — 11 skipped (user), 5 skipped (<50 words), 2 protected (recent code), 4 protected (analysis ctx), 1 unchanged (ratio>=0.76), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:52:13,776 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 85922 -> 85922 tokens (saved 0) [52.8ms]
+2026-06-18 21:52:13,792 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:52:37,810 INFO [c05cc096-d85] cogent.providers: Provider opencode-zen returned type=str len=10191
+2026-06-18 21:52:37,820 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:52:37,820 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 2685 -> 2685 tokens (saved 0) [1.0ms]
+2026-06-18 21:52:37,820 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:53:08,560 WARNING [c05cc096-d85] cogent.providers: Provider opencode-zen RuntimeError — Provider opencode-zen response had empty content
+2026-06-18 21:53:08,560 INFO [c05cc096-d85] cogent.providers: Provider fallback: opencode-zen → kilocode: malformed response: Provider opencode-zen response had empty content
+2026-06-18 21:53:22,564 INFO [c05cc096-d85] cogent.providers: Provider openrouter returned type=str len=342
+2026-06-18 21:53:22,635 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 25 msgs — 12 skipped (user), 5 skipped (<50 words), 2 protected (recent code), 5 protected (analysis ctx), 1 unchanged (ratio>=0.76), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:53:22,635 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 88621 -> 88621 tokens (saved 0) [57.7ms]
+2026-06-18 21:53:22,652 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:53:38,231 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=292
+2026-06-18 21:53:38,232 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:53:38,232 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 201 -> 201 tokens (saved 0) [0.2ms]
+2026-06-18 21:53:38,232 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:53:40,318 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=223
+2026-06-18 21:53:40,394 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 27 msgs — 13 skipped (user), 6 skipped (<50 words), 1 protected (recent code), 6 protected (analysis ctx), 1 unchanged (ratio>=0.76), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:53:40,394 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 88806 -> 88806 tokens (saved 0) [55.5ms]
+2026-06-18 21:53:40,410 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:53:59,597 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=951
+2026-06-18 21:53:59,601 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:53:59,601 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 366 -> 366 tokens (saved 0) [0.9ms]
+2026-06-18 21:53:59,602 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:54:03,716 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=210
+2026-06-18 21:54:03,786 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 29 msgs — 14 skipped (user), 7 skipped (<50 words), 7 protected (analysis ctx), 1 unchanged (ratio>=0.76), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:54:03,786 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 89153 -> 89153 tokens (saved 0) [56.2ms]
+2026-06-18 21:54:03,802 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:54:54,291 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=562
+2026-06-18 21:54:54,292 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:54:54,292 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 269 -> 269 tokens (saved 0) [0.2ms]
+2026-06-18 21:54:54,292 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:54:55,840 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=212
+2026-06-18 21:54:55,908 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 31 msgs — 15 skipped (user), 8 skipped (<50 words), 7 protected (analysis ctx), 1 unchanged (ratio>=0.76), 1 cache hits, cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:54:55,908 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 89403 -> 89403 tokens (saved 0) [54.7ms]
+2026-06-18 21:54:55,925 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:55:54,245 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=2710
+2026-06-18 21:55:54,246 INFO [c05cc096-d85] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 21:55:54,248 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 7 skips, 894ns avg]
+2026-06-18 21:55:54,248 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 815 -> 815 tokens (saved 0) [0.4ms]
+2026-06-18 21:55:54,248 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:56:01,146 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=238
+2026-06-18 21:56:01,198 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 7 msgs — 3 skipped (user), 2 skipped (<50 words), 2 unchanged (ratio>=0.79), 1 cache hits, 1 cache misses, cache[0 results, 8 skips, 847ns avg]
+2026-06-18 21:56:01,198 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 61067 -> 61067 tokens (saved 0) [40.0ms]
+2026-06-18 21:56:01,209 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:56:09,477 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=74
+2026-06-18 21:56:09,597 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 9 msgs — 4 skipped (user), 3 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 8 skips, 847ns avg]
+2026-06-18 21:56:09,597 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 69627 -> 69627 tokens (saved 0) [35.4ms]
+2026-06-18 21:56:09,609 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:56:32,119 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=76
+2026-06-18 21:56:32,595 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 11 msgs — 5 skipped (user), 4 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 8 skips, 847ns avg]
+2026-06-18 21:56:32,595 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 69786 -> 69786 tokens (saved 0) [36.0ms]
+2026-06-18 21:56:32,607 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:56:38,754 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=573
+2026-06-18 21:56:38,756 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 8 skips, 847ns avg]
+2026-06-18 21:56:38,756 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 275 -> 275 tokens (saved 0) [0.2ms]
+2026-06-18 21:56:38,756 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:56:41,727 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=322
+2026-06-18 21:56:41,778 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 13 msgs — 6 skipped (user), 5 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 8 skips, 847ns avg]
+2026-06-18 21:56:41,778 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70090 -> 70090 tokens (saved 0) [35.8ms]
+2026-06-18 21:56:41,790 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:56:53,853 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=235
+2026-06-18 21:56:53,855 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 8 skips, 847ns avg]
+2026-06-18 21:56:53,855 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 187 -> 187 tokens (saved 0) [0.3ms]
+2026-06-18 21:56:53,855 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:56:56,273 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=286
+2026-06-18 21:56:56,319 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 15 msgs — 7 skipped (user), 6 skipped (<50 words), 2 unchanged (ratio>=0.78), 2 cache hits, cache[0 results, 8 skips, 847ns avg]
+2026-06-18 21:56:56,320 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 70277 -> 70277 tokens (saved 0) [36.1ms]
+2026-06-18 21:56:56,332 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:58:00,439 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=10258
+2026-06-18 21:58:00,500 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 17 msgs — 8 skipped (user), 6 skipped (<50 words), 3 unchanged (ratio>=0.78), 2 cache hits, 1 cache misses, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:58:00,500 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 72892 -> 72892 tokens (saved 0) [44.0ms]
+2026-06-18 21:58:00,513 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:58:16,509 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=711
+2026-06-18 21:58:16,509 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:58:16,509 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 308 -> 308 tokens (saved 0) [0.2ms]
+2026-06-18 21:58:16,510 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:58:21,673 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=496
+2026-06-18 21:58:21,730 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 19 msgs — 9 skipped (user), 7 skipped (<50 words), 3 unchanged (ratio>=0.78), 3 cache hits, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:58:21,730 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 73252 -> 73252 tokens (saved 0) [39.9ms]
+2026-06-18 21:58:21,743 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:58:26,148 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=544
+2026-06-18 21:58:26,150 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:58:26,150 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 264 -> 264 tokens (saved 0) [0.2ms]
+2026-06-18 21:58:26,150 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:58:30,274 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=269
+2026-06-18 21:58:30,325 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 21 msgs — 10 skipped (user), 8 skipped (<50 words), 3 unchanged (ratio>=0.78), 3 cache hits, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:58:30,325 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 73512 -> 73512 tokens (saved 0) [39.5ms]
+2026-06-18 21:58:30,338 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:58:45,816 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=273
+2026-06-18 21:58:45,929 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 23 msgs — 11 skipped (user), 9 skipped (<50 words), 3 unchanged (ratio>=0.78), 3 cache hits, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:58:45,929 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 74674 -> 74674 tokens (saved 0) [39.6ms]
+2026-06-18 21:58:45,943 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:59:06,829 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=202
+2026-06-18 21:59:06,896 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 25 msgs — 12 skipped (user), 10 skipped (<50 words), 3 unchanged (ratio>=0.78), 3 cache hits, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:59:06,897 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 74766 -> 74766 tokens (saved 0) [40.4ms]
+2026-06-18 21:59:06,910 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:59:13,973 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=111
+2026-06-18 21:59:14,547 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 27 msgs — 13 skipped (user), 11 skipped (<50 words), 3 unchanged (ratio>=0.78), 3 cache hits, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:59:14,547 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 74815 -> 74815 tokens (saved 0) [40.1ms]
+2026-06-18 21:59:14,560 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:59:17,737 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=119
+2026-06-18 21:59:19,269 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 29 msgs — 14 skipped (user), 12 skipped (<50 words), 3 unchanged (ratio>=0.78), 3 cache hits, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 21:59:19,269 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 74876 -> 74876 tokens (saved 0) [39.6ms]
+2026-06-18 21:59:19,282 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 21:59:28,789 INFO [c05cc096-d85] cogent.providers: Provider kilocode returned type=str len=622
+2026-06-18 22:00:29,132 INFO [c05cc096-d85] headroom.transforms.content_router: content_router: 31 msgs — 15 skipped (user), 13 skipped (<50 words), 3 unchanged (ratio>=0.77), 3 cache hits, cache[0 results, 9 skips, 821ns avg]
+2026-06-18 22:00:29,132 INFO [c05cc096-d85] headroom.transforms.pipeline: Transform content_router: 75190 -> 75190 tokens (saved 0) [40.0ms]
+2026-06-18 22:00:29,145 INFO [c05cc096-d85] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:00:33,232 INFO [c05cc096-d85] cogent.skill_forge: Cloning https://github.com/browser-act/skills.git -> /tmp/cogent-skf-7zs848pd/repo (depth=1)
+2026-06-18 22:00:33,811 INFO [c05cc096-d85] cogent.skill_forge: Clone complete: /tmp/cogent-skf-7zs848pd/repo
+2026-06-18 22:00:33,824 INFO [c05cc096-d85] cogent.skill_forge: Forge: sending analysis to LLM for browser-act/skills
+2026-06-18 22:00:34,071 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 unchanged (ratio>=0.78), 1 cache misses, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:00:34,071 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 67561 -> 67561 tokens (saved 0) [68.0ms]
+2026-06-18 22:00:34,082 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:00:34,453 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=663
+2026-06-18 22:00:34,453 INFO [__forge__] cogent.agent.context_compressor: Compressed 32 messages to 6 (budget 64000 tokens)
+2026-06-18 22:00:40,095 INFO [__forge__] headroom.transforms.content_router: content_router: 7 msgs — 3 skipped (user), 3 skipped (<50 words), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:00:40,095 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 60471 -> 60471 tokens (saved 0) [31.2ms]
+2026-06-18 22:00:40,106 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:00:46,312 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=187
+2026-06-18 22:00:46,312 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:00:46,312 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 178 -> 178 tokens (saved 0) [0.2ms]
+2026-06-18 22:00:46,313 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:00:51,707 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=249
+2026-06-18 22:00:51,748 INFO [__forge__] headroom.transforms.content_router: content_router: 9 msgs — 4 skipped (user), 4 skipped (<50 words), 1 unchanged (ratio>=0.79), 1 cache hits, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:00:51,748 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 60640 -> 60640 tokens (saved 0) [31.4ms]
+2026-06-18 22:00:51,759 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:01:06,505 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=75
+2026-06-18 22:01:06,622 INFO [__forge__] headroom.transforms.content_router: content_router: 11 msgs — 5 skipped (user), 5 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:01:06,622 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 69200 -> 69200 tokens (saved 0) [33.8ms]
+2026-06-18 22:01:06,635 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:01:13,993 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=143
+2026-06-18 22:01:14,050 INFO [__forge__] headroom.transforms.content_router: content_router: 13 msgs — 6 skipped (user), 6 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:01:14,050 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 71033 -> 71033 tokens (saved 0) [34.8ms]
+2026-06-18 22:01:14,063 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:01:18,039 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=185
+2026-06-18 22:01:18,039 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:01:18,039 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 175 -> 175 tokens (saved 0) [0.2ms]
+2026-06-18 22:01:18,039 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:01:22,323 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=267
+2026-06-18 22:01:22,368 INFO [__forge__] headroom.transforms.content_router: content_router: 15 msgs — 7 skipped (user), 7 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:01:22,368 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 71202 -> 71202 tokens (saved 0) [33.9ms]
+2026-06-18 22:01:22,380 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:01:34,571 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=133
+2026-06-18 22:01:34,571 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:01:34,571 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 162 -> 162 tokens (saved 0) [0.2ms]
+2026-06-18 22:01:34,571 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:01:37,958 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=222
+2026-06-18 22:01:38,002 INFO [__forge__] headroom.transforms.content_router: content_router: 17 msgs — 8 skipped (user), 8 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:01:38,002 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 71347 -> 71347 tokens (saved 0) [33.7ms]
+2026-06-18 22:01:38,014 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:01:43,393 WARNING [__forge__] cogent.providers: Provider kilocode RuntimeError — Provider kilocode response had empty content
+2026-06-18 22:01:43,393 INFO [__forge__] cogent.providers: Provider fallback: kilocode → openrouter: malformed response: Provider kilocode response had empty content
+2026-06-18 22:02:02,752 INFO [__forge__] cogent.providers: Provider kilocode returned type=str len=133
+2026-06-18 22:02:02,753 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:02:02,753 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 162 -> 162 tokens (saved 0) [0.2ms]
+2026-06-18 22:02:02,753 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:02:24,326 INFO [__forge__] cogent.providers: Provider openrouter returned type=str len=396
+2026-06-18 22:02:24,371 INFO [__forge__] headroom.transforms.content_router: content_router: 19 msgs — 9 skipped (user), 9 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:02:24,371 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 71535 -> 71535 tokens (saved 0) [33.9ms]
+2026-06-18 22:02:24,384 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:02:53,162 INFO [__forge__] cogent.providers: Provider openrouter returned type=str len=759
+2026-06-18 22:02:53,163 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 10 skips, 805ns avg]
+2026-06-18 22:02:53,163 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 317 -> 317 tokens (saved 0) [0.2ms]
+2026-06-18 22:02:53,163 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:03:13,462 INFO [__forge__] cogent.providers: Provider openrouter returned type=str len=433
+2026-06-18 22:03:13,536 INFO [__forge__] headroom.transforms.content_router: content_router: 21 msgs — 10 skipped (user), 10 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache misses, cache[0 results, 10 skips, 800ns avg]
+2026-06-18 22:03:13,536 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 71890 -> 71890 tokens (saved 0) [63.1ms]
+2026-06-18 22:03:13,548 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:03:32,187 INFO [__forge__] cogent.providers: Provider openrouter returned type=str len=361
+2026-06-18 22:03:32,188 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 10 skips, 800ns avg]
+2026-06-18 22:03:32,188 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 218 -> 218 tokens (saved 0) [0.2ms]
+2026-06-18 22:03:32,189 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:03:41,351 INFO [__forge__] cogent.skill_forge: Cloning https://github.com/browser-act/skills.git -> /tmp/cogent-skf-sb3xaqew/repo (depth=1)
+2026-06-18 22:03:41,987 INFO [__forge__] cogent.skill_forge: Clone complete: /tmp/cogent-skf-sb3xaqew/repo
+2026-06-18 22:03:42,026 INFO [__forge__] cogent.skill_forge: Skill 'browser-act' installed -> /home/mike/cogent/.cogent/skills/browser-act (created)
+2026-06-18 22:03:42,028 INFO [__forge__] cogent.skill_forge: Skill 'browser-act-skill-forge' installed -> /home/mike/cogent/.cogent/skills/browser-act-skill-forge (created)
+2026-06-18 22:03:42,028 INFO [__forge__] cogent.skill_forge: Skill 'amazon-alexa-qa' installed -> /home/mike/cogent/.cogent/skills/amazon-alexa-qa (created)
+2026-06-18 22:03:42,028 INFO [__forge__] cogent.skill_forge: Skill 'amazon-asin-lookup-api-skill' installed -> /home/mike/cogent/.cogent/skills/amazon-asin-lookup-api-skill (created)
+2026-06-18 22:03:42,029 INFO [__forge__] cogent.skill_forge: Skill 'amazon-best-selling-products-finder-api-skill' installed -> /home/mike/cogent/.cogent/skills/amazon-best-selling-products-finder-api-skill (created)
+2026-06-18 22:03:42,029 INFO [__forge__] cogent.skill_forge: Skill 'amazon-buy-box-monitor-api-skill' installed -> /home/mike/cogent/.cogent/skills/amazon-buy-box-monitor-api-skill (created)
+2026-06-18 22:03:42,029 INFO [__forge__] cogent.skill_forge: Skill 'amazon-competitor-analyzer' installed -> /home/mike/cogent/.cogent/skills/amazon-competitor-analyzer (created)
+2026-06-18 22:03:42,029 INFO [__forge__] cogent.skill_forge: Skill 'amazon-listing-competitor-analysis-skill' installed -> /home/mike/cogent/.cogent/skills/amazon-listing-competitor-analysis-skill (created)
+2026-06-18 22:03:42,029 INFO [__forge__] cogent.skill_forge: Skill 'amazon-product-api-skill' installed -> /home/mike/cogent/.cogent/skills/amazon-product-api-skill (created)
+2026-06-18 22:03:42,030 INFO [__forge__] cogent.skill_forge: Skill 'amazon-product-search-api-skill' installed -> /home/mike/cogent/.cogent/skills/amazon-product-search-api-skill (created)
+2026-06-18 22:03:42,030 INFO [__forge__] cogent.skill_forge: Skill 'amazon-reviews-api-skill' installed -> /home/mike/cogent/.cogent/skills/amazon-reviews-api-skill (created)
+2026-06-18 22:03:42,030 INFO [__forge__] cogent.skill_forge: Skill 'ecommerce-listing' installed -> /home/mike/cogent/.cogent/skills/ecommerce-listing (created)
+2026-06-18 22:03:42,030 INFO [__forge__] cogent.skill_forge: Skill 'ecommerce-product-detail' installed -> /home/mike/cogent/.cogent/skills/ecommerce-product-detail (created)
+2026-06-18 22:03:42,030 INFO [__forge__] cogent.skill_forge: Skill 'ecommerce-reviews' installed -> /home/mike/cogent/.cogent/skills/ecommerce-reviews (created)
+2026-06-18 22:03:42,031 INFO [__forge__] cogent.skill_forge: Skill 'ecommerce-seller-info' installed -> /home/mike/cogent/.cogent/skills/ecommerce-seller-info (created)
+2026-06-18 22:03:42,031 INFO [__forge__] cogent.skill_forge: Skill 'goofish-item-detail' installed -> /home/mike/cogent/.cogent/skills/goofish-item-detail (created)
+2026-06-18 22:03:42,031 INFO [__forge__] cogent.skill_forge: Skill 'goofish-search-list' installed -> /home/mike/cogent/.cogent/skills/goofish-search-list (created)
+2026-06-18 22:03:42,031 INFO [__forge__] cogent.skill_forge: Skill 'taobao-keyword-search' installed -> /home/mike/cogent/.cogent/skills/taobao-keyword-search (created)
+2026-06-18 22:03:42,032 INFO [__forge__] cogent.skill_forge: Skill 'taobao-product-detail' installed -> /home/mike/cogent/.cogent/skills/taobao-product-detail (created)
+2026-06-18 22:03:42,032 INFO [__forge__] cogent.skill_forge: Skill 'taobao-product-reviews' installed -> /home/mike/cogent/.cogent/skills/taobao-product-reviews (created)
+2026-06-18 22:03:42,032 INFO [__forge__] cogent.skill_forge: Skill 'taobao-shop-catalog' installed -> /home/mike/cogent/.cogent/skills/taobao-shop-catalog (created)
+2026-06-18 22:03:42,032 INFO [__forge__] cogent.skill_forge: Skill 'business-contact-social-links-skill' installed -> /home/mike/cogent/.cogent/skills/business-contact-social-links-skill (created)
+2026-06-18 22:03:42,033 INFO [__forge__] cogent.skill_forge: Skill 'github-project-contributor-finder-api-skill' installed -> /home/mike/cogent/.cogent/skills/github-project-contributor-finder-api-skill (created)
+2026-06-18 22:03:42,033 INFO [__forge__] cogent.skill_forge: Skill 'google-maps-api-skill' installed -> /home/mike/cogent/.cogent/skills/google-maps-api-skill (created)
+2026-06-18 22:03:42,033 INFO [__forge__] cogent.skill_forge: Skill 'google-maps-reviews-api-skill' installed -> /home/mike/cogent/.cogent/skills/google-maps-reviews-api-skill (created)
+2026-06-18 22:03:42,033 INFO [__forge__] cogent.skill_forge: Skill 'google-maps-search-api-skill' installed -> /home/mike/cogent/.cogent/skills/google-maps-search-api-skill (created)
+2026-06-18 22:03:42,034 INFO [__forge__] cogent.skill_forge: Skill 'google-social-media-finder' installed -> /home/mike/cogent/.cogent/skills/google-social-media-finder (created)
+2026-06-18 22:03:42,034 INFO [__forge__] cogent.skill_forge: Skill 'indeed-job-search' installed -> /home/mike/cogent/.cogent/skills/indeed-job-search (created)
+2026-06-18 22:03:42,034 INFO [__forge__] cogent.skill_forge: Skill 'industry-key-contact-radar-api-skill' installed -> /home/mike/cogent/.cogent/skills/industry-key-contact-radar-api-skill (created)
+2026-06-18 22:03:42,034 INFO [__forge__] cogent.skill_forge: Skill 'linkedin-jobs-search' installed -> /home/mike/cogent/.cogent/skills/linkedin-jobs-search (created)
+2026-06-18 22:03:42,035 INFO [__forge__] cogent.skill_forge: Skill 'producthunt-launches' installed -> /home/mike/cogent/.cogent/skills/producthunt-launches (created)
+2026-06-18 22:03:42,035 INFO [__forge__] cogent.skill_forge: Skill 'social-media-finder-skill' installed -> /home/mike/cogent/.cogent/skills/social-media-finder-skill (created)
+2026-06-18 22:03:42,035 INFO [__forge__] cogent.skill_forge: Skill 'google-image-api-skill' installed -> /home/mike/cogent/.cogent/skills/google-image-api-skill (created)
+2026-06-18 22:03:42,035 INFO [__forge__] cogent.skill_forge: Skill 'google-news-api-skill' installed -> /home/mike/cogent/.cogent/skills/google-news-api-skill (created)
+2026-06-18 22:03:42,035 INFO [__forge__] cogent.skill_forge: Skill 'google-search-serp' installed -> /home/mike/cogent/.cogent/skills/google-search-serp (created)
+2026-06-18 22:03:42,035 INFO [__forge__] cogent.skill_forge: Skill 'web-research-assistant' installed -> /home/mike/cogent/.cogent/skills/web-research-assistant (created)
+2026-06-18 22:03:42,036 INFO [__forge__] cogent.skill_forge: Skill 'web-search-scraper-api-skill' installed -> /home/mike/cogent/.cogent/skills/web-search-scraper-api-skill (created)
+2026-06-18 22:03:42,036 INFO [__forge__] cogent.skill_forge: Skill 'facebook-ads-library-search' installed -> /home/mike/cogent/.cogent/skills/facebook-ads-library-search (created)
+2026-06-18 22:03:42,036 INFO [__forge__] cogent.skill_forge: Skill 'facebook-groups-scrape-posts' installed -> /home/mike/cogent/.cogent/skills/facebook-groups-scrape-posts (created)
+2026-06-18 22:03:42,036 INFO [__forge__] cogent.skill_forge: Skill 'facebook-page-posts' installed -> /home/mike/cogent/.cogent/skills/facebook-page-posts (created)
+2026-06-18 22:03:42,036 INFO [__forge__] cogent.skill_forge: Skill 'facebook-page-profile-posts' installed -> /home/mike/cogent/.cogent/skills/facebook-page-profile-posts (created)
+2026-06-18 22:03:42,037 INFO [__forge__] cogent.skill_forge: Skill 'instagram-hashtag-posts' installed -> /home/mike/cogent/.cogent/skills/instagram-hashtag-posts (created)
+2026-06-18 22:03:42,037 INFO [__forge__] cogent.skill_forge: Skill 'instagram-place-posts' installed -> /home/mike/cogent/.cogent/skills/instagram-place-posts (created)
+2026-06-18 22:03:42,037 INFO [__forge__] cogent.skill_forge: Skill 'instagram-post-comments' installed -> /home/mike/cogent/.cogent/skills/instagram-post-comments (created)
+2026-06-18 22:03:42,037 INFO [__forge__] cogent.skill_forge: Skill 'instagram-profile-meta' installed -> /home/mike/cogent/.cogent/skills/instagram-profile-meta (created)
+2026-06-18 22:03:42,037 INFO [__forge__] cogent.skill_forge: Skill 'instagram-profile-posts' installed -> /home/mike/cogent/.cogent/skills/instagram-profile-posts (created)
+2026-06-18 22:03:42,038 INFO [__forge__] cogent.skill_forge: Skill 'reddit-competitor-analysis-api-skill' installed -> /home/mike/cogent/.cogent/skills/reddit-competitor-analysis-api-skill (created)
+2026-06-18 22:03:42,038 INFO [__forge__] cogent.skill_forge: Skill 'wechat-article-search-api-skill' installed -> /home/mike/cogent/.cogent/skills/wechat-article-search-api-skill (created)
+2026-06-18 22:03:42,038 INFO [__forge__] cogent.skill_forge: Skill 'x-dm-auto-chat' installed -> /home/mike/cogent/.cogent/skills/x-dm-auto-chat (created)
+2026-06-18 22:03:42,038 INFO [__forge__] cogent.skill_forge: Skill 'x-keyword-comment' installed -> /home/mike/cogent/.cogent/skills/x-keyword-comment (created)
+2026-06-18 22:03:42,039 INFO [__forge__] cogent.skill_forge: Skill 'x-tweet-search' installed -> /home/mike/cogent/.cogent/skills/x-tweet-search (created)
+2026-06-18 22:03:42,039 INFO [__forge__] cogent.skill_forge: Skill 'xiaohongshu-auto-posting' installed -> /home/mike/cogent/.cogent/skills/xiaohongshu-auto-posting (created)
+2026-06-18 22:03:42,039 INFO [__forge__] cogent.skill_forge: Skill 'xiaohongshu-note-detail' installed -> /home/mike/cogent/.cogent/skills/xiaohongshu-note-detail (created)
+2026-06-18 22:03:42,039 INFO [__forge__] cogent.skill_forge: Skill 'xiaohongshu-search' installed -> /home/mike/cogent/.cogent/skills/xiaohongshu-search (created)
+2026-06-18 22:03:42,039 INFO [__forge__] cogent.skill_forge: Skill 'xiaohongshu-user-profile' installed -> /home/mike/cogent/.cogent/skills/xiaohongshu-user-profile (created)
+2026-06-18 22:03:42,040 INFO [__forge__] cogent.skill_forge: Skill 'zhihu-search-api-skill' installed -> /home/mike/cogent/.cogent/skills/zhihu-search-api-skill (created)
+2026-06-18 22:03:42,040 INFO [__forge__] cogent.skill_forge: Skill 'tiktok-hashtag-videos' installed -> /home/mike/cogent/.cogent/skills/tiktok-hashtag-videos (created)
+2026-06-18 22:03:42,040 INFO [__forge__] cogent.skill_forge: Skill 'tiktok-profile-videos' installed -> /home/mike/cogent/.cogent/skills/tiktok-profile-videos (created)
+2026-06-18 22:03:42,040 INFO [__forge__] cogent.skill_forge: Skill 'tiktok-search-videos' installed -> /home/mike/cogent/.cogent/skills/tiktok-search-videos (created)
+2026-06-18 22:03:42,040 INFO [__forge__] cogent.skill_forge: Skill 'tiktok-video-detail' installed -> /home/mike/cogent/.cogent/skills/tiktok-video-detail (created)
+2026-06-18 22:03:42,040 INFO [__forge__] cogent.skill_forge: Skill 'youtube-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-api-skill (created)
+2026-06-18 22:03:42,040 INFO [__forge__] cogent.skill_forge: Skill 'youtube-batch-transcript-extractor-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-batch-transcript-extractor-api-skill (created)
+2026-06-18 22:03:42,041 INFO [__forge__] cogent.skill_forge: Skill 'youtube-channel-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-channel-api-skill (created)
+2026-06-18 22:03:42,041 INFO [__forge__] cogent.skill_forge: Skill 'youtube-comments-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-comments-api-skill (created)
+2026-06-18 22:03:42,041 INFO [__forge__] cogent.skill_forge: Skill 'youtube-influencer-finder-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-influencer-finder-api-skill (created)
+2026-06-18 22:03:42,041 INFO [__forge__] cogent.skill_forge: Skill 'youtube-search-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-search-api-skill (created)
+2026-06-18 22:03:42,042 INFO [__forge__] cogent.skill_forge: Skill 'youtube-transcript' installed -> /home/mike/cogent/.cogent/skills/youtube-transcript (created)
+2026-06-18 22:03:42,042 INFO [__forge__] cogent.skill_forge: Skill 'youtube-transcript-analysis-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-transcript-analysis-api-skill (created)
+2026-06-18 22:03:42,042 INFO [__forge__] cogent.skill_forge: Skill 'youtube-transcript-extractor-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-transcript-extractor-api-skill (created)
+2026-06-18 22:03:42,042 INFO [__forge__] cogent.skill_forge: Skill 'youtube-video-api-skill' installed -> /home/mike/cogent/.cogent/skills/youtube-video-api-skill (created)
+2026-06-18 22:03:50,271 INFO [__forge__] cogent.providers: Provider openrouter returned type=str len=335
+2026-06-18 22:03:50,317 INFO [__forge__] headroom.transforms.content_router: content_router: 23 msgs — 11 skipped (user), 11 skipped (<50 words), 1 unchanged (ratio>=0.78), 1 cache hits, cache[0 results, 10 skips, 800ns avg]
+2026-06-18 22:03:50,317 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 72120 -> 72120 tokens (saved 0) [34.6ms]
+2026-06-18 22:03:50,330 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:04:18,870 INFO [__forge__] cogent.providers: Provider openrouter returned type=str len=1699
+2026-06-18 22:04:18,872 INFO [__forge__] headroom.transforms.content_router: content_router: 2 msgs — 1 skipped (user), 1 skipped (<50 words), cache[0 results, 10 skips, 800ns avg]
+2026-06-18 22:04:18,872 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 552 -> 552 tokens (saved 0) [0.3ms]
+2026-06-18 22:04:18,872 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 22:04:35,621 INFO [__forge__] cogent.providers: Provider openrouter returned type=str len=397
+2026-06-18 22:04:35,674 INFO [__forge__] headroom.transforms.content_router: content_router: 25 msgs — 12 skipped (user), 11 skipped (<50 words), 2 unchanged (ratio>=0.78), 1 cache hits, 1 cache misses, cache[0 results, 11 skips, 772ns avg]
+2026-06-18 22:04:35,674 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 72698 -> 72698 tokens (saved 0) [41.6ms]
+2026-06-18 22:04:35,687 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)

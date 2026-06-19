@@ -1,0 +1,12 @@
+{
+  "name": "producthunt-launches",
+  "description": "Scrape Product Hunt daily/weekly/monthly/yearly leaderboard launches with full product details, maker profiles, and website contact info. Use when user mentions Product Hunt, producthunt, PH scraper, product hunt launches, product hunt leaderboard, scrape product hunt, product hunt data, PH daily launches, product hunt upvotes, product hunt maker info, extract product hunt, product hunt today, top products product hunt, product hunt archive, PH products, product hunt email extraction, product hunt contact info, producthunt.com scraping, get product hunt launches, product hunt API alternative. Also applies to: startup launch monitoring, new product discovery, maker/founder contact enrichment, product hunt lead generation, daily product hunt digest, competitive product tracking.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/extract-launch-detail.py",
+    "scripts/extract-leaderboard.py",
+    "scripts/extract-maker-profile.py",
+    "scripts/extract-website-content.py"
+  ]
+}

@@ -2,6 +2,8 @@ name: notionhq-notion-mcp-server
 version: 1.0.0
 description: Official MCP server for Notion API
 transport: stdio
+source: makenotion/notion-mcp-server
+installed_at: 2026-06-18T16:05:30.613291+00:00
 command: npx
 args:
   - @notionhq/notion-mcp-server

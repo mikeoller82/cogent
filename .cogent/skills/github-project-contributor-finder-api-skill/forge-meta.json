@@ -1,0 +1,23 @@
+{
+  "name": "github-project-contributor-finder-api-skill",
+  "description": "This skill helps users extract GitHub repository project details and contributor contact information using keywords, stars, and update dates. Agent should proactively apply this skill when users express needs like search for GitHub projects by keywords, find top open-source contributors in specific domains, extract developer contacts from GitHub repositories, discover trending repositories with high stars, gather contributor profiles and social links for tech recruiting, retrieve GitHub project descriptions and metrics, build developer communities by finding active contributors, search for repositories updated recently, collect personal website and Twitter links of developers, generate targeted leads for developer tools, or track active open-source contributors for collaboration.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {
+    "metadata": {
+      "openclaw": {
+        "emoji": "\ud83c\udf10",
+        "requires": {
+          "bins": [
+            "python"
+          ],
+          "env": [
+            "BROWSERACT_API_KEY"
+          ]
+        }
+      }
+    }
+  },
+  "resources": [
+    "scripts/github_project_contributor_finder_api.py"
+  ]
+}

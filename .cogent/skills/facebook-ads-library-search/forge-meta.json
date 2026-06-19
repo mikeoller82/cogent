@@ -1,0 +1,9 @@
+{
+  "name": "facebook-ads-library-search",
+  "description": "Searches Meta Ad Library (Facebook/Instagram/WhatsApp ads) by keyword or Facebook page ID and extracts ad details including creatives, copy, CTA, publisher platforms, spend, impressions, reach estimates, and page transparency info. Use when user mentions Meta Ad Library, Facebook ads scraper, Instagram ads data, FB ad library, search Facebook ads, get ads from a Facebook page, scrape Meta ads, Facebook advertising data, ad creative extraction, competitor ads analysis, brand ads monitoring, Meta advertising transparency, political ads Facebook, housing ads Facebook, view all ads from a page, facebook ads search, fb ads library api, facebook ad archive, instagram ad data, get ad creatives.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/search-ads.py"
+  ]
+}

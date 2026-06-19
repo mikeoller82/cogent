@@ -1,0 +1,9 @@
+{
+  "name": "google-search-serp",
+  "description": "Extracts Google Search results page (SERP) data including organic results, paid ads, related searches, People Also Ask questions, AI Overview text, and total result count from google.com. Use when user mentions Google search results, SERP scraping, google search data, search engine results page, organic rankings, keyword SERP, Google SERP extraction, scrape Google search, Google search API alternative, SEO ranking data, paid search ads, PPC ads on Google, Google search monitoring, keyword research, search results export, check Google rankings, what shows up on Google, search engine scraper, google results checker.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/serp-extract.py"
+  ]
+}

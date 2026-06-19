@@ -1,0 +1,23 @@
+{
+  "name": "business-contact-social-links-skill",
+  "description": "This skill helps users automatically extract official website and social media profiles. Agent should proactively apply this skill when users express needs like search for official website and social media contacts of a company, find YouTube and LinkedIn profiles by company name, extract social media links from a specific website URL, discover a company's X and Facebook presence, gather business contact details using their brand name, retrieve TikTok and Instagram links from a target website, track competitor social media strategy, extract multi-platform social links for lead generation, find official contact channels of local businesses, collect canonical profile URLs for outreach campaigns, or build a contact database from Yellow Pages leads.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {
+    "metadata": {
+      "openclaw": {
+        "emoji": "\ud83c\udf10",
+        "requires": {
+          "bins": [
+            "python"
+          ],
+          "env": [
+            "BROWSERACT_API_KEY"
+          ]
+        }
+      }
+    }
+  },
+  "resources": [
+    "scripts/business_contact_social_links.py"
+  ]
+}

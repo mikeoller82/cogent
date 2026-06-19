@@ -1,0 +1,10 @@
+{
+  "name": "instagram-profile-posts",
+  "description": "Scrapes posts from an Instagram user's profile feed including captions, media URLs, like/comment counts, timestamps and location tags. Use when user mentions scraping Instagram posts, download Instagram feed, get posts from Instagram account, IG profile posts, Instagram user posts, pull posts from Instagram, Instagram post list, get someone's Instagram content, batch download Instagram, Instagram media scraper.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/get-profile-posts.py",
+    "scripts/get-user-id.py"
+  ]
+}

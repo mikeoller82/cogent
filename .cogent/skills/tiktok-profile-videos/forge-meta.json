@@ -1,0 +1,7 @@
+{
+  "name": "tiktok-profile-videos",
+  "description": "TikTok user profile video scraper: input a TikTok username \u2192 output the user's profile info plus paginated video list with full metadata (engagement stats, music, video meta). Use when user mentions TikTok profile scraping, scrape TikTok user videos, get TikTok creator videos, extract TikTok profile data, TikTok user posts, TikTok account video collection, collect TikTok profile page videos, TikTok creator video list, TikTok creator data, TikTok profile scraper, tiktok user scraper, tiktok creator scraper. Also applies to influencer research, competitor analysis, content archiving for a specific TikTok creator, or extracting all posts from a TikTok account.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": []
+}

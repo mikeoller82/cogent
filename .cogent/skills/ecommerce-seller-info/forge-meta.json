@@ -1,0 +1,9 @@
+{
+  "name": "ecommerce-seller-info",
+  "description": "Extract seller or merchant profile data from marketplace platform seller pages. Returns seller name, rating, review count, positive feedback percentage, joined date, and return policy. Works on Amazon seller pages, eBay seller pages, and any e-commerce site with seller profiles. Use when: seller information, merchant profile, seller rating, marketplace seller data, seller details, vendor profile, store information, seller feedback, merchant rating, seller review count, get seller info, ebay seller page, amazon seller profile, marketplace vendor analysis, seller research.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/extract-seller.py"
+  ]
+}

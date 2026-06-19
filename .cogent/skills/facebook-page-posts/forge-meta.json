@@ -1,0 +1,10 @@
+{
+  "name": "facebook-page-posts",
+  "description": "Scrapes posts from any public Facebook Page timeline, returning structured data including post text, author info, engagement metrics (likes/comments/shares), reaction breakdowns (like/love/haha/wow/sad/angry/care), hashtags and external links, and media type. Use when user wants to scrape Facebook posts, extract Facebook page content, get Facebook post data, collect Facebook engagement stats, download Facebook posts, monitor a Facebook page, crawl Facebook timeline, get Facebook reactions, get like count/comment count/share count from Facebook, Facebook post bulk export, Facebook social media analytics. Supports date range filtering (afterTime/beforeTime) and cursor-based pagination for bulk collection.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/get-page-id.py",
+    "scripts/get-page-posts.py"
+  ]
+}

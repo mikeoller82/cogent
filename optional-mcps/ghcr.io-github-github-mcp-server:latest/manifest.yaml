@@ -2,6 +2,8 @@ name: ghcr.io-github-github-mcp-server:latest
 version: 1.0.0
 description: Connect AI assistants to GitHub - manage repos, issues, PRs, and workflows through natural language.
 transport: stdio
+source: io.github.github/github-mcp-server
+installed_at: 2026-06-18T16:05:54.420171+00:00
 command: docker
 args:
   - run

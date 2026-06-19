@@ -1,0 +1,9 @@
+{
+  "name": "tiktok-video-detail",
+  "description": "TikTok single video detail scraper: input a TikTok video URL \u2192 output full video metadata (author profile, engagement stats, music, video meta, hashtags, mentions, slideshow images). Use when user mentions TikTok video detail, get TikTok video data, extract TikTok video metadata, scrape single TikTok video, TikTok video info, extract single TikTok video info, TikTok single video collection, tiktok video scraper, tiktok video url scraper. Also applies to batch URL processing (given a list of TikTok video URLs, extract metadata for each), verifying specific video stats, or archiving individual TikTok posts with full metadata.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {},
+  "resources": [
+    "scripts/extract-video-detail.py"
+  ]
+}

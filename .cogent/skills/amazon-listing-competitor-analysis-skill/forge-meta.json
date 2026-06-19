@@ -1,0 +1,23 @@
+{
+  "name": "amazon-listing-competitor-analysis-skill",
+  "description": "This skill helps users analyze Amazon competitor listings by ASIN and produce structured competitive intelligence plus strategic opportunity points for their own go-to-market. The Agent should proactively apply this skill when users want to analyze a competitor Amazon listing by ASIN, understand what a top-ranked product does right in content keywords or visuals, find market gaps and unmet buyer needs, turn competitor research into opportunity maps for their brand, identify keyword placement patterns on rival listings, extract SEO insights from Amazon product pages, reverse-engineer competitor bullet and title strategies, mine competitor reviews for buyer psychology, compare seller and A plus content patterns, run gap analysis before launching a new SKU, research why a listing wins conversion signals, synthesize whitespace you can own versus the diagnosed listing, or say just look at this ASIN with a competitive or optimization angle.",
+  "imported_at": "2026-06-19T03:03:42Z",
+  "metadata": {
+    "metadata": {
+      "openclaw": {
+        "emoji": "\ud83c\udf10",
+        "requires": {
+          "bins": [
+            "python"
+          ],
+          "env": [
+            "BROWSERACT_API_KEY"
+          ]
+        }
+      }
+    }
+  },
+  "resources": [
+    "scripts/amazon_listing_competitor_analysis.py"
+  ]
+}
