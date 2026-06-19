@@ -1,69 +1,117 @@
 /** @jsxImportSource @opentui/react */
 import { theme } from '../theme';
 
-const COGENT_LOGO = [
-  '╔═══╗╔═╗╔═╗╔═══╗╔═══╗╔╗──╔═══╗',
-  '╚══╗║║║╚╝║║║╔═╗║║╔══╝║║──║╔══╝',
-  '──╔╝║║║╔╗║║║╚═╝║║╚══╗║║──║╚══╗',
-  '╚═╝─╚╝╚╝╚╝╚╝═══╝╚═══╝╚╝──╚═══╝',
-];
-
 export function Header() {
   return (
     <box
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: { left: 1, right: 1 },
-        borderStyle: 'single',
-        borderColor: theme.border,
-        backgroundColor: theme.surface,
-        height: 7,
+        flexDirection: 'column',
+        borderStyle: 'round',
+        borderColor: theme.headerBorder,
+        backgroundColor: theme.headerBg,
+        padding: { left: 2, right: 2, top: 1, bottom: 1 },
+        margin: { left: 1, right: 1, top: 1 },
       }}
     >
-      {/* Logo block */}
+      {/* Title row */}
       <box
         style={{
-          flexDirection: 'column',
-          marginRight: 2,
+          flexDirection: 'row',
+          alignItems: 'center',
         }}
       >
-        {COGENT_LOGO.map((line, i) => (
-          <text
-            key={i}
-            style={{
-              color: theme.secondary,
-            }}
-            content={line}
-          />
-        ))}
+        <text
+          style={{
+            color: theme.primaryBright,
+            fontWeight: 'bold',
+          }}
+          content="◆"
+        />
+        <text
+          style={{
+            color: theme.text,
+            fontWeight: 'bold',
+            padding: { left: 1 },
+          }}
+          content=" COGENT"
+        />
+        <text
+          style={{
+            color: theme.accent,
+            padding: { left: 1 },
+          }}
+          content="·"
+        />
+        <text
+          style={{
+            color: theme.textMuted,
+            padding: { left: 1 },
+          }}
+          content="AI coworker"
+        />
+        <box style={{ flexGrow: 1 }} />
+        <text
+          style={{
+            color: theme.textDim,
+          }}
+          content="v0.1"
+        />
       </box>
 
-      {/* Title + subtitle */}
+      {/* Subtitle row */}
       <box
         style={{
-          flexDirection: 'column',
-          flexGrow: 1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: 1,
         }}
       >
-      <text
-        style={{
-          color: theme.accent,
-        }}
-        content="COGENT"
-      />
-      <text
-        style={{
-          color: theme.textMuted,
-        }}
-        content="AI co-worker — terminal interface"
-      />
-      <text
-        style={{
-          color: theme.textDim,
-        }}
-        content="Plan · Execute · Verify"
-      />
+        <text
+          style={{
+            color: theme.primary,
+          }}
+          content="━━━"
+        />
+        <text
+          style={{
+            color: theme.textMuted,
+            padding: { left: 2 },
+          }}
+          content="Plan"
+        />
+        <text
+          style={{
+            color: theme.textDim,
+            padding: { left: 1, right: 1 },
+          }}
+          content="·"
+        />
+        <text
+          style={{
+            color: theme.textMuted,
+          }}
+          content="Execute"
+        />
+        <text
+          style={{
+            color: theme.textDim,
+            padding: { left: 1, right: 1 },
+          }}
+          content="·"
+        />
+        <text
+          style={{
+            color: theme.textMuted,
+          }}
+          content="Verify"
+        />
+        <box style={{ flexGrow: 1 }} />
+        <text
+          style={{
+            color: theme.textDim,
+          }}
+          content="type /help for commands"
+        />
       </box>
     </box>
   );

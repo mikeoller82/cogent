@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Cbencent TUI — thin bootstrap entry point.
+ * Cogent TUI — thin bootstrap entry point.
  *
  * Handles --help and --version before loading OpenTUI. This avoids
  * triggering OpenTUI's platform-native .so loading (which uses a
@@ -15,11 +15,8 @@ const args = process.argv.slice(2);
 
 if (args.includes('--help') || args.includes('-h')) {
   console.log(`
-\x1b[35m╔═══╗╔═╗╔═╗╔═══╗╔═══╗╔╗──╔═══╗\x1b[0m
-\x1b[35m╚══╗║║║╚╝║║║╔═╗║║╔══╝║║──║╔══╝\x1b[0m
-\x1b[35m──╔╝║║║╔╗║║║╚═╝║║╚══╗║║──║╚══╗\x1b[0m
-\x1b[35m╚═╝─╚╝╚╝╚╝╚╝═══╝╚═══╝╚╝──╚═══╝\x1b[0m
-\x1b[38;5;245mCogent — AI co-worker  |  Terminal User Interface\x1b[0m
+\x1b[34m  ◆ COGENT  \x1b[38;5;245m·  AI coworker\x1b[0m
+\x1b[34m  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\x1b[0m
 
 \x1b[1mUSAGE\x1b[0m
   cogent [options]
@@ -31,14 +28,22 @@ if (args.includes('--help') || args.includes('-h')) {
   \x1b[36m-v, --version\x1b[0m       Show version
 
 \x1b[1mCOMMANDS (inside TUI)\x1b[0m
-  /help     Show available commands
-  /clear    Clear the conversation
-  /connect  Reconnect to server
-  /quit     Exit Cogent
+  /help                   Show extensive help with all commands
+  /session                Show current session info
+  /sessions               List all sessions
+  /skills [/subcommand]   List / install / forge / delete skills
+  /memory [/subcommand]   List / add / delete memories
+  /tasks [/subcommand]    List / run / delete scheduled tasks
+  /mcp [/subcommand]      List / search / install / remove / sync MCP
+  /connect                Reconnect to server
+  /disconnect             Disconnect from server
+  /clear                  Clear the conversation
+  /quit                   Exit Cogent
 
 \x1b[1mEXAMPLES\x1b[0m
-  cogent                              Start TUI, connect to default server
-  cogent -u http://10.0.0.5:8000      Connect to remote server
+  cogent                          Start TUI, connect to default server
+  cogent -u http://10.0.0.5:8000  Connect to remote server
+  cogent -s                       Start server then open TUI
 `);
   process.exit(0);
 }

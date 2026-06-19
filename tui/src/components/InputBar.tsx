@@ -18,7 +18,6 @@ export function InputBar({ onSend, onCommand, disabled, connected }: InputBarPro
       const trimmed = val.trim();
       if (!trimmed || disabled) return;
 
-      // Check if it's a command first
       if (trimmed.startsWith('/')) {
         const handled = await onCommand(trimmed);
         if (handled) {
@@ -29,28 +28,34 @@ export function InputBar({ onSend, onCommand, disabled, connected }: InputBarPro
 
       onSend(trimmed);
       setValue('');
-      // Refocus input after sending
       setTimeout(() => inputRef.current?.focus(), 0);
     },
     [onSend, onCommand, disabled]
   );
 
+  const connectedIcon = connected ? '▶' : '✗';
+
   return (
     <box
       style={{
         flexDirection: 'column',
-        borderStyle: 'single',
+        borderStyle: 'round',
         borderColor: connected ? theme.borderFocus : theme.border,
         backgroundColor: theme.surface,
+        margin: { left: 1, right: 1, bottom: 0 },
       }}
     >
-      {/* Prompt indicator */}
-      <box style={{ flexDirection: 'row', alignItems: 'center', padding: { left: 1, right: 1 } }}>
+      {/* Prompt indicator row */}
+      <box
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          padding: { left: 2, right: 1, top: 1 },
+        }}
+      >
         <text
-          style={{
-            color: connected ? theme.success : theme.error,
-          }}
-          content={connected ? '▶' : '✗'}
+          style={{ color: connected ? theme.success : theme.error }}
+          content={connectedIcon}
         />
         <text
           style={{
@@ -59,32 +64,53 @@ export function InputBar({ onSend, onCommand, disabled, connected }: InputBarPro
           }}
           content="cogent"
         />
-        <text style={{ color: theme.textMuted }} content=" ❯ " />
+        <text
+          style={{
+            color: theme.textMuted,
+            padding: { left: 1 },
+          }}
+          content="❯"
+        />
       </box>
 
-      {/* Input field */}
-      <input
-        ref={inputRef}
-        focused
-        value={value}
-        placeholder={
-          connected
-            ? 'Ask Cogent to do something...'
-            : 'Disconnected — run cogent server first'
-        }
-        onSubmit={(val: string) => handleSubmit(val)}
-        onInput={(val: string) => setValue(val)}
+      {/* Input row — dedicated row so typed text appears inside the box */}
+      <box
         style={{
-          color: theme.text,
-          placeholderColor: theme.textDim,
-          padding: { left: 2, right: 1 },
-          backgroundColor: theme.surface,
+          flexDirection: 'row',
+          padding: { left: 1, right: 1, top: 0, bottom: 0 },
         }}
-      />
+      >
+        <input
+          ref={inputRef}
+          focused
+          value={value}
+          placeholder={
+            connected
+              ? 'Ask Cogent to do something...'
+              : 'Disconnected — run cogent server first'
+          }
+          onSubmit={(val: string) => handleSubmit(val)}
+          onInput={(val: string) => setValue(val)}
+          style={{
+            color: theme.text,
+            placeholderColor: theme.textDim,
+            backgroundColor: theme.surfaceAlt,
+            flexGrow: 1,
+          }}
+        />
+      </box>
 
-      {/* Hint bar */}
-      <box style={{ flexDirection: 'row', padding: { left: 1, right: 1 } }}>
-        <text style={{ color: theme.textDim }} content="/help  /skills  /clear  /quit" />
+      {/* Hint bar with all slash commands */}
+      <box
+        style={{
+          flexDirection: 'row',
+          padding: { left: 2, right: 1, bottom: 1, top: 0 },
+        }}
+      >
+        <text
+          style={{ color: theme.textDim }}
+          content="/help  /skills  /sessions  /memory  /tasks  /mcp  /connect  /clear  /quit"
+        />
       </box>
     </box>
   );

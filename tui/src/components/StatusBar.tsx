@@ -33,10 +33,11 @@ export function StatusBar({
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        padding: { left: 1, right: 1 },
+        padding: { left: 2, right: 2 },
         backgroundColor: theme.surface,
-        borderStyle: 'single',
+        borderStyle: 'round',
         borderColor: theme.border,
+        margin: { left: 1, right: 1, bottom: 1, top: 0 },
       }}
     >
       {/* Connection status dot */}
@@ -70,13 +71,11 @@ export function StatusBar({
         </box>
       )}
 
-      {/* Spacer */}
       <box style={{ flexGrow: 1 }} />
 
-      {/* Version / server info */}
       <text
         style={{ color: theme.textDim }}
-        content="Cogent TUI v0.1"
+        content="Cogent TUI"
       />
     </box>
   );

@@ -2367,3 +2367,5 @@ TypeError: expected string or bytes-like object, got 'NoneType'
 2026-06-18 22:04:35,674 INFO [__forge__] headroom.transforms.content_router: content_router: 25 msgs — 12 skipped (user), 11 skipped (<50 words), 2 unchanged (ratio>=0.78), 1 cache hits, 1 cache misses, cache[0 results, 11 skips, 772ns avg]
 2026-06-18 22:04:35,674 INFO [__forge__] headroom.transforms.pipeline: Transform content_router: 72698 -> 72698 tokens (saved 0) [41.6ms]
 2026-06-18 22:04:35,687 INFO [__forge__] cogent.headroom: Headroom: no compression applied (output larger than input)
+2026-06-18 23:12:35,964 INFO cogent.scheduler: Scheduler started
+2026-06-18 23:12:35,968 INFO cogent.scheduler: Loaded 0 scheduled tasks

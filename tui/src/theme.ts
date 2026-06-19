@@ -1,23 +1,26 @@
 /**
  * Cogent TUI Theme
- * Dark terminal color palette
+ * Blue & Black premium terminal palette
  */
 
 export const theme = {
-  bg: '#0d1117',
-  surface: '#161b22',
-  surfaceAlt: '#1c2333',
-  border: '#30363d',
-  borderFocus: '#58a6ff',
-  primary: '#58a6ff',
-  secondary: '#a855f7',
-  success: '#3fb950',
-  warning: '#d29922',
-  error: '#f85149',
-  text: '#e6edf3',
-  textMuted: '#8b949e',
-  textDim: '#484f58',
-  accent: '#79c0ff',
+  bg: '#0a0e1a',
+  surface: '#111827',
+  surfaceAlt: '#1e293b',
+  border: '#1e3a5f',
+  borderFocus: '#3b82f6',
+  primary: '#3b82f6',
+  primaryBright: '#60a5fa',
+  secondary: '#6366f1',
+  success: '#22c55e',
+  warning: '#f59e0b',
+  error: '#ef4444',
+  text: '#f1f5f9',
+  textMuted: '#94a3b8',
+  textDim: '#475569',
+  accent: '#818cf8',
+  headerBg: '#0f172a',
+  headerBorder: '#1e40af',
 } as const;
 
 export type Theme = typeof theme;

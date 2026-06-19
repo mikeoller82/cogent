@@ -45,6 +45,10 @@ export class GatewayClient {
     return this.state;
   }
 
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
   getSessionId(): string | null {
     return this.sessionId;
   }

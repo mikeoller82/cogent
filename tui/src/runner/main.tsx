@@ -65,7 +65,6 @@ async function checkMongoDB(): Promise<boolean> {
 async function waitForServer(proc: import('bun').Subprocess, timeoutMs = 30_000): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    // If the process already exited, abort immediately
     if (proc.killed || (proc.exitCode !== null && proc.exitCode !== 0)) {
       throw new Error(`Server process exited with code ${proc.exitCode}`);
     }
@@ -109,7 +108,6 @@ function killPort(port: number): void {
 }
 
 async function startBackendServer(): Promise<() => void> {
-  // Verify MongoDB is running before attempting to start the server
   const mongoUp = await checkMongoDB();
   if (!mongoUp) {
     console.error('');
@@ -119,7 +117,6 @@ async function startBackendServer(): Promise<() => void> {
     throw new Error('MongoDB not available');
   }
 
-  // Kill anything stale on port 8000
   killPort(8000);
   await Bun.sleep(500);
 
@@ -169,7 +166,7 @@ async function main(): Promise<void> {
     exitSignals: ['SIGINT', 'SIGTERM', 'SIGQUIT'],
     clearOnShutdown: true,
     screenMode: 'alternate-screen',
-    backgroundColor: '#0d1117',
+    backgroundColor: '#0a0e1a',
     targetFps: 30,
   });
 
