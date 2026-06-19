@@ -45,12 +45,13 @@ export function InputBar({ onSend, onCommand, disabled, connected }: InputBarPro
         margin: { left: 1, right: 1, bottom: 0 },
       }}
     >
-      {/* Prompt indicator row */}
+      {/* Prompt + Input — single command-line row */}
       <box
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          padding: { left: 2, right: 1, top: 1 },
+          height: 1,
+          padding: { left: 1, right: 1, top: 0 },
         }}
       >
         <text
@@ -71,15 +72,6 @@ export function InputBar({ onSend, onCommand, disabled, connected }: InputBarPro
           }}
           content="❯"
         />
-      </box>
-
-      {/* Input row — dedicated row so typed text appears inside the box */}
-      <box
-        style={{
-          flexDirection: 'row',
-          padding: { left: 1, right: 1, top: 0, bottom: 0 },
-        }}
-      >
         <input
           ref={inputRef}
           focused
@@ -100,11 +92,12 @@ export function InputBar({ onSend, onCommand, disabled, connected }: InputBarPro
         />
       </box>
 
-      {/* Hint bar with all slash commands */}
+      {/* Hint bar with all slash commands — own row */}
       <box
         style={{
           flexDirection: 'row',
-          padding: { left: 2, right: 1, bottom: 1, top: 0 },
+          height: 1,
+          padding: { left: 2, right: 1, top: 0, bottom: 1 },
         }}
       >
         <text
