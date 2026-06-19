@@ -1,79 +1,82 @@
 import React from "react";
-import { FileText, CreditCard, Shield } from "lucide-react";
-import { builtByLogos, backedByLogos } from "../mock";
+import { ArrowRight, GitBranch, Shield, Cpu } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative pt-[140px] pb-20 topo-bg overflow-hidden">
-      <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
+    <section className="relative pt-[140px] pb-24 top-bg circuit-bg overflow-hidden">
+      <div className="max-w-[1280px] mx-auto px-6 lg:px-10 relative z-10">
         <div className="flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1d1813] border border-[#f5ede0]/10 text-[12px] text-[#d8d0c2] font-mono">
-            <span>🇺🇸</span>
-            Cogent speaks English
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#16120e] border border-[#f5ede0]/10 text-[12px] text-[#d8d0c2] font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] signal-pulse" />
+            Built on Loop Engineering
           </div>
 
-          <h1 className="mt-7 text-[64px] md:text-[96px] leading-[0.95] tracking-[-0.04em] font-medium text-[#f5ede0]">
-            Hire the agent. <span className="font-serif-i text-[#f5ede0]">Keep the work.</span>
+          <h1 className="mt-7 text-[56px] md:text-[88px] leading-[0.92] tracking-[-0.045em] font-medium text-[#f5ede0] max-w-[1000px]">
+            The governed{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b5a8f5] to-[#a78bfa]">
+              AI coworker
+            </span>
+            <br />
+            that ships real work.
           </h1>
 
-          <p className="mt-7 max-w-[620px] text-[18px] leading-[1.5] text-[#b8b0a2]">
-            Cogent is an AI coworker that lives where your team does. It plugs into your stack, runs real tasks end-to-end, and ships the output — reports, dashboards, code, campaigns.
+          <p className="mt-6 max-w-[620px] text-[18px] leading-[1.5] text-[#b8b0a2]">
+            Not a chatbot. A colleague governed by Loop Engineering — every action planned,
+            executed, verified, and controlled. Cogent uses MCP tools, runs skills, remembers
+            context, and refines through a Plan→Execute→Verify→Govern loop.
           </p>
 
-          <a
-            href="/app"
-            className="mt-10 group btn-cream inline-flex items-center gap-3 px-7 py-4 rounded-md hover:scale-[1.02] transition-transform"
-          >
-            Try Cogent Now
-            <svg width="18" height="18" viewBox="0 0 32 32" fill="none">
-              <path d="M4 16 Q 16 4, 28 16" stroke="#15110d" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-              <path d="M4 16 Q 16 28, 28 16" stroke="#15110d" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-              <circle cx="16" cy="16" r="2.4" fill="#15110d" />
-            </svg>
-          </a>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <a
+              href="/app"
+              className="group inline-flex items-center gap-2 px-7 py-4 rounded-md btn-cream hover:scale-[1.02] transition-transform"
+            >
+              Try Cogent Free
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            </a>
+            <a
+              href="#loop"
+              className="inline-flex items-center gap-2 px-7 py-4 rounded-md btn-outline hover:scale-[1.02] transition-transform"
+            >
+              See the loop
+            </a>
+          </div>
 
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-6 text-[12px] text-[#a8a092] font-mono uppercase tracking-wider">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6 text-[12px] text-[#a8a092] font-mono uppercase tracking-wider">
             <span className="inline-flex items-center gap-2">
-              <CreditCard className="w-3.5 h-3.5" /> $100 in free credits
+              <GitBranch className="w-3.5 h-3.5 text-[#b5a8f5]" /> Plan→Execute→Verify loop
             </span>
             <span className="inline-flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5" /> No credit card required
+              <Shield className="w-3.5 h-3.5 text-[#22c55e]" /> Governance per iteration
             </span>
             <span className="inline-flex items-center gap-2">
-              <Shield className="w-3.5 h-3.5" /> SOC2 Compliant
+              <Cpu className="w-3.5 h-3.5 text-[#60a5fa]" /> 350+ MCP tools
             </span>
           </div>
         </div>
 
-        <div className="mt-24 grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-10 items-center">
-          <div>
-            <p className="tiny-label mb-5">Built by engineers from:</p>
-            <div className="grid grid-cols-5 gap-3">
-              {builtByLogos.map((l) => (
-                <div
-                  key={l.name}
-                  className="h-14 rounded-md border border-[#f5ede0]/10 flex items-center justify-center text-[#d8d0c2] text-[14px] font-medium hover:border-[#f5ede0]/25 transition-colors"
-                >
-                  {l.text}
+        <div className="mt-20 max-w-[900px] mx-auto">
+          <div className="grid grid-cols-3 gap-px bg-[#f5ede0]/8 rounded-2xl overflow-hidden border border-[#f5ede0]/8">
+            {[
+              { label: "Plan", desc: "Decompose goal into structured steps with constraints and criteria", color: "from-[#b5a8f5]/20 to-transparent" },
+              { label: "Execute", desc: "Run actions through risk-checked boundaries with tool access", color: "from-[#60a5fa]/20 to-transparent" },
+              { label: "Verify", desc: "Evaluate outputs against success criteria with 4-signal assessment", color: "from-[#22c55e]/20 to-transparent" },
+            ].map((phase) => (
+              <div key={phase.label} className={`bg-[#16120e] p-6 lg:p-8 bg-gradient-to-b ${phase.color}`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-2 h-2 rounded-full bg-[#b5a8f5] pulse-soft" />
+                  <span className="font-mono text-[11px] tracking-wider text-[#b5a8f5] uppercase">
+                    {phase.label}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <p className="text-[14px] leading-[1.5] text-[#a8a092]">{phase.desc}</p>
+              </div>
+            ))}
           </div>
-
-          <div className="hidden lg:block w-px h-16 bg-[#f5ede0]/10" />
-
-          <div>
-            <p className="tiny-label mb-5">Backed by:</p>
-            <div className="grid grid-cols-2 gap-3 max-w-[280px]">
-              {backedByLogos.map((l) => (
-                <div
-                  key={l.name}
-                  className="h-14 rounded-md border border-[#f5ede0]/10 flex items-center justify-center text-[#d8d0c2] text-[14px] font-medium hover:border-[#f5ede0]/25 transition-colors"
-                >
-                  {l.text}
-                </div>
-              ))}
-            </div>
+          <div className="text-center mt-3">
+            <span className="font-mono text-[11px] text-[#8a8278] tracking-widest">
+              + GOVERN layer across all phases — risk check, evaluate, decide every iteration
+            </span>
           </div>
         </div>
       </div>

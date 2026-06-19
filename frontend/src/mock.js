@@ -1,158 +1,122 @@
-// Mock data for Cogent landing page (original copy under the Cogent brand)
-
 export const navLinks = [
   {
     label: "Product",
     items: [
+      { label: "Loop Engineering", href: "#loop" },
+      { label: "Features", href: "#features" },
       { label: "How it works", href: "#how" },
       { label: "Integrations", href: "#" },
-      { label: "Security", href: "#" },
-      { label: "Changelog", href: "#" }
     ]
   },
-  { label: "Enterprise", href: "#" },
+  { label: "Use Cases", href: "#usecases" },
   {
     label: "Resources",
     items: [
-      { label: "Blog", href: "#" },
       { label: "Docs", href: "#" },
-      { label: "Customer stories", href: "#" },
-      { label: "Help center", href: "#" }
+      { label: "The Paper", href: "#paper" },
+      { label: "Blog", href: "#" },
+      { label: "GitHub", href: "#" },
     ]
   },
+  { label: "Pricing", href: "#" },
+];
+
+export const loopComponents = [
   {
-    label: "Compare",
-    items: [
-      { label: "Cogent vs ChatGPT", href: "#" },
-      { label: "Cogent vs Copilot", href: "#" },
-      { label: "Cogent vs Zapier", href: "#" }
-    ]
+    id: "goal",
+    label: "Goal Representation",
+    icon: "🎯",
+    desc: "Structured task definition with constraints, success criteria, and stop conditions. The agent has a fixed reference point — not just a prompt.",
+    color: "#b5a8f5",
   },
   {
-    label: "Solutions",
-    items: [
-      { label: "Founders & CEOs", href: "#usecases" },
-      { label: "Marketing & Growth", href: "#usecases" },
-      { label: "Engineering", href: "#usecases" },
-      { label: "Operations & Finance", href: "#usecases" }
-    ]
-  }
-];
-
-export const builtByLogos = [
-  { name: "Meta AI", text: "Meta AI" },
-  { name: "Oxford", text: "OXFORD" },
-  { name: "Google", text: "Google" },
-  { name: "Tesla", text: "TESLA" },
-  { name: "Amazon", text: "amazon" }
-];
-
-export const backedByLogos = [
-  { name: "NFDG", text: "NFDG" },
-  { name: "BEK", text: "bek" }
+    id: "state",
+    label: "State Model",
+    icon: "🧠",
+    desc: "Five differentiated layers: static (goal), dynamic (outputs), tool (availability), reflective (lessons), governance (budget). Not crammed into one context.",
+    color: "#60a5fa",
+  },
+  {
+    id: "action",
+    label: "Action Executor",
+    icon: "⚡",
+    desc: "Controlled boundary around every tool call. Each action passes a risk check before execution — the difference between an agent that can do anything and one that must ask.",
+    color: "#22c55e",
+  },
+  {
+    id: "observe",
+    label: "Observation Collector",
+    icon: "👁️",
+    desc: "Captures what actually happened — not what the agent intended. LLMs are famously bad at self-assessment; the collector resolves the gap.",
+    color: "#f59e0b",
+  },
+  {
+    id: "evaluate",
+    label: "Evaluator",
+    icon: "📊",
+    desc: "Assesses four signals every iteration: confidence, progress, drift, and risk. Knows when the agent is spinning wheels or veering off course.",
+    color: "#ef4444",
+  },
+  {
+    id: "control",
+    label: "Controller",
+    icon: "🛡️",
+    desc: "The decision-maker. Given the evaluation, it decides: continue, revise, rollback, escalate to a human, or stop. Most agents lack this entirely.",
+    color: "#a78bfa",
+  },
 ];
 
 export const featureBlocks = [
   {
-    title: "Outputs, not opinions.",
-    desc: "Cogent ships finished work. Polished PDFs you can email. Dashboards your team actually opens. Tiny web apps deployed to a real URL — not screenshots and to-dos.",
-    tags: ["PDF", "Excel", "PowerPoint", "Web App"]
+    title: "MCP Tools",
+    subtitle: "350+ integrations, one protocol",
+    desc: "Cogent connects to the Model Context Protocol ecosystem — GitHub MCP, Linear, Notion, Stripe, n8n, Playwright, and 350+ servers. Each tool call passes through the governance layer before execution.",
+    tags: ["GitHub MCP", "Linear", "Notion", "Stripe", "n8n"],
+    visual: "mcp",
   },
   {
-    title: "One ask, every system.",
-    desc: "Stripe, Notion, GitHub, Meta Ads, your CRM. Cogent reaches into all of them in a single turn. No tab juggling, no exports, no glue scripts.",
-    tags: ["Stripe", "Notion", "GitHub", "Meta", "Slack"]
+    title: "Skill Orchestration",
+    subtitle: "Discover, forge, activate",
+    desc: "A portable skills system that discovers skills from .cogent/skills/, imports from any GitHub repo, and forges new ones from code analysis. Each skill bundles instructions, scripts, and assets. Activated at runtime via tool call.",
+    tags: ["SKILL.md", "Forge", "Import", "Catalog"],
+    visual: "skills",
   },
   {
-    title: "Learns once. Remembers forever.",
-    desc: "Every conversation makes Cogent sharper about your business. Tone, customers, KPIs, what shipped, what flopped — it keeps the context so you don't repeat yourself.",
-    tags: ["Memory", "Context", "Learning"]
-  }
-];
-
-export const shiftComparisons = [
-  {
-    label: "AD SPEND AUDIT",
-    other: { name: "ChatGPT", text: "Explains how to audit your ad spend." },
-    cogent: { text: "Does the audit.", emphasis: "Hands you the PDF." }
+    title: "Persistent Memory",
+    subtitle: "Learns once, remembers forever",
+    desc: "Cross-session memory with a markdown KV store. Cogent documents what it learns about your business — tone, customers, KPIs, decisions — and carries context across conversations. Every fact is traceable.",
+    tags: ["MEMORY.md", "USER.md", "Cross-session", "Context"],
+    visual: "memory",
   },
   {
-    label: "MEETING FOLLOW-UPS",
-    other: { name: "Copilot", text: "Summarizes the meeting." },
-    cogent: { text: "Creates the tasks,", emphasis: "sends the follow-ups, updates the CRM." }
+    title: "Governed Execution",
+    subtitle: "Plan → Execute → Verify → Govern",
+    desc: "Every task runs through an iterative refinement loop with maker/checker split, budget management, circuit-breaker stagnation detection, and risk-checked action boundaries. Governance runs every iteration, not just at exceptions.",
+    tags: ["Loop", "Budget", "Circuit Breaker", "Risk"],
+    visual: "govern",
   },
-  {
-    label: "WORKFLOW AUTOMATION",
-    other: { name: "Zapier", text: "Runs the rules you wrote." },
-    cogent: { text: "Spots what needs automating", emphasis: "and wires it up itself." }
-  },
-  {
-    label: "BUILDING TOOLS",
-    other: { name: "Claude Code", text: "Writes the code. You run it." },
-    cogent: { text: "Builds it, deploys it,", emphasis: "sends you the live link." }
-  }
-];
-
-export const testimonials = [
-  {
-    saved: "1-3 hours/week",
-    quote: "It feels like hiring a junior analyst who never sleeps. I send a message in Slack and a polished report shows up before standup.",
-    name: "Mariana Ortiz",
-    title: "Head of Ops, Lumen Health",
-    initials: "MO"
-  },
-  {
-    saved: "10+ hours/week",
-    quote: "Cogent took over our weekly ad readout. The team gets a fresh PDF every Monday with notes and recommendations. We haven't built a slide in months.",
-    name: "Kenji Park",
-    title: "Growth Lead, Forge Labs",
-    initials: "KP"
-  },
-  {
-    saved: "10+ hours/week",
-    quote: "The closest thing to a generalist hire I've used. It writes, it researches, it ships small tools — and it remembers what we already decided.",
-    name: "Priya Anand",
-    title: "Founder, Stackline",
-    initials: "PA"
-  },
-  {
-    saved: "10+ hours/week",
-    quote: "Adoption was almost suspiciously fast. Two days in and half the team was tagging Cogent for anything that smelled like busy work.",
-    name: "Daniel Owusu",
-    title: "COO, Northbeam Studio",
-    initials: "DO"
-  },
-  {
-    saved: "10+ hours/week",
-    quote: "I keep catching myself reaching for it before I reach for a person. That's either delightful or terrifying. Probably both.",
-    name: "Hana Brennan",
-    title: "Operator, TalentBright",
-    initials: "HB"
-  },
-  {
-    saved: "10+ hours/week",
-    quote: "For a two-person team, this is roughly the difference between drowning and floating. Cogent handles the work we'd otherwise punt on.",
-    name: "Eli Vargas",
-    title: "Co-Founder, UniTru",
-    initials: "EV"
-  }
 ];
 
 export const howSteps = [
   {
     n: "/01",
-    title: "Connect",
-    desc: "Install Cogent in Slack or Teams. Authorize the tools you actually use — Stripe, Notion, GitHub, your CRM. The whole thing takes about two minutes."
+    title: "Install & Connect",
+    desc: "Add Cogent to Slack, Teams, or open the web app. Authorize the tools you actually use — CRM, GitHub, Stripe, Notion. The whole thing takes about two minutes."
   },
   {
     n: "/02",
-    title: "Ask",
-    desc: "Talk to Cogent the same way you'd brief a teammate. \"Pull our Q3 numbers and draft the investor update.\" \"Open a ticket and assign it to Alex.\" \"Build me a tiny revenue dashboard.\""
+    title: "Describe the Goal",
+    desc: "Brief Cogent the same way you'd brief a teammate. Include constraints, success criteria, and what 'done' looks like. The more structure you give, the sharper the result."
   },
   {
     n: "/03",
-    title: "Cogent delivers",
-    desc: "It queries your systems, does the work, and ships outputs you can use immediately — PDFs, spreadsheets, web apps, code. It also suggests recurring runs you didn't think to schedule."
+    title: "Governed Loop",
+    desc: "Cogent plans, executes, verifies, and governs — every iteration. The controller evaluates confidence, progress, drift, and risk before each action. No runaway loops, no ungoverned API calls."
+  },
+  {
+    n: "/04",
+    title: "Ship the Output",
+    desc: "Polished PDFs, deployed web apps, updated CRMs, scheduled reports. Cogent ships finished work — not screenshots and to-dos. It also suggests recurring runs you didn't think to schedule."
   }
 ];
 
@@ -160,88 +124,115 @@ export const useCases = [
   {
     key: "founders",
     label: "Founders & CEOs",
-    headline: "One coworker that handles the analyst work, the marketing work, and the ops work you keep deferring.",
+    headline: "A governed AI coworker that handles the analyst work, the ops work, and the reporting you keep deferring.",
     items: [
-      { title: "Live business pulse", desc: "Pulls MRR, churn, CAC, ad spend, and pipeline from Stripe, PostHog, and your CRM. Lands in your inbox or Slack every morning." },
-      { title: "Investor updates on autopilot", desc: "Assembles revenue, runway, pipeline, and headcount into a clean monthly investor email or deck. You read it and hit send." },
-      { title: "Outbound that maintains itself", desc: "Builds ICP lead lists, enriches contacts, launches sequences, and reports what's converting. Restarts itself every week." },
-      { title: "Internal tools in minutes", desc: "Builds dashboards, portals, and approval flows as deployed web apps with database and auth. No backlog, no sprint planning." }
+      { title: "Live business pulse", desc: "Pulls MRR, churn, CAC, ad spend, and pipeline from Stripe, PostHog, and your CRM. Governed execution — every data pull is risk-checked and logged." },
+      { title: "Investor updates on autopilot", desc: "Assembles revenue, runway, pipeline, and headcount into a clean monthly investor deck. The loop verifies accuracy before shipping." },
+      { title: "Internal tools in minutes", desc: "Builds dashboards, portals, and approval flows as deployed web apps with database and auth. The controller gates deployment until verification passes." },
+      { title: "Metric-driven governance", desc: "Set risk budgets and cost thresholds. Cogent escalates to you before exceeding either — no surprise bills." }
     ]
   },
   {
     key: "marketing",
     label: "Marketing & Growth",
-    headline: "Cogent watches your ad accounts, writes your content, builds your pipeline, and reports on all of it. Daily.",
+    headline: "Cogent watches your ad accounts, writes your content, builds your pipeline — and governors every action.",
     items: [
-      { title: "Full-funnel ad intelligence", desc: "Tracks spend, CAC, CTR, and ROAS across Meta and Google. Flags underperformers, recommends shifts, drafts new creative based on winners." },
-      { title: "Content engine", desc: "Writes SEO posts, launch copy, email campaigns, and social drafts. Publishes to your CMS or GitHub on whatever cadence you set." },
-      { title: "Pipeline builder", desc: "Sources matched leads, enriches with firmographic data, syncs to HubSpot or Attio, and triggers outbound. Hands-free." },
-      { title: "Stakeholder reporting", desc: "Ships performance reports with charts, narrative, and next actions as polished PDFs — not raw exports." }
+      { title: "Full-funnel ad intelligence", desc: "Tracks spend, CAC, CTR, and ROAS across Meta and Google. The evaluator flags underperformers and recommends shifts based on confidence and drift signals." },
+      { title: "Governed content engine", desc: "Writes SEO posts, email campaigns, and social drafts. Every output passes the evaluator's quality check before publishing." },
+      { title: "Pipeline builder", desc: "Sources matched leads, enriches with firmographic data, syncs to HubSpot. The controller decides when to batch operations to stay within risk budget." },
+      { title: "Stakeholder reporting", desc: "Ships performance reports with charts, narrative, and next actions as polished PDFs. Each report is verified against source data." }
     ]
   },
   {
     key: "engineering",
     label: "Engineering",
-    headline: "Cogent writes code, opens PRs, triages bugs, and builds internal tools so your engineers stay on the real roadmap.",
+    headline: "Cogent writes code, opens PRs, triages bugs, and builds tools — with governance on every action.",
     items: [
-      { title: "Bug triage that thinks", desc: "Watches support channels, dedupes reports, cross-references the codebase, and opens scoped tickets with repro steps." },
-      { title: "Real code contributions", desc: "Clones the repo, writes the fix on a branch, opens a PR with context, and drafts the release note. Real commits, shipped." },
-      { title: "Full-stack internal tools", desc: "Builds and deploys dashboards, admin panels, and ops tools as web apps with database, auth, and hosting included." },
-      { title: "Incident response", desc: "Queries logs and error tracking, summarizes root cause, assigns owners, and writes the postmortem checklist." }
+      { title: "Governed bug triage", desc: "Watches support channels, dedupes reports, cross-references the codebase, and opens scoped tickets. The evaluator assesses reproduction confidence before escalating." },
+      { title: "Code contributions with guardrails", desc: "Clones the repo, writes the fix on a branch, opens a PR with context, and drafts the release note. The controller verifies against coding standards before pushing." },
+      { title: "Full-stack internal tools", desc: "Builds and deploys dashboards, admin panels, and ops tools as web apps. Each deployment is pre-verified in the loop." },
+      { title: "Incident response", desc: "Queries logs and error tracking, summarizes root cause, assigns owners, and writes the postmortem. The loop traces every action for audit." }
     ]
   },
   {
     key: "ops",
     label: "Operations & Finance",
-    headline: "Cogent absorbs the spreadsheet wrangling, vendor chasing, and report building that eats your team's day.",
+    headline: "Cogent absorbs the spreadsheet wrangling, vendor chasing, and report building — governed so you stay in control.",
     items: [
-      { title: "Board pack assembly", desc: "Pulls from Stripe, your CRM, Sheets, and headcount tools. Ships the monthly board update with revenue, burn, and KPIs — zero manual assembly." },
-      { title: "Document + invoice processing", desc: "Reads invoices and contracts, matches line items against agreements, flags anomalies, and queues them for review." },
-      { title: "Model + forecast refresh", desc: "Updates operating models with live data, highlights where actuals diverge from plan, and surfaces the variances that matter." },
-      { title: "Cross-team automation", desc: "Tracks missing inputs, nudges owners, syncs data on schedule, and closes reporting loops so you're not the bottleneck." }
+      { title: "Board pack assembly", desc: "Pulls from Stripe, CRM, Sheets, and headcount tools. Ships the monthly board update with revenue, burn, and KPIs. The controller verifies consistency before delivery." },
+      { title: "Document + invoice processing", desc: "Reads invoices and contracts, matches line items against agreements, flags anomalies. High-risk actions queue for human approval via the escalation gate." },
+      { title: "Model + forecast refresh", desc: "Updates operating models with live data, highlights where actuals diverge from plan. The evaluator tracks drift from projections." },
+      { title: "Cross-team automation", desc: "Tracks missing inputs, nudges owners, syncs data on schedule. The controller manages the task queue within configured risk and iteration budgets." }
     ]
+  }
+];
+
+export const paperHighlights = [
+  {
+    quote: "The smarter the model gets, the more damage it can do before you realize something went wrong.",
+    author: "Mike Oller",
+    context: "Loop Engineering paper"
+  },
+  {
+    quote: "Governance checks must run every iteration rather than only at exception points, because there is no design-time map of which iterations might fail.",
+    author: "Mike Oller",
+    context: "Loop Engineering paper"
+  },
+  {
+    quote: "A controller that logs a risk classification on every action but never withholds approval is not governing; it is narrating.",
+    author: "Mike Oller",
+    context: "Loop Engineering paper"
+  },
+  {
+    quote: "Instead of asking 'how do we make the model smarter?' it asks 'how do we build a governance architecture that wraps around the model?'",
+    author: "Mike Oller",
+    context: "Loop Engineering paper"
+  },
+  {
+    quote: "Most agent systems collapse all of this into a single context window. Loop engineering explicitly separates them so the agent can distinguish between 'what I'm trying to do,' 'what I've done,' and 'what I've learned.'",
+    author: "Mike Oller",
+    context: "Loop Engineering paper"
   }
 ];
 
 export const tweets = [
   { name: "Marcus Dean", handle: "@marcusdean", text: "Cogent actually remembers context from two weeks ago. That alone makes it a different category of tool." },
   { name: "Bella K.", handle: "@bellakat", text: "An AI coworker that lives where the work happens. Obvious in hindsight, hard to build, very fun to use." },
-  { name: "Mo", handle: "@mobuilds", text: "Asked Cogent to audit our Meta spend. Four minutes later: a PDF with budget recommendations. Wild." },
-  { name: "Steven Lee", handle: "@stevenlee", text: "Cogent shipped. Polished product, considered onboarding, weirdly delightful empty states." },
-  { name: "Rafael S.", handle: "@rafsfeed", text: "Worked out of the box. Connected Stripe, Notion, and Linear in under five minutes." },
-  { name: "Joel W.", handle: "@joelw", text: "Loving the new release. The latest model is noticeably sharper at multi-step tasks." },
-  { name: "Clintin K.", handle: "@clintink", text: "Quietly excited about Cogent. This is the form factor agents should have shipped in." },
-  { name: "Jo Allen", handle: "@joallen", text: "The Cogent UI is so good. Every micro-interaction is considered." },
-  { name: "Adrian", handle: "@adrianbuilds", text: "Installed Cogent and immediately impressed. Output quality is on another level." },
-  { name: "Mike Chambers", handle: "@mikejc", text: "Whole team is Cogent-pilled. We use it daily for things we used to schedule meetings about." },
-  { name: "Shiva", handle: "@shivapatel", text: "Congrats on Cogent. Best AI launch I've seen in a while." }
+  { name: "Mo", handle: "@mobuilds", text: "Asked Cogent to audit our Meta spend. Four minutes later: a PDF with budget recommendations. The governance trace was a nice surprise." },
+  { name: "Steven Lee", handle: "@stevenlee", text: "Cogent ships. Polished product, considered onboarding, weirdly delightful that it shows you its evaluation signals." },
+  { name: "Rafael S.", handle: "@rafsfeed", text: "Connected Stripe, Notion, and Linear in five minutes. The loop trace is basically an audit log for every decision." },
+  { name: "Joel W.", handle: "@joelw", text: "The controller step is what sold me. Finally an agent that knows when to stop and ask for help." },
+  { name: "Clintin K.", handle: "@clintink", text: "Quietly excited about Cogent. The loop engineering approach is the form factor agents should have shipped in." },
+  { name: "Adrian", handle: "@adrianbuilds", text: "The Cogent UI is so good. And the governance layer means I actually trust it with production access." },
+  { name: "Shiva", handle: "@shivapatel", text: "Congrats on Cogent. Best AI launch I've seen in a while. The loop trace alone is worth the onboarding time." }
 ];
 
 export const faqs = [
-  { q: "What is Cogent, exactly?", a: "Cogent is an AI coworker. It lives in Slack (and on the web), runs on its own cloud workspace where it can read, write, and run code, and completes real tasks end-to-end — not just generates text about them." },
-  { q: "How is Cogent different from ChatGPT?", a: "ChatGPT talks. Cogent acts. It has a persistent workspace, connects to your tools, and performs real actions — building PDFs, deploying apps, updating CRMs, sending emails. You don't copy-paste outputs; Cogent ships them." },
-  { q: "What can Cogent actually do?", a: "Automate recurring workflows, pull data from multiple tools, build and deploy small web apps, generate reports and documents, run web research, draft content, schedule itself. Anything you can describe in a sentence, Cogent can usually code and execute." },
-  { q: "Which tools does it connect to?", a: "3,000+ integrations — Salesforce, HubSpot, Linear, Notion, Jira, Stripe, GitHub, Google Drive, Slack, and more. If your tool isn't supported, Cogent can usually build a custom integration on the fly." },
-  { q: "Is my data secure?", a: "Yes. Each workspace gets an isolated compute environment. Cogent only touches tools you explicitly connect. Data is encrypted in transit and at rest. We don't train on your data." },
-  { q: "Does Cogent read all my Slack messages?", a: "Only channels it's invited to. You decide where it has access. It remembers context to be useful, but you can remove it from any channel at any time." },
-  { q: "How does it learn about my team?", a: "By reading the channels it joins, observing your workflows, and building a private knowledge base over time. It documents what it learns so it gets sharper with use." },
-  { q: "Can Cogent make mistakes?", a: "Yes. It's capable, not infallible. It double-checks its work and asks for confirmation before high-stakes actions like sending emails or deploying. You stay in control." },
-  { q: "How long does setup take?", a: "Minutes. Install Cogent, connect a few tools, and start working. It handles its own onboarding — it'll introduce itself and ask what you need first." },
-  { q: "Can my whole team use it?", a: "Yes. Cogent works across your workspace. Anyone can tag it. It keeps context about the team while respecting individual preferences." }
+  { q: "What is Cogent, exactly?", a: "Cogent is an AI coworker built on Loop Engineering — a governance-first architecture where every action is planned, executed, verified, and governed. It lives in Slack, Teams, and on the web, and completes real tasks end-to-end with traceable decision logs." },
+  { q: "What is Loop Engineering?", a: "Loop Engineering is a framework for reliable AI agents. It defines six components — goal representation, state model, action executor, observation collector, evaluator, and controller — that together form a governed execution loop. Every iteration is checked before the next begins." },
+  { q: "How is Cogent different from ChatGPT?", a: "ChatGPT talks. Cogent acts — with governance. It has a persistent workspace, connects to your tools through MCP, executes plans through a governed loop, and ships real outputs. You don't copy-paste; Cogent deploys, emails, and updates." },
+  { q: "What does 'governed execution' mean?", a: "Every action passes through a controller that evaluates confidence, progress, drift from goal, and risk before proceeding. If an action exceeds risk budget or shows high drift, the controller escalates to you or stops entirely. Governance isn't a one-time review — it runs every iteration." },
+  { q: "What can Cogent actually do?", a: "Automate recurring workflows, pull data from multiple tools via MCP, build and deploy web apps, generate reports, write code, open PRs, run web research, draft content, schedule tasks, and activate skills. Anything you can describe as a goal with constraints." },
+  { q: "Which tools does it connect to?", a: "350+ MCP servers — GitHub, Linear, Notion, Stripe, n8n, Playwright, Slack, and more. Each integration passes through the action executor's risk check. If your tool isn't in the registry, Cogent can often build a custom integration on the fly." },
+  { q: "What is the Skills system?", a: "Skills are portable instruction bundles that teach Cogent specialized capabilities. Each skill has a SKILL.md file with instructions, scripts, and assets. Cogent discovers them automatically, can forge new ones from code analysis, and activates them at runtime." },
+  { q: "Is my data secure?", a: "Yes. Each workspace gets an isolated compute environment. The governance layer logs every action in a traceable loop record — you can replay exactly what Cogent did and why. Data is encrypted in transit and at rest. We don't train on your data." },
+  { q: "How does memory work?", a: "Cogent maintains a persistent markdown KV store across sessions. It documents facts about your business, team preferences, past decisions, and KPIs. Every memory entry is traceable to the conversation that created it. You can review and clear memory at any time." },
+  { q: "Can Cogent make mistakes?", a: "Yes — it's capable, not infallible. That's exactly why the governance layer exists. The evaluator checks confidence and risk before every action. The controller gates high-stakes operations behind human escalation. You stay in control." },
+  { q: "How long does setup take?", a: "Minutes. Install Cogent, connect a few MCP servers, and describe your first task. Cogent handles its own onboarding — it'll introduce itself and ask what you need first." }
 ];
 
 export const footerCols = [
   {
     title: "Product",
-    links: ["How it works", "Integrations", "Pricing", "Changelog", "Roadmap"]
+    links: ["Features", "Loop Engineering", "MCP Integrations", "Pricing", "Changelog"]
   },
   {
-    title: "Solutions",
+    title: "Use Cases",
     links: ["Founders & CEOs", "Marketing", "Engineering", "Operations", "Enterprise"]
   },
   {
     title: "Resources",
-    links: ["Blog", "Docs", "Help center", "Customer stories", "Community"]
+    links: ["Documentation", "The Paper", "Blog", "GitHub", "Community"]
   },
   {
     title: "Company",

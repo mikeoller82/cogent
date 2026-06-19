@@ -24,7 +24,7 @@ const Navbar = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#15110d]/85 backdrop-blur-md border-b border-[#f5ede0]/10"
+          ? "bg-[#0f0d0b]/85 backdrop-blur-md border-b border-[#f5ede0]/8"
           : "bg-transparent"
       }`}
     >
@@ -40,7 +40,7 @@ const Navbar = () => {
                   <ChevronDown className="w-3.5 h-3.5 opacity-60 group-data-[state=open]:rotate-180 transition-transform" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="bg-[#1d1813] border-[#f5ede0]/10 text-[#f5ede0] mt-2 min-w-[220px]"
+                  className="bg-[#16120e] border-[#f5ede0]/10 text-[#f5ede0] mt-2 min-w-[220px]"
                   align="start"
                 >
                   {link.items.map((it) => (
@@ -74,7 +74,7 @@ const Navbar = () => {
             href="/app"
             className="hidden md:inline-flex btn-cream px-5 py-2.5 rounded-md hover:scale-[1.02] transition-transform"
           >
-            Get Started For Free
+            Try Cogent Free
           </a>
 
           <Sheet open={open} onOpenChange={setOpen}>
@@ -83,7 +83,7 @@ const Navbar = () => {
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="bg-[#1a1410] border-[#f5ede0]/10 text-[#f5ede0] w-[300px]"
+              className="bg-[#16120e] border-[#f5ede0]/10 text-[#f5ede0] w-[300px]"
             >
               <div className="flex flex-col gap-1 mt-8">
                 {navLinks.map((link) => (

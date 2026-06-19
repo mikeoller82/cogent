@@ -1,44 +1,36 @@
 import React from "react";
-import Logo from "./Logo";
 import { footerCols } from "../mock";
-import { Twitter, Linkedin, Github } from "lucide-react";
+import Logo from "./Logo";
 
 const Footer = () => {
   return (
-    <footer className="relative pt-20 pb-10 border-t border-[#f5ede0]/8">
+    <footer className="relative py-16 border-t border-[#f5ede0]/8">
       <div className="max-w-[1280px] mx-auto px-6 lg:px-10">
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-10">
-          <div className="col-span-2">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <div className="col-span-2 md:col-span-1">
             <Logo />
-            <p className="mt-5 text-[14px] text-[#a8a092] max-w-[280px] leading-[1.55]">
-              The AI coworker that lives in Slack, connects to 3,000+ tools, and does the work.
+            <p className="mt-4 text-[13px] leading-[1.6] text-[#8a8278] max-w-[200px]">
+              The governed AI coworker that ships real work.
             </p>
-            <div className="mt-6 flex items-center gap-3">
-              {[Twitter, Linkedin, Github].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-9 h-9 rounded-md border border-[#f5ede0]/10 flex items-center justify-center text-[#a8a092] hover:text-[#f5ede0] hover:border-[#f5ede0]/25 transition-colors"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
+            <div className="mt-4 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] signal-pulse" />
+              <span className="text-[11px] font-mono text-[#8a8278]">All systems governed</span>
             </div>
           </div>
 
-          {footerCols.map((c) => (
-            <div key={c.title}>
-              <h4 className="text-[13px] font-mono uppercase tracking-wider text-[#8a8278] mb-4">
-                {c.title}
+          {footerCols.map((col) => (
+            <div key={col.title}>
+              <h4 className="text-[12px] font-mono tracking-wider uppercase text-[#8a8278] mb-4">
+                {col.title}
               </h4>
-              <ul className="space-y-3">
-                {c.links.map((l) => (
-                  <li key={l}>
+              <ul className="space-y-2.5">
+                {col.links.map((link) => (
+                  <li key={link}>
                     <a
                       href="#"
-                      className="text-[14px] text-[#d8d0c2] hover:text-[#f5ede0] transition-colors"
+                      className="text-[13px] text-[#d8d0c2] hover:text-[#f5ede0] transition-colors"
                     >
-                      {l}
+                      {link}
                     </a>
                   </li>
                 ))}
@@ -47,14 +39,16 @@ const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-16 pt-6 border-t border-[#f5ede0]/8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[12px] font-mono text-[#8a8278]">
-            © 2025 Cogent. All rights reserved.
+        <div className="mt-12 pt-6 border-t border-[#f5ede0]/8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-[12px] text-[#8a8278] font-mono">
+            &copy; {new Date().getFullYear()} Cogent. Governed execution for AI agents.
           </p>
-          <div className="flex items-center gap-6 text-[12px] font-mono text-[#8a8278]">
-            <a href="#" className="hover:text-[#f5ede0] transition-colors">Privacy</a>
-            <a href="#" className="hover:text-[#f5ede0] transition-colors">Terms</a>
-            <a href="#" className="hover:text-[#f5ede0] transition-colors">Security</a>
+          <div className="flex items-center gap-4 text-[12px] text-[#8a8278] font-mono">
+            <span>v2.0</span>
+            <span className="text-[#f5ede0]/20">/</span>
+            <span>Loop Engineering</span>
+            <span className="text-[#f5ede0]/20">/</span>
+            <span>MCP Registry</span>
           </div>
         </div>
       </div>
