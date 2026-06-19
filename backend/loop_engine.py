@@ -106,6 +106,7 @@ CB_COOLDOWN_SECONDS = 1800
 MAX_CONSECUTIVE_TEST_LOOPS = 3
 MAX_CONSECUTIVE_DONE_SIGNALS = 5
 SAFETY_CIRCUIT_BREAKER_LIMIT = 12
+MAX_CONSECUTIVE_NO_TOOL = 3  # re-prompt this many times before sending to evaluator
 
 MAX_SAME_ARGS_CALLS = 5
 MAX_CONSECUTIVE_FAILURES = 3
@@ -155,6 +156,7 @@ class LoopState:
     verification_criteria: List[str] = field(default_factory=list)
     continue_count: int = 0
     last_plan_text: str = ""
+    consecutive_no_tool_responses: int = 0
 
     goal_representation: GoalRepr = field(default_factory=GoalRepr)
     reflective_lessons: List[str] = field(default_factory=list)
@@ -277,6 +279,7 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.risk_level = "low"
     state.continue_count = 0
     state.last_plan_text = ""
+    state.consecutive_no_tool_responses = 0
     state.attempts = []
     state.errors = []
     state.decisions = []

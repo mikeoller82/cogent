@@ -517,14 +517,35 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                         f"Original task: {user_text}"
                     )
                     continue
-                # ── No tool call and not a plan — treat as final ──────
-                final_text = response_text.strip()
-                yield {"type": "final", "content": final_text}
-                break
+                # ── No tool call — re-prompt to keep working ──────────
+                loop_state.consecutive_no_tool_responses += 1
+                le.save_state(loop_state)
+                if loop_state.consecutive_no_tool_responses >= le.MAX_CONSECUTIVE_NO_TOOL:
+                    yield {"type": "reasoning", "content": (
+                        f"[no-tool response x{loop_state.consecutive_no_tool_responses} "
+                        f"— passing to evaluator]"
+                    )}
+                    final_text = response_text.strip()
+                    break  # Let evaluator decide — no premature "final"
+                yield {"type": "reasoning", "content": (
+                    f"[no-tool response {loop_state.consecutive_no_tool_responses}/"
+                    f"{le.MAX_CONSECUTIVE_NO_TOOL} — re-prompting to use tools]"
+                )}
+                yield {"type": "status", "content": "re-prompting to use tools"}
+                current_user_text = (
+                    "You responded without calling any tools. "
+                    "Continue working by calling the appropriate tools to complete the task. "
+                    "Do not summarize, plan, or describe — execute.\n\n"
+                    f"Original task: {user_text}"
+                )
+                continue
 
             made_tool_calls = True
             tool_name = call.get("name", "")
             args = call.get("args", {})
+            if loop_state.consecutive_no_tool_responses > 0:
+                loop_state.consecutive_no_tool_responses = 0
+                le.save_state(loop_state)
 
             # ── CowAgent-style loop detection ──────────────────
             should_stop, stop_reason, is_critical = le.check_tool_loop(loop_state, tool_name, args)
@@ -727,7 +748,8 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": f"Refining after {verdict}"}}
 
             feedback += (
-                f"\nRefine the output to address these issues. "
+                f"\nCall more tools to gather the information needed to complete the task. "
+                f"Use the available tools to do the actual work — do not just rewrite your output.\n"
                 f"This is iteration {loop_state.iteration}.\n\n"
                 f"Original task: {user_text}"
             )
