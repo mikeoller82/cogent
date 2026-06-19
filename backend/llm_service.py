@@ -560,6 +560,19 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 yield {"type": "artifact", "data": tool_result["artifact"]}
 
             loop_state.tokens_estimated += (len(response_text) + len(summary)) // 4
+
+            # ── Observation recording (Loop Engineering) ─────────────
+            obs = le.Observation(
+                status="success" if is_success else "failure",
+                action_type=tool_name,
+                target=str(list(args.values())[0] if args else ""),
+                input_summary=json.dumps(args)[:200],
+                output_summary=str(tool_result.get("result", ""))[:200],
+                error="" if is_success else str(tool_result.get("result", ""))[:200],
+            )
+            le.record_observation(loop_state, obs)
+            le.update_risk_level(loop_state, tool_name, args)
+
             current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue."
             yield {"type": "status", "content": "processing results and continuing work"}
 
@@ -624,25 +637,30 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
         loop_state.last_asking_questions = analysis["asking_questions"]
         le.update_exit_signals(loop_state, analysis)
 
-        # ── Verification (maker/checker split) ───────────────────────
+        # ── Evaluation + Controller + Reflection + Trace (Loop Engineering) ──
         if final_text:
             if not loop_state.verification_criteria:
                 loop_state.verification_criteria = [f"Addresses: {user_text[:100]}"]
                 le.save_state(loop_state)
 
-            le.transition(loop_state, le.PHASE_VERIFY, "Running verification pass")
+            le.transition(loop_state, le.PHASE_VERIFY, "Running evaluation pass")
             yield {"type": "loop", "data": {"phase": le.PHASE_VERIFY}}
             yield {"type": "status", "content": "verifying output quality against criteria"}
 
-            verdict, notes = await le.run_verification(
+            # Enhanced evaluator with 4 signals (confidence, progress, drift, risk)
+            eval_signals = await le.run_evaluation(
                 task=loop_state.task_description,
                 output=final_text,
                 criteria=loop_state.verification_criteria,
                 llm_complete_fn=lambda p: _send_kilocode_chat([
-                    {"role": "system", "content": "You are a strict quality verifier."},
+                    {"role": "system", "content": "You are a strict quality evaluator."},
                     {"role": "user", "content": p},
                 ]),
+                recent_observations=loop_state.observations,
             )
+
+            verdict = eval_signals.verdict
+            notes = eval_signals.notes
 
             loop_state.verification_result = verdict
             loop_state.verification_notes = notes
@@ -653,28 +671,67 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 "verdict": verdict,
                 "notes": notes[:300],
                 "iteration": loop_state.iteration,
+                "signals": {
+                    "confidence": eval_signals.confidence,
+                    "progress": eval_signals.progress,
+                    "drift": eval_signals.drift,
+                    "risk": eval_signals.risk,
+                },
             }}
 
+            # Controller decision based on evaluator signals + policies
+            controller_decision = le.controller_step(loop_state, eval_signals, analysis)
+
+            # Record loop trace (Appendix B schema)
+            le.record_loop_trace(loop_state, eval_signals, controller_decision, analysis)
+
             # ── ONLY exit on 100% complete (PASS verification) ────────
-            # No other exit conditions — the loop continues until the
-            # verifier confirms the task is fully complete.
             if verdict == "PASS":
                 le.complete_task(loop_state, final_text[:200])
                 yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
                 yield {"type": "final", "content": final_text}
                 break
 
-            # ── Not PASS — feed verification back and continue ────────
-            yield {"type": "status", "content": f"refining output after {verdict.lower()} — reworking based on feedback"}
-            le.transition(loop_state, le.PHASE_PLAN, f"Refining after {verdict}")
-            yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": f"Refining after {verdict}"}}
-            current_user_text = (
+            # ── Reflection pass (Loop Engineering) ─────────────────────
+            if verdict in ("FAIL", "PARTIAL"):
+                lesson = await le.run_reflection(
+                    task=loop_state.task_description,
+                    output=final_text,
+                    verdict=verdict,
+                    verifier_notes=notes,
+                    attempts_count=loop_state.iteration,
+                    llm_complete_fn=lambda p: _send_kilocode_chat([
+                        {"role": "system", "content": "You are a reflective analyst."},
+                        {"role": "user", "content": p},
+                    ]),
+                )
+                if lesson:
+                    le.store_reflective_lesson(loop_state, lesson)
+                    yield {"type": "reasoning", "content": f"[reflection] {lesson}"}
+
+            # ── Controller-guided refinement ─────────────────────────
+            feedback = (
                 f"Your previous output was verified as **{verdict}**.\n"
-                f"Verifier notes: {notes}\n\n"
-                f"Refine the output to address these issues. "
+                f"Verifier notes: {notes}\n"
+            )
+
+            if controller_decision == "escalate":
+                feedback += (
+                    "\n⚠️ The system recommends escalation — the loop is stuck or high-risk. "
+                    "Change approach entirely or ask for human review.\n"
+                )
+                le.escalate_task(loop_state, f"Controller escalated after {verdict}: {notes[:100]}")
+
+            yield {"type": "status", "content": f"refining output after {verdict.lower()} — {controller_decision}"}
+            le.transition(loop_state, le.PHASE_PLAN, f"Refining after {verdict} ({controller_decision})")
+            yield {"type": "loop", "data": {"phase": le.PHASE_PLAN, "message": f"Refining after {verdict}"}}
+
+            feedback += (
+                f"\nRefine the output to address these issues. "
                 f"This is iteration {loop_state.iteration}.\n\n"
                 f"Original task: {user_text}"
             )
+            current_user_text = feedback
             continue
 
         # ── No output to verify — feed back and continue ─────────────

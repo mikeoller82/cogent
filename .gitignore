@@ -6,7 +6,6 @@
 
 # Dependencies
 node_modules/
-/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -28,29 +27,81 @@ next-env.d.ts
 # Production builds
 /build
 dist/
-dist
 
-# Environment files (comprehensive coverage)
-
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
 *token.json*
-*credentials.json*
+*.p12
 
 # Logs and debug files
+logs/
+backend/logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 dump.rdb
-# Project logs
-backend/logs/
+
+# Runtime data and state (each subdir explicitly)
+memory/loops/
+memory/cache/
+memory/cron/
+memory/sessions/
+memory/snapshots/
+memory/kanban.json
+memory/cogent.json
+memory/auth.json
+memory/processes.json
+memory/observability/
+# Keep memory/memories/ (user data) and .gitkeep
+
+# Generated artifacts
+artifacts/
+
+# Generated test reports
+test_reports/
+
+# Generated builds/sandboxes
+sandboxes/
+
+# Generated media and captures
+videos/
+
+# Archive files and large assets
+*.zip
+*.tar.gz
+*.tar
+*.tgz
+*.pack
+*.deb
+*.dylib
+*.pdf
+*.mp4
+*.mov
+*.webm
+
+# Image assets (generated, not source)
+**/captures/**/*.png
+**/captures/**/*.jpg
+**/captures/**/*.jpeg
+**/captures/**/*.gif
+**/captures/**/*.svg
+**/captures/**/*.webp
+**/captures/**/*.woff2
 
 # System files
 .DS_Store
-*.pem
 
 # Python
 __pycache__/
-*pyc*
+*.pyc
 venv/
 .venv/
 
@@ -66,36 +117,10 @@ chainlit.md
 # Data and databases
 agenthub/agents/youtube/db
 
-# Archive files and large assets
-**/*.zip
-**/*.tar.gz
-**/*.tar
-**/*.tgz
-*.pack
-*.deb
-*.dylib
-
 # Build caches
 .cache/
 
 memory/test_credentials.md
 
 # Mobile development
-android-sdk/-e 
-# Environment and credential files
-.env
-.env.*
-*.env
-credentials.json
-*.pem
-*.key
-.credentials
--e 
-# Environment and credential files
-.env
-.env.*
-*.env
-credentials.json
-*.pem
-*.key
-.credentials
+android-sdk/

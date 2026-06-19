@@ -211,19 +211,14 @@ class TestLoopStateMachine:
         le.begin_task(state, "Completable task")
         le.record_attempt(state, PHASE_EXECUTE, "first")
 
-        # Simulate two done signals via RALPH_STATUS block (the expected format)
-        analysis1 = le.analyze_response_text(
-            "---RALPH_STATUS---\nEXIT_SIGNAL: true\n---END_RALPH_STATUS---\n\nDone with work."
-        )
-        le.update_exit_signals(state, analysis1)
-
-        analysis2 = le.analyze_response_text(
-            "---RALPH_STATUS---\nEXIT_SIGNAL: true\n---END_RALPH_STATUS---"
-        )
-        le.update_exit_signals(state, analysis2)
+        # Send enough done signals to trigger the exit threshold
+        signal = "---RALPH_STATUS---\nEXIT_SIGNAL: true\n---END_RALPH_STATUS---\n\nDone with work."
+        for _ in range(le.MAX_CONSECUTIVE_DONE_SIGNALS):
+            analysis = le.analyze_response_text(signal)
+            le.update_exit_signals(state, analysis)
 
         reason = le.should_exit_gracefully(state)
-        assert reason is not None, "Should exit after multiple done signals"
+        assert reason is not None, "Should exit after done signal saturation"
 
     def test_tool_loop_guardrail_detects_repeated_calls(self):
         state = LoopState(session_id="s-10")
