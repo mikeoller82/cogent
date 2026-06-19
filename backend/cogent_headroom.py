@@ -52,18 +52,18 @@ def compress_messages(
         return messages
 
     try:
-        compressed = _headroom_compress(messages, model="auto")
+        result = _headroom_compress(messages, model="auto")
 
         original_len = len(str(messages))
-        compressed_len = len(str(compressed))
+        compressed_len = len(str(result.messages))
 
-        if compressed and compressed_len < original_len:
+        if result.messages and compressed_len < original_len:
             savings = (1 - compressed_len / original_len) * 100
             logger.info(
                 "Headroom: %d chars → %d chars (%.0f%% savings)",
                 original_len, compressed_len, savings,
             )
-            return compressed
+            return result.messages
 
         logger.info("Headroom: no compression applied (output larger than input)")
         return messages
