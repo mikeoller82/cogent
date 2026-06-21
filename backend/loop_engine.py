@@ -200,6 +200,7 @@ class LoopState:
 
     web_search_count: int = 0
     web_scrape_count: int = 0
+    artifact_produced: bool = False
 
     last_files_changed: int = 0
     last_errors_detected: bool = False
@@ -307,6 +308,7 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.tool_loop_detected_stop = False
     state.web_search_count = 0
     state.web_scrape_count = 0
+    state.artifact_produced = False
     state.last_files_changed = 0
     state.last_errors_detected = False
     state.last_output_length = 0

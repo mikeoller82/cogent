@@ -503,6 +503,15 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
             call, _ = _parse_tool_call(response_text)
             if not call:
+                # ── Check for explicit LLM completion signal ──────────
+                ralph_status = le.parse_ralph_status_block(response_text)
+                if ralph_status.get("exit_signal"):
+                    yield {"type": "reasoning", "content": "[LLM signaled completion — processing final answer]"}
+                    final_text = response_text.strip()
+                    loop_state.consecutive_no_tool_responses = 0
+                    le.save_state(loop_state)
+                    break
+
                 # ── Auto-continue: if LLM plans without executing, re-prompt ──
                 if (loop_state.continue_count < le.CONTINUE_MAX
                         and _looks_like_plan(response_text)):
@@ -605,6 +614,8 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
             if "artifact" in tool_result:
                 yield {"type": "artifact", "data": tool_result["artifact"]}
+                loop_state.artifact_produced = True
+                le.save_state(loop_state)
 
             loop_state.tokens_estimated += (len(response_text) + len(summary)) // 4
 
@@ -684,6 +695,15 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
         loop_state.last_asking_questions = analysis["asking_questions"]
         le.update_exit_signals(loop_state, analysis)
 
+        # ── Check exit signal saturation before running expensive evaluation ──
+        exit_reason = le.should_exit_gracefully(loop_state)
+        if exit_reason:
+            yield {"type": "reasoning", "content": f"[exit signal saturation: {exit_reason}]"}
+            le.complete_task(loop_state, final_text[:200])
+            yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+            yield {"type": "final", "content": final_text}
+            break
+
         # ── Evaluation + Controller + Reflection + Trace (Loop Engineering) ──
         if final_text:
             if not loop_state.verification_criteria:
@@ -734,6 +754,14 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
             # ── ONLY exit on 100% complete (PASS verification) ────────
             if verdict == "PASS":
+                le.complete_task(loop_state, final_text[:200])
+                yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+                yield {"type": "final", "content": final_text}
+                break
+
+            # ── Trust explicit EXIT_SIGNAL even if evaluator disagrees ──
+            if analysis.get("explicit_exit_signal"):
+                yield {"type": "reasoning", "content": "[LLM explicitly signaled completion — exiting despite evaluator verdict]"}
                 le.complete_task(loop_state, final_text[:200])
                 yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
                 yield {"type": "final", "content": final_text}
