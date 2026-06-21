@@ -84,7 +84,7 @@ Issue ONE tool call per turn. You may chain multiple turns.
 - Use markdown formatting in every chat response: **bold** for key terms, `code` for filenames/commands/API calls, bullet lists for multiple items, and the occasional heading for structure.
 - When the user shares a preference, fact, or recurring need, silently call save_memory.
 - For research tasks, use web_search for general web searches, plus the agent-reach tools for platform-specific searches (GitHub, YouTube, V2EX, RSS, Bilibili).
-- When researching a topic: combine multiple channels — GitHub for open-source tools, YouTube for video walkthroughs, V2EX for community opinions, RSS for ongoing coverage.
+- When researching a topic: be surgical — use the minimum number of searches needed. Start with 1-2 web_search calls; scrape only the most promising results. You have a limited search budget (3 searches, 6 scrapes per task) so don't exhaust it on tangents.
 
 ## Design quality (CRITICAL — your work must look designed, not generic)
 
@@ -438,7 +438,11 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
         # ── Tool-calling loop ────────────────────────────────────────
         tool_loop_error = False
         made_tool_calls = False
-        max_turns = MAX_TOOL_TURNS + le.CONTINUE_MAX  # extra budget for auto-continue
+        max_turns = MAX_TOOL_TURNS
+        web_search_budget_msg = (
+            "Search budget exceeded (%d web_search + %d web_scrape calls allowed per task). "
+            "Use the results you already have or rely on what you know."
+        )
         for turn in range(max_turns):
             messages = initial_messages.copy()
             messages.append({"role": "user", "content": current_user_text})
@@ -568,6 +572,28 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             label = _tool_action_label(tool_name, args)
             yield {"type": "tool", "data": {"tool": tool_name, "args": args, "label": label}}
             yield {"type": "status", "content": label}
+
+            # ── Web search budget ────────────────────────────────────
+            if tool_name == "web_search":
+                loop_state.web_search_count += 1
+                le.save_state(loop_state)
+                if loop_state.web_search_count > le.MAX_WEB_SEARCH_CALLS:
+                    msg = web_search_budget_msg % (le.MAX_WEB_SEARCH_CALLS, le.MAX_WEB_SCRAPE_CALLS)
+                    yield {"type": "tool_result", "data": {"tool": tool_name, "summary": msg, "display": msg}}
+                    yield {"type": "reasoning", "content": f"[web search budget] {msg}"}
+                    initial_messages.append({"role": "user", "content": f"<system>{msg}</system>"})
+                    current_user_text = f"<tool_result>\n{msg}\n</tool_result>\n\nContinue."
+                    continue
+            elif tool_name == "web_scrape":
+                loop_state.web_scrape_count += 1
+                le.save_state(loop_state)
+                if loop_state.web_scrape_count > le.MAX_WEB_SCRAPE_CALLS:
+                    msg = web_search_budget_msg % (le.MAX_WEB_SEARCH_CALLS, le.MAX_WEB_SCRAPE_CALLS)
+                    yield {"type": "tool_result", "data": {"tool": tool_name, "summary": msg, "display": msg}}
+                    yield {"type": "reasoning", "content": f"[web scrape budget] {msg}"}
+                    initial_messages.append({"role": "user", "content": f"<system>{msg}</system>"})
+                    current_user_text = f"<tool_result>\n{msg}\n</tool_result>\n\nContinue."
+                    continue
 
             tool_result = await _execute_tool(db, workspace_id, call)
             is_success = tool_result.get("result", "").find("Error") != 0

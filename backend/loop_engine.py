@@ -81,7 +81,7 @@ LOOP_STATE_DIR = PROJECT_ROOT / "memory" / "loops"
 MAX_ITERATIONS = 90
 MAX_TOKENS_PER_TASK = 100_000
 WARN_TOKEN_PCT = 0.75
-CONTINUE_MAX = 90
+CONTINUE_MAX = 15
 
 PHASE_IDLE = "idle"
 PHASE_PLAN = "plan"
@@ -107,6 +107,8 @@ MAX_CONSECUTIVE_TEST_LOOPS = 3
 MAX_CONSECUTIVE_DONE_SIGNALS = 5
 SAFETY_CIRCUIT_BREAKER_LIMIT = 12
 MAX_CONSECUTIVE_NO_TOOL = 3  # re-prompt this many times before sending to evaluator
+MAX_WEB_SEARCH_CALLS = 3  # max web_search calls per task
+MAX_WEB_SCRAPE_CALLS = 6  # max web_scrape calls per task
 
 MAX_SAME_ARGS_CALLS = 5
 MAX_CONSECUTIVE_FAILURES = 3
@@ -195,6 +197,9 @@ class LoopState:
 
     tool_failure_history: List[tuple] = field(default_factory=list)
     tool_loop_detected_stop: bool = False
+
+    web_search_count: int = 0
+    web_scrape_count: int = 0
 
     last_files_changed: int = 0
     last_errors_detected: bool = False
@@ -300,6 +305,8 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.test_only_loops = []
     state.tool_failure_history = []
     state.tool_loop_detected_stop = False
+    state.web_search_count = 0
+    state.web_scrape_count = 0
     state.last_files_changed = 0
     state.last_errors_detected = False
     state.last_output_length = 0

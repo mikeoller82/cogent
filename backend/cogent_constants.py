@@ -55,8 +55,8 @@ DEFAULT_MODEL = "nex-agi/nex-n2-pro:free"
 DEFAULT_CHAT_COMPLETIONS_URL = "https://api.kilo.ai/api/gateway/chat/completions"
 DEFAULT_WORKSPACE = "default"
 DEFAULT_LOG_LEVEL = "INFO"
-MAX_TOOL_TURNS = 50
-MAX_LOOP_ITERATIONS = 50
+MAX_TOOL_TURNS = 25
+MAX_LOOP_ITERATIONS = 10
 
 
 # ── Platform helpers ──────────────────────────────────────────────────────
