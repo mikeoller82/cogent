@@ -1,0 +1,316 @@
+{
+  "description": "Curated MCP server catalog — verified install methods for known-working servers.",
+  "last_updated": "2026-06-21",
+  "servers": {
+    "microsoft/playwright-mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @playwright/mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @playwright/mcp"
+          }
+        }
+      ]
+    },
+    "github/github-mcp-server": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "docker",
+          "label": "Docker (ghcr.io/github/github-mcp-server)",
+          "install_command": "docker pull ghcr.io/github/github-mcp-server:latest",
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "docker run --rm -i ghcr.io/github/github-mcp-server:latest"
+          }
+        }
+      ]
+    },
+    "ChromeDevTools/chrome-devtools-mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y chrome-devtools-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y chrome-devtools-mcp"
+          }
+        }
+      ]
+    },
+    "makenotion/notion-mcp-server": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @notionhq/notion-mcp-server",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @notionhq/notion-mcp-server"
+          }
+        }
+      ]
+    },
+    "microsoft/markitdown": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "pip",
+          "label": "pip install markitdown",
+          "install_command": "pip install markitdown",
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "markitdown"
+          }
+        }
+      ]
+    },
+    "firecrawl/firecrawl-mcp-server": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y firecrawl-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y firecrawl-mcp"
+          }
+        }
+      ]
+    },
+    "bytebase/dbhub": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y dbhub",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y dbhub"
+          }
+        }
+      ]
+    },
+    "tavily-ai/tavily-mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y tavily-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y tavily-mcp"
+          }
+        }
+      ]
+    },
+    "getsentry/sentry-mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y sentry-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y sentry-mcp"
+          }
+        }
+      ]
+    },
+    "vercel/next-devtools-mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y next-devtools-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y next-devtools-mcp"
+          }
+        }
+      ]
+    },
+    "com.apify/apify-mcp-server": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @apify/actors-mcp-server",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @apify/actors-mcp-server"
+          }
+        }
+      ]
+    },
+    "brightdata/brightdata-mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @brightdata/mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @brightdata/mcp"
+          }
+        }
+      ]
+    },
+    "com.stripe/mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @stripe/mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @stripe/mcp"
+          }
+        }
+      ]
+    },
+    "mongodb-js/mongodb-mcp-server": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @mongodb-js/mongodb-mcp-server",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @mongodb-js/mongodb-mcp-server"
+          }
+        }
+      ]
+    },
+    "upstash/context7": {
+      "verified": true,
+      "notes": "npm package is @upstash/context7-mcp (not @upstash/context7)",
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @upstash/context7-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @upstash/context7-mcp"
+          }
+        }
+      ]
+    },
+    "wonderwhy-er/desktop-commander": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @wonderwhy-er/desktop-commander",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @wonderwhy-er/desktop-commander"
+          }
+        }
+      ]
+    },
+    "neondatabase/mcp-server-neon": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @neondatabase/mcp-server-neon",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @neondatabase/mcp-server-neon"
+          }
+        }
+      ]
+    },
+    "antfu/nuxt-mcp": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y nuxt-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y nuxt-mcp"
+          }
+        }
+      ]
+    },
+    "ihor-sokoliuk/mcp-searxng": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y mcp-searxng",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y mcp-searxng"
+          }
+        }
+      ]
+    },
+    "com.atlassian/atlassian-mcp-server": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y atlassian-mcp-server",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y atlassian-mcp-server"
+          }
+        }
+      ]
+    },
+    "doist/todoist-ai": {
+      "verified": true,
+      "notes": "npm package is @doist/todoist-mcp",
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @doist/todoist-mcp",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @doist/todoist-mcp"
+          }
+        }
+      ]
+    },
+    "com.postman/postman-mcp-server": {
+      "verified": true,
+      "methods": [
+        {
+          "type": "npx",
+          "label": "npx -y @postman/postman-mcp-server",
+          "skip_install": true,
+          "mcp_config": {
+            "transport": "stdio",
+            "command": "npx -y @postman/postman-mcp-server"
+          }
+        }
+      ]
+    }
+  }
+}

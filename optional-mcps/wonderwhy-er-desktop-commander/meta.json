@@ -1,0 +1,44 @@
+{
+  "name": "wonderwhy-er-desktop-commander",
+  "source": "io.github.wonderwhy-er/desktop-commander",
+  "registry_entry": {
+    "id": "io.github.wonderwhy-er/desktop-commander",
+    "name": "wonderwhy-er/desktop-commander",
+    "display_name": "Desktop Commander",
+    "description": "MCP server for terminal commands, file operations, and process management",
+    "url": "https://github.com/wonderwhy-er/DesktopCommanderMCP",
+    "created_at": "0.2.42",
+    "updated_at": "2026-06-18T07:04:40Z",
+    "stargazer_count": 6183,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/1150639?u=a63bab27280afb38b44ceea84590bb8ad9321c92&v=4",
+    "primary_language": "TypeScript",
+    "primary_language_color": "#3178c6",
+    "repo_id": null,
+    "license": "MIT License",
+    "topics": [
+      "agent",
+      "ai",
+      "code-analysis",
+      "code-generation",
+      "mcp",
+      "terminal-ai",
+      "terminal-automation",
+      "vibe-coding",
+      "gemini-cli-extension"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/fc4a45c8434c4f5721f1f87f0932a990b7059f7e70eb2951b55b1ad5c02f66b2/wonderwhy-er/DesktopCommanderMCP",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "wonderwhy-er/DesktopCommanderMCP",
+    "is_in_organization": false,
+    "pushed_at": "2026-06-18T07:04:40Z",
+    "repository": {
+      "source": "github",
+      "url": "https://github.com/wonderwhy-er/DesktopCommanderMCP"
+    },
+    "full_name": "io.github.wonderwhy-er/desktop-commander",
+    "api_name": "io.github.wonderwhy-er/desktop-commander"
+  },
+  "install_command": "",
+  "install_results": [],
+  "installed_at": "2026-06-21T05:58:57.550232+00:00"
+}

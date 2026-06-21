@@ -1,0 +1,15 @@
+name: ghcr.io-oraios-serena:latest
+version: 1.0.0
+description: Semantic code retrieval & editing tools for coding agents.
+transport: stdio
+source: oraios/serena
+installed_at: 2026-06-21T06:00:24.848060+00:00
+command: docker
+args:
+  - run
+  - --rm
+  - -i
+  - ghcr.io/oraios/serena:latest
+tools:
+  - name: ghcr.io-oraios-serena:latest_help
+    description: Tools provided by ghcr.io-oraios-serena:latest

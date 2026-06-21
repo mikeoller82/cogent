@@ -1,0 +1,43 @@
+{
+  "name": "chrome-devtools-mcp",
+  "source": "io.github.ChromeDevTools/chrome-devtools-mcp",
+  "registry_entry": {
+    "id": "io.github.ChromeDevTools/chrome-devtools-mcp",
+    "name": "ChromeDevTools/chrome-devtools-mcp",
+    "display_name": "Chrome DevTools MCP",
+    "description": "MCP server for Chrome DevTools",
+    "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+    "created_at": "1.2.0",
+    "updated_at": "2026-06-17T12:57:43Z",
+    "stargazer_count": 43896,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/11260967?v=4",
+    "primary_language": "TypeScript",
+    "primary_language_color": "#3178c6",
+    "repo_id": null,
+    "license": "Apache License 2.0",
+    "topics": [
+      "mcp-server",
+      "puppeteer",
+      "chrome-devtools",
+      "browser",
+      "chrome",
+      "debugging",
+      "devtools",
+      "mcp"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/5689eb93083dd6d28e5f494706ced0760b1c1594a9a2308b7191f05635239849/ChromeDevTools/chrome-devtools-mcp",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "ChromeDevTools/chrome-devtools-mcp",
+    "is_in_organization": true,
+    "pushed_at": "2026-06-17T12:57:43Z",
+    "repository": {
+      "source": "github",
+      "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp"
+    },
+    "full_name": "io.github.ChromeDevTools/chrome-devtools-mcp",
+    "api_name": "io.github.ChromeDevTools/chrome-devtools-mcp"
+  },
+  "install_command": "",
+  "install_results": [],
+  "installed_at": "2026-06-21T05:58:45.660148+00:00"
+}

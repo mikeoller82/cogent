@@ -1,0 +1,13 @@
+name: apify-actors-mcp-server
+version: 1.0.0
+description: Extract data from any website with thousands of scrapers, crawlers, and automations on Apify Store ⚡
+transport: stdio
+source: com.apify/apify-mcp-server
+installed_at: 2026-06-21T05:59:15.164761+00:00
+command: npx
+args:
+  - -y
+  - @apify/actors-mcp-server
+tools:
+  - name: apify-actors-mcp-server_help
+    description: Tools provided by apify-actors-mcp-server

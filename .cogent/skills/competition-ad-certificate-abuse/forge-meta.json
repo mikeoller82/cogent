@@ -1,0 +1,9 @@
+{
+  "name": "competition-ad-certificate-abuse",
+  "description": "Internal downstream skill for ctf-sandbox-orchestrator. CTF-sandbox workflow for AD CS, certificate templates, enrollment rights, EKUs, SAN controls, PKINIT, certificate mapping, and cert-based privilege paths. Use when the user asks about ESC-style abuse, certificate templates, enrollment agents, EKUs, SAN or subject controls, smartcard or PKINIT logon, CA policy, or how an issued cert turns into accepted privilege. Use only after `$ctf-sandbox-orchestrator` has already established sandbox assumptions and routed here.",
+  "imported_at": "2026-06-21T06:03:24Z",
+  "metadata": {},
+  "resources": [
+    "references/ad-certificate-abuse.md"
+  ]
+}

@@ -1,0 +1,13 @@
+name: wonderwhy-er-desktop-commander
+version: 1.0.0
+description: MCP server for terminal commands, file operations, and process management
+transport: stdio
+source: io.github.wonderwhy-er/desktop-commander
+installed_at: 2026-06-21T05:58:57.550232+00:00
+command: npx
+args:
+  - -y
+  - @wonderwhy-er/desktop-commander
+tools:
+  - name: wonderwhy-er-desktop-commander_help
+    description: Tools provided by wonderwhy-er-desktop-commander

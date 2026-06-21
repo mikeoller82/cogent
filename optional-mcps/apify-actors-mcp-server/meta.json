@@ -1,0 +1,39 @@
+{
+  "name": "apify-actors-mcp-server",
+  "source": "com.apify/apify-mcp-server",
+  "registry_entry": {
+    "id": "com.apify/apify-mcp-server",
+    "name": "com.apify/apify-mcp-server",
+    "display_name": "Apify",
+    "description": "Extract data from any website with thousands of scrapers, crawlers, and automations on Apify Store \u26a1",
+    "url": "https://github.com/apify/apify-mcp-server",
+    "created_at": "0.11.2",
+    "updated_at": "2026-06-17T12:57:30Z",
+    "stargazer_count": 1352,
+    "owner_avatar_url": "https://avatars.githubusercontent.com/u/24586296?v=4",
+    "primary_language": "TypeScript",
+    "primary_language_color": "#3178c6",
+    "repo_id": null,
+    "license": "MIT License",
+    "topics": [
+      "agents",
+      "ai",
+      "mcp",
+      "mcp-server"
+    ],
+    "opengraph_image_url": "https://opengraph.githubassets.com/73f181ce8f2c480ee8f66927edaf251eadc10fa58d23f4fed9c84d994c59537b/apify/apify-mcp-server",
+    "uses_custom_opengraph_image": null,
+    "name_with_owner": "apify/apify-mcp-server",
+    "is_in_organization": true,
+    "pushed_at": "2026-06-17T12:57:30Z",
+    "repository": {
+      "source": "github",
+      "url": "https://github.com/apify/apify-mcp-server"
+    },
+    "full_name": "io.github.com.apify/apify-mcp-server",
+    "api_name": "com.apify/apify-mcp-server"
+  },
+  "install_command": "",
+  "install_results": [],
+  "installed_at": "2026-06-21T05:59:15.164761+00:00"
+}

@@ -2,9 +2,12 @@ name: playwright-mcp
 version: 1.0.0
 description: Automate web browsers using accessibility trees for testing and data extraction.
 transport: stdio
+source: microsoft/playwright-mcp
+installed_at: 2026-06-21T05:49:12.076499+00:00
 command: npx
 args:
-  - @playwright/mcp@latest
+  - -y
+  - @playwright/mcp
 tools:
   - name: playwright-mcp_help
     description: Tools provided by playwright-mcp

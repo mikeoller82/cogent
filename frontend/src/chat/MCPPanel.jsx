@@ -386,7 +386,16 @@ export default function MCPPanel() {
                     ))}
                   </div>
                 </div>
-              ) : null}
+              ) : (
+                <div className="text-[12px] text-[#6e6760] py-4 leading-relaxed">
+                  No auto-install method available for this server.
+                  <br />
+                  <a href={repoUrl} target="_blank" rel="noopener noreferrer"
+                     className="text-[#7c5cf5] hover:underline">
+                    View the README on GitHub
+                  </a> for manual setup instructions.
+                </div>
+              )}
 
               {installTarget.topics?.length > 0 && (
                 <div>
@@ -464,7 +473,7 @@ export default function MCPPanel() {
               </button>
               <button
                 onClick={() => handleInstall(selectedMethod)}
-                disabled={installing || detailLoading}
+                disabled={installing || detailLoading || !selectedMethod}
                 className="flex items-center gap-1.5 px-4 py-1.5 rounded text-[12px] font-medium
                   bg-[#7c5cf5] hover:bg-[#6a4ae3] text-white transition-colors
                   disabled:opacity-50 disabled:cursor-not-allowed"

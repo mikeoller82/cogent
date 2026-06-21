@@ -1,0 +1,11 @@
+{
+  "name": "edr-bypass-re",
+  "description": "\u9006\u5411\u9632\u5fa1\u65b9\u5b9e\u73b0 \u2192 \u7ea2\u961f\u9488\u5bf9\u6027\u7ed5\u8fc7\u3002\u628a EDR / Defender / AV \u7684 hook \u8868\u3001ETW provider\u3001AMSI \u5b9e\u73b0\u5148\u9006\u5411\u51fa\u6765\uff0c\n\u518d\u5199\u9488\u5bf9\u6027\u7684 unhook / \u95f4\u63a5 syscall / ETW patch / call stack spoof\u3002\u5bf9\u7167 MITRE ATT&CK T1562 \u9632\u5fa1\u89c4\u907f\u3002\n\u89e6\u53d1\u5173\u952e\u8bcd\uff1aEDR \u7ed5\u8fc7\u3001AV bypass\u3001\u514d\u6740\u3001unhook\u3001direct syscall\u3001indirect syscall\u3001Hell's Gate\u3001Halo's Gate\u3001\nTartarus Gate\u3001ETW patch\u3001AMSI patch\u3001call stack spoofing\u3001hardware breakpoint Blindside\u3001MITRE T1562\u3001\nntdll unhook\u3001kernel callback\u3001CrowdStrike \u7ed5\u8fc7\u3001Defender \u7ed5\u8fc7\u3001Sentinel One \u7ed5\u8fc7\u3001Elastic Defend\u3001\nSysmon \u89c4\u907f\u3001PPID spoof\u3001Sleep mask\u3001Process Hollowing\u3001Reflective DLL\u3002",
+  "imported_at": "2026-06-21T06:03:24Z",
+  "metadata": {},
+  "resources": [
+    "references/hook-survey.md",
+    "references/telemetry-blinding.md",
+    "references/unhook-techniques.md"
+  ]
+}

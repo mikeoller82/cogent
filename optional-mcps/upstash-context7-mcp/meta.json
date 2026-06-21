@@ -33,20 +33,7 @@
     "full_name": "io.github.upstash/context7",
     "api_name": "io.github.upstash/context7"
   },
-  "install_command": "npm install -g @upstash/context7-mcp",
-  "install_results": [
-    {
-      "command": "npx -y @upstash/context7-mcp",
-      "exit_code": -1,
-      "stdout": "",
-      "stderr": "Command timed out after 120s"
-    },
-    {
-      "command": "npm install -g @upstash/context7-mcp",
-      "exit_code": 0,
-      "stdout": "\nchanged 109 packages in 928ms\n\n30 packages are looking for funding\n  run `npm fund` for details\n",
-      "stderr": ""
-    }
-  ],
-  "installed_at": "2026-06-18T08:32:41.591808+00:00"
+  "install_command": "",
+  "install_results": [],
+  "installed_at": "2026-06-21T06:01:16.622717+00:00"
 }

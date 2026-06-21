@@ -1,0 +1,13 @@
+name: chrome-devtools-mcp
+version: 1.0.0
+description: MCP server for Chrome DevTools
+transport: stdio
+source: io.github.ChromeDevTools/chrome-devtools-mcp
+installed_at: 2026-06-21T05:58:45.660148+00:00
+command: npx
+args:
+  - -y
+  - chrome-devtools-mcp
+tools:
+  - name: chrome-devtools-mcp_help
+    description: Tools provided by chrome-devtools-mcp

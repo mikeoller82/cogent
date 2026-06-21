@@ -75,6 +75,36 @@ class InstalledMCPServer:
     source: str = ""  # GitHub registry server id
 
 
+# ── Curated Server Catalog ────────────────────────────────────────
+# A vetted catalog of known-working install methods for popular MCP servers.
+# Servers listed here always work — they were manually verified against the
+# actual npm/pip/docker packages.  Servers NOT in the catalog fall through to
+# manifest-based auto-detection (GitHub package.json discovery); if that also
+# fails, no install methods are returned and the user is offered manual config.
+#
+# To add a server: verify its install method works, then add its entry here.
+CATALOG_PATH = OPTIONAL_MCPS_DIR / "servers-catalog.json"
+_catalog_cache: Optional[Dict[str, Any]] = None
+
+
+def _load_catalog() -> Dict[str, Any]:
+    """Load the curated server catalog, with a module-level cache."""
+    global _catalog_cache
+    if _catalog_cache is not None:
+        return _catalog_cache
+    if not CATALOG_PATH.exists():
+        _catalog_cache = {}
+        return _catalog_cache
+    try:
+        raw = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+        _catalog_cache = raw.get("servers", {})
+        return _catalog_cache
+    except (json.JSONDecodeError, OSError) as e:
+        logger.warning("Failed to load server catalog: %s", e)
+        _catalog_cache = {}
+        return _catalog_cache
+
+
 # ── Install Method Detection ──────────────────────────────────────
 
 
@@ -83,15 +113,40 @@ def detect_install_methods(
     manifest_info: Optional[Dict[str, Any]] = None,
     readme_commands: Optional[List[Dict[str, str]]] = None,
 ) -> List[Dict[str, Any]]:
-    """Auto-detect how to install an MCP server from its registry metadata.
+    """Detect install methods for an MCP server.
 
-    Uses GitHub API manifest data (package.json, pyproject.toml) when available
-    to determine the exact package name. Falls back to heuristics from the
-    repo name and language.
+    Priority order:
+      1. Curated catalog (``optional-mcps/servers-catalog.json``) —
+         manually verified, guaranteed to work.
+      2. GitHub manifest discovery (package.json from the repo) —
+         high confidence when the API succeeds.
+      3. README command extraction from the GitHub page.
 
-    Returns a list of possible install methods with commands and MCP configuration,
-    ranked by likelihood (first = best guess).
+    If none of the above yield a method, returns an empty list — the UI
+    shows the user manual config instead of generating wrong guesses.
     """
+    # ── Phase 1: Curated catalog (verified entries always win) ─────
+    server_id = registry_entry.get("name", "") if registry_entry else ""
+    catalog = _load_catalog()
+    if server_id in catalog:
+        entry = catalog[server_id]
+        curated_methods = entry.get("methods", [])
+        # Normalise the curated entries into the expected output format
+        out = []
+        for m in curated_methods:
+            out.append({
+                "type": m["type"],
+                "label": m["label"],
+                "install_command": m.get("install_command", ""),
+                "mcp_config": m["mcp_config"],
+                "skip_install": m.get("skip_install", False),
+                "from_catalog": True,
+            })
+        if out:
+            logger.info("Using curated install method for '%s'", server_id)
+            return out
+
+    # ── Phase 2: Manifest-based detection ──────────────────────────
     manifest_info = manifest_info or {}
     real_pkg_name = (manifest_info.get("package_name") or "").strip()
     has_real_name = bool(real_pkg_name)
@@ -105,7 +160,6 @@ def detect_install_methods(
     else:
         org, repo = "", raw_name
 
-    # Sanitize repo name for package lookups
     repo_pkg = repo.lower().replace("_", "-").replace(".", "-")
     org_pkg = org.lower().replace("_", "-").replace(".", "-")
 
@@ -118,6 +172,7 @@ def detect_install_methods(
         # MCP client's run command.
         if mtype.startswith("npx") and install_cmd.startswith("npx "):
             pkg_for_npm = install_cmd.removeprefix("npx -y ").removeprefix("npx ").strip()
+            pkg_for_npm = re.sub(r"@[^/]+$", "", pkg_for_npm)
             install_cmd = f"npm install -g {pkg_for_npm}"
         if mtype in seen_types:
             return
@@ -154,6 +209,7 @@ def detect_install_methods(
             # npx as install command hangs — use npm install -g instead
             if install_cmd.startswith("npx "):
                 bare_pkg = install_cmd.removeprefix("npx -y ").removeprefix("npx ").strip()
+                bare_pkg = re.sub(r"@[^/]+$", "", bare_pkg)
                 install_cmd = f"npm install -g {bare_pkg}"
         elif method_type == "npm":
             mcp_cmd = pkg
@@ -223,67 +279,12 @@ def detect_install_methods(
                     f"docker run --rm -i {docker_image}",
                     requires_build=False)
 
+        # Manifest data gives us accurate package names — return what we have.
         return methods
 
-    # ── Fallback: Heuristics from repo name + language ─────────────
-    if lang == "Python":
-        add_method("pip", f"pip install ({repo_pkg})",
-                    f"pip install {repo_pkg}", repo_pkg)
-        add_method("uvx", f"uvx {repo_pkg}",
-                    f"uvx {repo_pkg}", f"uvx {repo_pkg}")
-        if org:
-            add_method("pip_org", f"pip install {org}-{repo_pkg}",
-                        f"pip install {org}-{repo_pkg}", f"{org}-{repo_pkg}")
-
-    elif lang in ("TypeScript", "JavaScript", "TypeScript/JavaScript"):
-        scope = f"@{org_pkg}" if org else ""
-        npx_pkg = f"{scope}/{repo_pkg}" if scope else repo_pkg
-        # Bare name first — many MCP servers publish without a scope even
-        # when the repo lives under an org (e.g. ``apify-mcp-server`` runs
-        # under ``com.apify`` on GitHub but publishes as bare ``apify-mcp-server``).
-        add_method("npx_bare", f"npx {repo_pkg} (bare)",
-                    f"npx -y {repo_pkg}", f"npx -y {repo_pkg}")
-        if scope:
-            add_method("npx", f"npx {npx_pkg} (scoped)",
-                        f"npx -y {npx_pkg}", f"npx -y {npx_pkg}")
-        else:
-            add_method("npx", f"npx {npx_pkg}",
-                        f"npx -y {npx_pkg}", f"npx -y {npx_pkg}")
-        add_method("npm", f"npm install -g {npx_pkg}",
-                    f"npm install -g {npx_pkg}", repo_pkg)
-
-    elif lang == "Go":
-        go_module = f"github.com/{org}/{repo}" if org else repo_pkg
-        add_method("go_install", f"go install {go_module}@latest",
-                    f"go install {go_module}@latest", repo_pkg)
-        # Some Go repos place main.go in cmd/<name>/
-        add_method("go_install_cmd", f"go install {go_module}/cmd/{repo_pkg}@latest",
-                    f"go install {go_module}/cmd/{repo_pkg}@latest", repo_pkg)
-        if org == "github":
-            add_method("gh_extension", f"gh extension install {org}/{repo_pkg}",
-                        f"gh extension install {org}/{repo_pkg}", repo_pkg)
-
-    elif lang == "Rust":
-        add_method("cargo", f"cargo install {repo_pkg}",
-                    f"cargo install {repo_pkg}", repo_pkg)
-
-    elif lang == "Ruby":
-        add_method("gem", f"gem install {repo_pkg}",
-                    f"gem install {repo_pkg}", repo_pkg)
-
-    # Source and docker fallback for all
-    git_url = f"https://github.com/{org}/{repo}" if org else registry_entry.get("url", "")
-    if git_url:
-        add_method("source", f"git clone + build ({org}/{repo})",
-                    f"git clone {git_url} && cd {repo} && make install", repo_pkg,
-                    requires_build=True)
-
-    docker_image = f"ghcr.io/{org}/{repo_pkg}:latest"
-    add_method("docker", f"docker pull {docker_image}",
-                f"docker pull {docker_image}",
-                f"docker run --rm -i {docker_image}",
-                requires_build=False)
-
+    # No manifest data available and this server isn't in the curated catalog.
+    # Return whatever README commands were found (if any), or empty list.
+    # The UI will show manual config instead of generating wrong guesses.
     return methods
 
 
@@ -894,9 +895,17 @@ def get_installed_servers() -> List[Dict[str, Any]]:
 
 
 def _parse_manifest(path: Path) -> Optional[Dict[str, Any]]:
-    """Parse a manifest.yaml file into a dict."""
+    """Parse a manifest.yaml file into a dict.
+
+    Handles our known format:
+      key: scalar
+      key:
+        - item
+      tools:
+        - name: foo
+          description: bar
+    """
     text = path.read_text(encoding="utf-8")
-    # Simple YAML parser for our known format — avoids pyyaml dependency
     manifest: Dict[str, Any] = {}
     current_list_key: Optional[str] = None
     current_list: List[str] = []
@@ -904,40 +913,54 @@ def _parse_manifest(path: Path) -> Optional[Dict[str, Any]]:
     in_tools = False
     current_tool: Dict[str, str] = {}
 
+    def _flush_list():
+        """Save pending list to manifest if any."""
+        nonlocal current_list_key, current_list
+        if current_list_key and current_list and current_list_key != "tools":
+            manifest[current_list_key] = current_list
+        current_list = []
+
+    def _flush_tool():
+        """Save pending tool entry if any."""
+        nonlocal current_tool
+        if current_tool:
+            tools_list.append(current_tool)
+            current_tool = {}
+
     for line in text.splitlines():
         stripped = line.strip()
 
-        # Skip comments and blanks
         if not stripped or stripped.startswith("#"):
             continue
 
-        # Track indentation
         indent = len(line) - len(line.lstrip())
 
         if indent == 0 and not stripped.startswith("-"):
             # Top-level key: value
+            _flush_list()
             in_tools = False
             current_list_key = None
-            current_list = []
             if ":" in stripped:
                 key, _, value = stripped.partition(":")
                 key = key.strip()
                 value = value.strip()
                 if value == "":
-                    # Could be a list or nested
                     current_list_key = key
                 else:
                     manifest[key] = value
-                    current_list = []
             continue
 
         if indent == 2 and stripped.startswith("- ") and current_list_key:
-            # List item: - value
             if current_list_key == "tools":
+                _flush_tool()
                 in_tools = True
                 current_tool = {}
                 item_text = stripped[2:].strip()
-                current_tool["name"] = item_text
+                # Parse "- name: foo" → name = "foo"
+                if item_text.startswith("name:"):
+                    current_tool["name"] = item_text[5:].strip()
+                else:
+                    current_tool["name"] = item_text
             else:
                 current_list.append(stripped[2:].strip())
             continue
@@ -947,19 +970,16 @@ def _parse_manifest(path: Path) -> Optional[Dict[str, Any]]:
             current_tool["description"] = val.strip()
             continue
 
-        if in_tools and current_tool and not stripped.startswith("-"):
-            # End of tool entry
-            tools_list.append(current_tool)
-            current_tool = {}
+        if in_tools and not stripped.startswith("-"):
+            # New tool entry or end of tools section
+            _flush_tool()
             in_tools = False
 
-    # Add last tool if any
-    if current_tool:
-        tools_list.append(current_tool)
+    # Flush remaining
+    _flush_tool()
+    _flush_list()
     if tools_list:
         manifest["tools"] = tools_list
-    if current_list_key and current_list and current_list_key != "tools":
-        manifest[current_list_key] = current_list
 
     return manifest
 
@@ -1091,9 +1111,30 @@ async def install_server(
             mcp_command = mcp_command or chosen["mcp_config"].get("command", "")
             transport = chosen["mcp_config"].get("transport", "stdio")
 
+    # Guard: if detection yielded nothing and nothing was provided manually,
+    # there is nothing to install.  The frontend will show a manual config form.
+    if not install_command and not mcp_command:
+        logger.warning("MCP server '%s': no install method available", server_id)
+        return {
+            "name": server_name,
+            "install_ok": False,
+            "status": "install_failed",
+            "error": "No install method available for this server. Configure it manually.",
+        }
+
     # Run the install command
     skip_install = config.get("skip_install", False)
     if install_command and not skip_install:
+        # Safety net: convert any npx install command to npm install -g
+        # to avoid the npx hang (npx starts the server and blocks on stdio).
+        stripped = install_command.strip()
+        if stripped.startswith("npx "):
+            bare_pkg = stripped.removeprefix("npx -y ").removeprefix("npx ").strip()
+            # Strip @version tags like @latest for a clean npm install
+            bare_pkg = re.sub(r"@[^/]+$", "", bare_pkg)
+            install_command = f"npm install -g {bare_pkg}"
+            logger.info("Converted npx install command to npm install -g: %s", install_command)
+
         # Parse the install command into args
         import shlex
         cmd_parts = shlex.split(install_command)
@@ -1128,13 +1169,29 @@ async def install_server(
                             transport = fallback["mcp_config"].get("transport", transport)
 
     # Determine if install succeeded
-    install_ok = skip_install or (
-        install_results and any(r["exit_code"] == 0 for r in install_results)
-    ) or not install_command  # empty command = manual config
+    install_ok = skip_install or not install_command  # manual config always ok
+    if install_command and install_results:
+        install_ok = install_ok or any(r["exit_code"] == 0 for r in install_results)
 
-    # Build the server name from installed binary if install succeeded
+    if not install_ok:
+        logger.warning(
+            "MCP server '%s' install failed (all methods returned non-zero)",
+            server_id,
+        )
+        return {
+            "name": server_name,
+            "install_ok": False,
+            "status": "install_failed",
+            "install_results": install_results,
+            "error": "All install methods failed. Check install_results for details.",
+        }
+
+    # Build the server name from installed binary
     if mcp_command and install_ok:
-        # Use the actual binary name as server_name for cleanliness
+        # If mcp_command is a scoped npm package (starts with @), it won't
+        # be directly executable — wrap with npx -y so the MCP client can run it.
+        if mcp_command.startswith("@"):
+            mcp_command = f"npx -y {mcp_command}"
         binary_name = mcp_command.split()[-1] if " " in mcp_command else mcp_command
         binary_name = binary_name.replace("@", "").replace("/", "-")
     else:
@@ -1196,7 +1253,7 @@ async def install_server(
         encoding="utf-8",
     )
 
-    status = "installed" if install_ok else "install_failed"
+    status = "installed"
     logger.info(
         "MCP server '%s' %s (method: %s)",
         binary_name, status,

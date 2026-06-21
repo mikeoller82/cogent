@@ -1,8 +1,0 @@
-name: netdata-mcp-server
-version: 1.0.0
-description: Real-time infrastructure monitoring
-transport: stdio
-command: netdata-mcp-server
-tools:
-  - name: netdata-mcp-server_help
-    description: Tools provided by netdata-mcp-server

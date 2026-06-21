@@ -1,8 +1,0 @@
-name: apify-mcp-server
-version: 1.0.0
-description: Extract data from any website with thousands of scrapers, crawlers, and automations on Apify Store ⚡
-transport: stdio
-command: apify-mcp-server
-tools:
-  - name: apify-mcp-server_help
-    description: Tools provided by apify-mcp-server

@@ -17,6 +17,7 @@ logger = logging.getLogger("cogent.headroom")
 HAS_HEADROOM = False
 try:
     from headroom import compress as _headroom_compress
+    from headroom.compress import CompressConfig
     HAS_HEADROOM = True
 except ImportError:
     pass
@@ -52,7 +53,25 @@ def compress_messages(
         return messages
 
     try:
-        result = _headroom_compress(messages, model="auto")
+        # Pass explicit config so user messages are compressed (headroom-ai
+        # defaults to False, meaning only system messages get compressed).
+        # Lower min_tokens_to_compress from 250 → 50 and protect_recent
+        # from 4 → 2 so compression actually triggers on real conversations.
+        if level == "aggressive":
+            hr_cfg = CompressConfig(
+                compress_user_messages=True,
+                min_tokens_to_compress=30,
+                protect_recent=1,
+                target_ratio=0.5,
+            )
+        else:
+            hr_cfg = CompressConfig(
+                compress_user_messages=True,
+                min_tokens_to_compress=50,
+                protect_recent=2,
+                target_ratio=0.6,
+            )
+        result = _headroom_compress(messages, model="auto", config=hr_cfg)
 
         original_len = len(str(messages))
         compressed_len = len(str(result.messages))

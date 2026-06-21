@@ -1,0 +1,19 @@
+{
+  "name": "apk-reverse",
+  "description": "\u5728 CLI \u73af\u5883\u4e0b\u505a Android APK \u9006\u5411\u65f6\u4f7f\u7528\u3002\u9002\u7528\u4e8e APK \u89e3\u5305\u3001Java \u53cd\u7f16\u8bd1\u3001smali \u4fee\u6539\u3001\u91cd\u6253\u5305\u3001Frida \u52a8\u6001 Hook\uff0c\u4ee5\u53ca\u6309\u9700\u5207\u6362\u5230 so/native \u5206\u6790\u3002\u4f18\u5148\u4f7f\u7528\u672c\u673a\u5df2\u5b89\u88c5\u7684 jadx\u3001apktool\u3001frida\u3001adb\u3001ida-reverse\u3001radare2\u3002",
+  "imported_at": "2026-06-21T06:03:24Z",
+  "metadata": {},
+  "resources": [
+    "scripts/decode.ps1",
+    "scripts/decode.sh",
+    "scripts/frida-run.ps1",
+    "scripts/frida-run.sh",
+    "scripts/manifest-summary.ps1",
+    "scripts/rebuild-sign-install.ps1",
+    "scripts/rebuild-sign-install.sh",
+    "references/android-advanced.md",
+    "references/apk-security-checklist.md",
+    "references/frida-bypass-kit.md",
+    "references/frida-cookbook.md"
+  ]
+}

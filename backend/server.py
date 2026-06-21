@@ -27,6 +27,7 @@ from cogent_hooks import discover_and_load, run_hooks
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / ".env")
 
+from cogent_providers import get_provider
 from llm_service import run_turn, run_turn_stream
 from tools import ARTIFACTS_DIR
 from file_extract import extract_text_from_file
@@ -612,13 +613,12 @@ async def forge_skill(body: ForgeSkillBody):
     """Analyse a GitHub repo (with or without existing skills) and generate a Cogent skill via LLM."""
     try:
         async def _llm_complete(prompt: str) -> str:
-            """Call the backend LLM for skill generation."""
-            msg = await run_turn(
-                db, session_id="__forge__", workspace_id=DEFAULT_WORKSPACE,
-                user_text=prompt,
-                history=[],
-            )
-            return msg.get("text", "")
+            """Call the backend LLM for skill generation — one-shot, no tool loop."""
+            provider = get_provider()
+            return await provider.chat([
+                {"role": "system", "content": "You are an expert at analyzing code repositories and creating agent skills."},
+                {"role": "user", "content": prompt},
+            ])
 
         result = await skf.forge_skill(body.repo_url, _llm_complete, force=body.force)
         return result

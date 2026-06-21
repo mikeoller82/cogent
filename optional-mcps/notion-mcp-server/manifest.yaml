@@ -1,8 +1,0 @@
-name: notion-mcp-server
-version: 1.0.0
-description: Official MCP server for Notion API
-transport: stdio
-command: notion-mcp-server
-tools:
-  - name: notion-mcp-server_help
-    description: Tools provided by notion-mcp-server
