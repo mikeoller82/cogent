@@ -2,12 +2,17 @@
 Each tool returns a dict with 'result' (string for LLM) and optional 'artifact' (dict for client).
 """
 import os
+import re
 import uuid
 import json
 import html
+import glob as glob_module
 import asyncio
 from pathlib import Path
 from datetime import datetime
+
+import cogent_plugins
+import cogent_commands
 
 import agent_skills
 import skill_forge
@@ -207,6 +212,48 @@ TOOL_SPECS = [
             "path": "string - relative path from cogent root (e.g. 'output/report.md', 'data/config.json')",
             "content": "string - text content to write to the file",
             "mode": "string, optional - 'w' to overwrite (default) or 'a' to append",
+        },
+    },
+    {
+        "name": "plugin_install",
+        "description": "Install a Knowledge Work Plugin from a GitHub repository. Clones the repo and installs the specified plugin. The plugin's skills are merged into the skill catalog, its MCP servers are registered, and its commands become available.",
+        "args": {
+            "repo_url": "string - GitHub repo URL or 'owner/repo' (e.g. 'anthropics/knowledge-work-plugins' or 'https://github.com/anthropics/knowledge-work-plugins')",
+            "plugin_name": "string - name of the plugin directory inside the repo (e.g. 'sales', 'data')",
+        },
+    },
+    {
+        "name": "plugin_list",
+        "description": "List all installed plugins with their versions, skill counts, command counts, and MCP server counts.",
+        "args": {},
+    },
+    {
+        "name": "plugin_describe",
+        "description": "Show detailed information about an installed plugin: its manifest, skills, commands, and MCP server definitions.",
+        "args": {"name": "string - plugin name (e.g. 'sales', 'data')"},
+    },
+    {
+        "name": "run_command",
+        "description": "Execute a registered plugin command. Commands are explicit slash-command workflows (e.g. /sales:account-research, /data:write-query). Call this when the user asks for a specific command workflow or mentions a /plugin:command they want to use.",
+        "args": {"command": "string - the command name in 'plugin:command' format (e.g. 'sales:account-research')"},
+    },
+    {
+        "name": "glob_files",
+        "description": "Search for files matching a glob pattern by name/path. Returns matching file paths sorted by modification time (most recent first). Results never cross directory boundaries with *, use ** for recursive search. Prefer this over 'find' or 'ls' in shell for file discovery.",
+        "args": {
+            "pattern": "string - glob pattern (e.g. '**/*.py', 'src/**/*.ts', '*.json')",
+            "path": "string, optional - directory to search from (default: project root)",
+        },
+    },
+    {
+        "name": "grep_files",
+        "description": "Search file CONTENTS using ripgrep. Searches inside files, not file names. Use for finding definitions, usages, references, or any text across the codebase. Pair with glob_files to discover candidate files then grep their contents.",
+        "args": {
+            "pattern": "string - regex pattern to search for (e.g. 'def main', 'console\\.log')",
+            "include": "string, optional - glob pattern to filter files (e.g. '*.py', '*.{ts,tsx}')",
+            "path": "string, optional - directory to search in (default: project root)",
+            "output_mode": "string, optional - 'files_with_matches' (default, just file paths), 'content' (matching lines with context), or 'count' (match tallies per file)",
+            "-i": "boolean, optional - case-insensitive search (default false)",
         },
     },
 ]
@@ -929,3 +976,181 @@ async def file_write(path: str, content: str, mode: str = "w") -> dict:
         }
     except Exception as e:
         return {"result": f"Write error: {e}"}
+
+
+# ---------------- Brace expansion helper ----------------
+def _expand_braces(pattern: str) -> list[str]:
+    """Expand {a,b,c} brace syntax in glob patterns."""
+    if '{' not in pattern:
+        return [pattern]
+    results = ['']
+    i = 0
+    while i < len(pattern):
+        if pattern[i] == '{':
+            end = pattern.find('}', i)
+            if end == -1:
+                results = [r + pattern[i:] for r in results]
+                break
+            alternatives = pattern[i+1:end].split(',')
+            new_results = []
+            for r in results:
+                for alt in alternatives:
+                    new_results.append(r + alt)
+            results = new_results
+            i = end + 1
+        elif pattern[i] == '\\' and i + 1 < len(pattern):
+            results = [r + pattern[i:i+2] for r in results]
+            i += 2
+        else:
+            results = [r + pattern[i] for r in results]
+            i += 1
+    return results
+
+
+# ---------------- Glob file search ----------------
+async def glob_files(pattern: str, path: str = "") -> dict:
+    """Search for files matching a glob pattern, sorted by modification time."""
+    root = Path(__file__).parent.parent
+    search_dir = root
+    if path:
+        search_dir = (root / path).resolve()
+        try:
+            search_dir.relative_to(root.resolve())
+        except ValueError:
+            return {"result": f"Access denied: path must be inside {root}"}
+
+    if not search_dir.is_dir():
+        return {"result": f"Directory not found: {search_dir}"}
+
+    try:
+        expanded = _expand_braces(pattern)
+        all_matches: set[Path] = set()
+        for pat in expanded:
+            full = str(search_dir / pat)
+            all_matches.update(
+                Path(m) for m in glob_module.glob(full, recursive=True)
+                if Path(m).is_file()
+            )
+
+        if not all_matches:
+            return {"result": "No files matched the pattern."}
+
+        sorted_matches = sorted(all_matches, key=lambda p: p.stat().st_mtime, reverse=True)
+        MAX_SHOWN = 100
+        lines = []
+        for p in sorted_matches[:MAX_SHOWN]:
+            rel = p.relative_to(root)
+            ts = datetime.fromtimestamp(p.stat().st_mtime).strftime("%Y-%m-%d %H:%M")
+            lines.append(f"{rel}  ({ts})")
+
+        summary = f"Found {len(sorted_matches)} file(s)"
+        if len(sorted_matches) > MAX_SHOWN:
+            summary += f" (showing {MAX_SHOWN})"
+        return {"result": summary + ":\n" + "\n".join(lines)}
+    except Exception as e:
+        return {"result": f"Glob error: {e}"}
+
+
+# ---------------- Grep content search ----------------
+async def grep_files(pattern: str, include: str = "", path: str = "",
+                     output_mode: str = "files_with_matches",
+                     case_insensitive: bool = False) -> dict:
+    """Search file contents using ripgrep."""
+    import subprocess as sp
+
+    root = Path(__file__).parent.parent
+    search_dir = root
+    if path:
+        search_dir = (root / path).resolve()
+        try:
+            search_dir.relative_to(root.resolve())
+        except ValueError:
+            return {"result": f"Access denied: path must be inside {root}"}
+
+    if not search_dir.exists():
+        return {"result": f"Path not found: {search_dir}"}
+
+    try:
+        cmd = ["rg", "--no-messages"]
+        if case_insensitive:
+            cmd.append("-i")
+        if output_mode == "files_with_matches":
+            cmd.append("-l")
+        elif output_mode == "count":
+            cmd.append("-c")
+        elif output_mode == "content":
+            cmd.append("-n")
+            cmd.extend(["-C", "2"])
+        if include:
+            cmd.extend(["--glob", include])
+        cmd.extend([pattern, str(search_dir)])
+
+        proc = await asyncio.create_subprocess_exec(
+            *cmd, stdout=sp.PIPE, stderr=sp.PIPE,
+        )
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=30)
+        stdout = stdout.decode("utf-8", errors="replace")
+        stderr = stderr.decode("utf-8", errors="replace")
+
+        if proc.returncode == 2:
+            return {"result": f"Grep error: {stderr[:1000]}".strip()}
+        if not stdout.strip():
+            return {"result": "No matches found."}
+
+        max_output = 15000
+        truncated = len(stdout) > max_output
+        body = stdout[:max_output] + ("\n... (output truncated)" if truncated else "")
+
+        if output_mode == "files_with_matches":
+            files = [l for l in stdout.strip().split("\n") if l.strip()]
+            return {"result": f"Found {len(files)} file(s):\n" + "\n".join(files)}
+        elif output_mode == "count":
+            return {"result": f"Match counts per file:\n{body}"
+                    + ("\n(truncated)" if truncated else "")}
+        else:
+            lines = stdout.count("\n")
+            return {"result": f"Found {lines} matching line(s):\n{body}"}
+    except FileNotFoundError:
+        return {"result": "ripgrep (rg) not found. Install with: apt install ripgrep  or  brew install ripgrep"}
+    except asyncio.TimeoutError:
+        return {"result": "Grep search timed out after 30s. Try narrowing with 'include' filter."}
+    except Exception as e:
+        return {"result": f"Grep error: {e}"}
+
+
+# ---------------- Plugin management tools ----------------
+async def plugin_install(repo_url: str, plugin_name: str) -> dict:
+    """Install a plugin from a GitHub repository."""
+    result = await cogent_plugins.install_plugin_from_repo(repo_url, plugin_name)
+    cogent_commands.invalidate_cache()
+    return result
+
+
+async def plugin_list() -> dict:
+    """List all installed plugins."""
+    return {"result": cogent_plugins.list_plugins()}
+
+
+async def plugin_describe(name: str) -> dict:
+    """Describe an installed plugin."""
+    return {"result": cogent_plugins.describe_plugin(name)}
+
+
+async def run_command(command: str) -> dict:
+    """Execute a registered plugin command."""
+    cmd = cogent_commands.get_command(command)
+    if not cmd:
+        available = cogent_commands.command_catalog_for_prompt()
+        return {
+            "result": (
+                f"Command '{command}' not found.\n"
+                f"{available}" if available else "No commands are installed."
+            )
+        }
+    return {
+        "result": (
+            f'<command name="{cmd.name}">\n'
+            f"{cmd.body}\n"
+            "</command>"
+        )
+    }

@@ -98,6 +98,10 @@ skills:
   auto_discover: true           # scan .cogent/skills/ on startup
   optional_dir: optional-skills # path relative to project root
 
+plugins:
+  enabled: true
+  dir: plugins                  # path relative to project root
+
 datagen:
   enabled: false
   output_dir: memory/research/

@@ -7,6 +7,7 @@ import re
 import json
 import asyncio
 import logging
+from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, AsyncGenerator
 
@@ -16,6 +17,8 @@ from dotenv import load_dotenv
 import agent_skills
 import tools as tool_impls
 import agent_reach_tools as art
+import cogent_prompt
+import cogent_commands
 from agent import context_compressor as cc
 import loop_engine as le
 
@@ -37,82 +40,23 @@ MAX_TOOL_TURNS = _cfg.max_turns
 
 def build_system_prompt(workspace_name: str = "your team", memory_facts: str = "",
                         loop_state=None) -> str:
-    mem_block = f"\n\n## Known facts about the user (from memory)\n{memory_facts}\n" if memory_facts else ""
+    """Assemble the system prompt from SOUL.md + tools + skills + commands + loop state."""
+    soul_path = Path(__file__).parent.parent / "SOUL.md"
+    soul_content = soul_path.read_text(encoding="utf-8") if soul_path.exists() else ""
+
     loop_block = le.build_loop_system_block(loop_state)
     tools_block = tool_impls.tool_specs_for_prompt()
     skills_block = agent_skills.skill_catalog_for_prompt()
-    return f"""You are Cogent — an AI coworker. Not a chatbot. A colleague who ships real work.
+    commands_block = cogent_commands.command_catalog_for_prompt()
 
-You don't describe what to do; you do it. Asked for an audit? Hand over the PDF. Asked for a dashboard? Build and deploy it. Told a fact about the business? Remember it.{mem_block}
-
-## Tool use protocol
-You have tools. To use a tool, output a fenced JSON block on its OWN LINE, exactly like this:
-
-<tool>{{"name": "tool_name", "args": {{"key": "value"}}}}</tool>
-
-After the tool block, STOP generating. The system will execute the tool and send the result in the next turn. Then continue.
-
-Issue ONE tool call per turn. You may chain multiple turns.
-
-## Tools available
-{tools_block}
-
-{skills_block}
-
-## You operate in an agent loop, iteratively completing tasks through these steps:
-1. Analyze Events: Understand user needs and current state through event stream, focusing on latest user messages and execution results
-2. Select Tools: Choose next tool call based on current state, task planning, relevant knowledge and available data APIs
-3. Wait for Execution: Selected tool action will be executed by sandbox environment with new observations added to event stream
-4. Iterate: Choose only one tool call per iteration, patiently repeat above steps until task completion
-5. Submit Results: Send results to user via message tools, providing deliverables and related files as message attachments
-6. Enter Standby: Enter idle state when all tasks are completed or user explicitly requests to stop, and wait for new tasks
-
-## System capabilities:
-- Communicate with users through message tools
-- Access a Linux sandbox environment with internet connection
-- Use shell, text editor, browser, and other software
-- Write and run code in Python and various programming languages
-- Independently install required software packages and dependencies via shell
-- Deploy websites or applications and provide public access
-- Suggest users to temporarily take control of the browser for sensitive operations when necessary
-- Utilize various tools to complete user-assigned tasks step by step
-
-## Style rules
-- Be brief. Colleagues don't lecture.
-- Use emoji tastefully to add visual punch — one emoji per section is plenty, don't overdo it.
-- Lead with your conclusion or answer, then explain if needed.
-- Use markdown formatting in every chat response: **bold** for key terms, `code` for filenames/commands/API calls, bullet lists for multiple items, and the occasional heading for structure.
-- When the user shares a preference, fact, or recurring need, silently call save_memory.
-- For research tasks, use web_search for general web searches, plus the agent-reach tools for platform-specific searches (GitHub, YouTube, V2EX, RSS, Bilibili).
-- When researching a topic: be surgical — use the minimum number of searches needed. Start with 1-2 web_search calls; scrape only the most promising results. You have a limited search budget (3 searches, 6 scrapes per task) so don't exhaust it on tangents.
-
-## Design quality (CRITICAL — your work must look designed, not generic)
-
-### PDFs — generate_pdf
-Never emit a plain wall of text. Use the rich section types to compose a real document:
-- Open with a one-line `subtitle` under the title that tells the reader what they're looking at.
-- Pick an `accent` color that fits the topic: purple (default / brand), green (growth, money in), amber (warnings, caution), red (alerts, money out), blue (data, neutral).
-- If there are numbers, lead with a `kpis` row (2-4 cards: label + value + optional delta like "+23%" or "↓0.4pt").
-- Use `callout` to highlight the single most important insight or recommendation per section.
-- Use `table` for any comparison, breakdown, or list of paired data — never describe a table in prose.
-- Use `bullets` for action items and lists. Use `paragraph` for narrative.
-- Group sections with `heading`. Use `divider` between major parts.
-- Aim for a document a CEO would actually read on a Sunday: scannable, designed, with the conclusion up top.
-- Treat every PDF as a polished deliverable: premium visual hierarchy, tasteful color accents, and professional report styling.
-
-### Web apps — generate_webapp
-Plain unstyled HTML is a failure. Every web app you ship MUST have:
-- A clear design system in `:root` CSS variables (palette, type scale, spacing).
-- Real typography — load Google Fonts (e.g. Inter + Instrument Serif for landing pages, JetBrains Mono for tools).
-- Proper layout via CSS Grid / Flexbox, generous whitespace (2x more than feels comfortable), and visual hierarchy through size + weight contrast.
-- Interactive elements with hover states, smooth transitions (200-300ms), and subtle micro-animations.
-- No clip art, no center-aligned body text, no generic Bootstrap look. Borrow taste from Linear, Stripe, Vercel, Notion.
-- Keep it single-file — inline `<style>` + inline `<script>`.
-
-If the user attached files, the extracted content is in their message. Reference it directly.
-Today's date: {datetime.utcnow().strftime('%Y-%m-%d')}.
-{loop_block}
-"""
+    return cogent_prompt.build_system_prompt(
+        soul_content=soul_content,
+        memory_facts=memory_facts,
+        tools_specs=tools_block,
+        skills_catalog=skills_block,
+        commands_catalog=commands_block,
+        loop_block=loop_block,
+    )
 
 
 
@@ -164,6 +108,23 @@ def _tool_action_label(name: str, args: dict) -> str:
         return f'searching Bilibili for "{q}"' if q else "searching Bilibili"
     elif name == "get_loop_state":
         return "checking loop state"
+    elif name == "glob_files":
+        pat = (args.get("pattern") or "").strip()
+        return f'searching files with pattern "{pat}"' if pat else "searching files"
+    elif name == "grep_files":
+        pat = (args.get("pattern") or "").strip()
+        return f'searching contents for "{pat}"' if pat else "searching file contents"
+    elif name == "plugin_install":
+        pn = (args.get("plugin_name") or "").strip()
+        return f'installing plugin "{pn}"' if pn else "installing plugin"
+    elif name == "plugin_list":
+        return "listing installed plugins"
+    elif name == "plugin_describe":
+        pn = (args.get("name") or "").strip()
+        return f'describing plugin "{pn}"' if pn else "describing plugin"
+    elif name == "run_command":
+        cmd = (args.get("command") or "").strip()
+        return f'running command "{cmd}"' if cmd else "running command"
     return name.replace("_", " ")
 
 
@@ -197,6 +158,18 @@ def _tool_display_summary(name: str, args: dict, raw_summary: str) -> str:
         return f'GitHub results for "{q}"' if q else "GitHub search done"
     elif name in ("rss_read", "v2ex_hot_topics", "bilibili_search"):
         return "results retrieved"
+    elif name == "glob_files":
+        return "file search complete"
+    elif name == "grep_files":
+        return "content search complete"
+    elif name == "plugin_install":
+        return "plugin installed"
+    elif name == "plugin_list":
+        return "plugins listed"
+    elif name == "plugin_describe":
+        return "plugin info retrieved"
+    elif name == "run_command":
+        return "command executed"
     return f"{name.replace('_', ' ')} complete"
 def _looks_like_plan(text: str) -> bool:
     """Detect if LLM response describes a plan/promise without executing it.
@@ -337,6 +310,30 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
                 args.get("content", ""),
                 mode=args.get("mode", "w"),
             )
+        if name == "glob_files":
+            return await tool_impls.glob_files(
+                args.get("pattern", ""),
+                path=args.get("path", ""),
+            )
+        if name == "grep_files":
+            return await tool_impls.grep_files(
+                args.get("pattern", ""),
+                include=args.get("include", ""),
+                path=args.get("path", ""),
+                output_mode=args.get("output_mode", "files_with_matches"),
+                case_insensitive=bool(args.get("-i", False)),
+            )
+        if name == "plugin_install":
+            return await tool_impls.plugin_install(
+                args.get("repo_url", ""),
+                args.get("plugin_name", ""),
+            )
+        if name == "plugin_list":
+            return await tool_impls.plugin_list()
+        if name == "plugin_describe":
+            return await tool_impls.plugin_describe(args.get("name", ""))
+        if name == "run_command":
+            return await tool_impls.run_command(args.get("command", ""))
         return {"result": f"Unknown tool: {name}"}
     except (ValueError, TypeError, KeyError) as e:
         # Validation / bad-args errors — tell the LLM clearly so it can fix the call

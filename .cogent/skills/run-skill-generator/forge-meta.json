@@ -1,0 +1,7 @@
+{
+  "name": "run-skill-generator",
+  "description": "Teach /run and /verify how to build and launch your project by creating a per-project run skill with a driver script.",
+  "imported_at": "2026-06-22T03:55:43Z",
+  "metadata": {},
+  "resources": []
+}

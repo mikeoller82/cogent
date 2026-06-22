@@ -240,6 +240,19 @@ class CogentConfig:
     def headroom_output_shaper(self) -> bool:
         return bool(self._data.get("headroom", {}).get("output_shaper", False))
 
+    # Plugins
+    @property
+    def plugins_enabled(self) -> bool:
+        return bool(self._data.get("plugins", {}).get("enabled", True))
+
+    @property
+    def plugins_dir(self) -> str:
+        return str(self._data.get("plugins", {}).get("dir", "plugins"))
+
+    @property
+    def plugins_dir_path(self) -> Path:
+        return Path(self.plugins_dir)
+
     # Logging
     @property
     def log_level(self) -> str:

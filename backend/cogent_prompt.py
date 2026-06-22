@@ -1,132 +1,202 @@
-"""Structured system prompt builder — ported from CowAgent's PromptBuilder pattern.
+"""Structured system prompt builder — composes the full Cogent system prompt
+from ordered sections (SOUL identity, memory, tools, skills, loop state, etc.).
 
-Composes the system prompt from ordered sections so each component (tools,
-skills, memory, identity, runtime info) gets a consistent, well-defined block.
+Ordered section layout (implements Option B: all prompt assembly routes through
+this module from ``llm_service.build_system_prompt()``):
+
+  1. Identity  — SOUL.md content (or fallback default)
+  2. Memory    — known facts about the user
+  3. Protocol  — how to call tools
+  4. Tools     — available tool definitions
+  5. Skills    — installed agent skills catalog
+  6. Commands  — plugin slash commands
+  7. Loop      — agent loop steps & system capabilities
+  8. Style     — brevity, formatting, research discipline
+  9. Design    — PDF / web-app quality rules
+  10. Runtime   — current date
+  11. Loop state — Plan→Execute→Verify state block
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Optional
 
 logger = logging.getLogger("cogent.prompt")
 
 
-# ── Section builders ────────────────────────────────────────────────────────
-
-def build_tools_section(tools: List[Dict[str, Any]]) -> str:
-    """Render available tools as an XML block."""
-    if not tools:
-        return ""
-    lines = ["<available_tools>"]
-    for t in tools:
-        name = t.get("name", "?")
-        desc = t.get("description", "")[:200]
-        lines.append(f'  <tool name="{name}">{desc}</tool>')
-    lines.append("</available_tools>")
-    return "\n".join(lines)
-
-
-def build_memory_section(memory_facts: str) -> str:
-    """Render long-term memory facts."""
-    if not memory_facts:
-        return ""
-    return f"## Known facts about the user\n{memory_facts}"
-
-
-def build_identity_section(identity: Optional[Dict[str, str]] = None) -> str:
-    """Render agent identity/role description."""
-    if not identity:
-        return ""
-    name = identity.get("name", "Agent")
-    role = identity.get("role", "")
-    desc = identity.get("description", "")
-    parts = [f"You are {name}."]
-    if role:
-        parts.append(f"Your role: {role}")
-    if desc:
-        parts.append(desc)
-    return "\n".join(parts)
-
-
-def build_runtime_section(runtime: Optional[Dict[str, Any]] = None) -> str:
-    """Render runtime information (current time, workspace, etc.)."""
-    if not runtime:
-        return ""
-    lines = ["## Runtime context"]
-    for key, val in runtime.items():
-        lines.append(f"- {key}: {val}")
-    return "\n".join(lines)
-
-
-def build_loop_state_section(loop_state) -> str:
-    """Render current loop state for the system prompt block."""
-    if loop_state is None:
-        return ""
-    from loop_engine import PHASE_IDLE
-    if loop_state.phase == PHASE_IDLE:
-        return ""
-    budget_pct = int(
-        (loop_state.tokens_estimated / loop_state.budget_max) * 100
-    ) if loop_state.budget_max else 0
-
-    lines = [
-        "## Loop Engineering — Current State",
-        "",
-        f"| Field | Value |",
-        f"|-------|-------|",
-        f"| Phase | {loop_state.phase} |",
-        f"| Iteration | {loop_state.iteration} |",
-        f"| Task | {loop_state.task_description[:120]} |",
-        f"| Budget used | ~{budget_pct}% |",
-        f"| Last verification | {loop_state.verification_result or 'not yet run'} |",
-    ]
-    return "\n".join(lines)
-
-
-# ── Main builder ────────────────────────────────────────────────────────────
-
 def build_system_prompt(
-    tools: Optional[List[Dict[str, Any]]] = None,
+    *,
+    soul_content: str = "",
     memory_facts: str = "",
-    identity: Optional[Dict[str, str]] = None,
-    runtime: Optional[Dict[str, Any]] = None,
-    loop_state=None,
-    extra_instructions: str = "",
+    tools_specs: str = "",
+    skills_catalog: str = "",
+    commands_catalog: str = "",
+    loop_block: str = "",
 ) -> str:
-    """Compose the full system prompt from ordered sections.
+    """Compose the full Cogent system prompt from ordered sections.
 
-    Order: identity → tools → memory → runtime → loop state → extra instructions
+    Sections are assembled in a fixed order.  Each section is separated by
+    two newlines.  Empty sections are skipped so the prompt stays compact.
     """
-    sections: List[str] = []
+    sections: list[str] = []
 
-    # 1. Core identity
-    identity_block = build_identity_section(identity)
-    if identity_block:
-        sections.append(identity_block)
+    # ── 1. Identity ─────────────────────────────────────────────────────
+    if soul_content:
+        sections.append(soul_content)
+    else:
+        sections.append(
+            "You are Cogent — an AI coworker. Not a chatbot. "
+            "A colleague who ships real work."
+        )
 
-    # 2. Available tools
-    tools_block = build_tools_section(tools or [])
-    if tools_block:
-        sections.append(tools_block)
+    # ── 2. Action philosophy + memory facts ─────────────────────────────
+    action_philosophy = (
+        "You don't describe what to do; you do it. "
+        "Asked for an audit? Hand over the PDF. "
+        "Asked for a dashboard? Build and deploy it. "
+        "Told a fact about the business? Remember it."
+    )
+    if memory_facts:
+        action_philosophy += (
+            f"\n\n## Known facts about the user (from memory)\n{memory_facts}"
+        )
+    sections.append(action_philosophy)
 
-    # 3. Memory facts
-    memory_block = build_memory_section(memory_facts)
-    if memory_block:
-        sections.append(memory_block)
+    # ── 3. Tool use protocol ────────────────────────────────────────────
+    sections.append(
+        "## Tool use protocol\n"
+        "You have tools. To use a tool, output a fenced JSON block "
+        "on its OWN LINE, exactly like this:\n\n"
+        '<tool>{{"name": "tool_name", "args": {{"key": "value"}}}}</tool>\n\n'
+        "After the tool block, STOP generating. The system will execute "
+        "the tool and send the result in the next turn. Then continue.\n\n"
+        "Issue ONE tool call per turn. You may chain multiple turns."
+    )
 
-    # 4. Runtime info
-    runtime_block = build_runtime_section(runtime)
-    if runtime_block:
-        sections.append(runtime_block)
+    # ── 4. Tools available ──────────────────────────────────────────────
+    sections.append(f"## Tools available\n{tools_specs}")
 
-    # 5. Loop state
-    loop_block = build_loop_state_section(loop_state)
+    # ── 5. Skills catalog ───────────────────────────────────────────────
+    if skills_catalog:
+        sections.append(skills_catalog)
+
+    # ── 6. Commands catalog ─────────────────────────────────────────────
+    if commands_catalog:
+        sections.append(commands_catalog)
+
+    # ── 7. Agent loop ───────────────────────────────────────────────────
+    sections.append(
+        "## You operate in an agent loop, iteratively completing "
+        "tasks through these steps:\n"
+        "1. Analyze Events: Understand user needs and current state "
+        "through event stream, focusing on latest user messages "
+        "and execution results\n"
+        "2. Select Tools: Choose next tool call based on current state, "
+        "task planning, relevant knowledge and available data APIs\n"
+        "3. Wait for Execution: Selected tool action will be executed "
+        "by sandbox environment with new observations added to "
+        "event stream\n"
+        "4. Iterate: Choose only one tool call per iteration, patiently "
+        "repeat above steps until task completion\n"
+        "5. Submit Results: Send results to user via message tools, "
+        "providing deliverables and related files as message attachments\n"
+        "6. Enter Standby: Enter idle state when all tasks are completed "
+        "or user explicitly requests to stop, and wait for new tasks\n\n"
+        "## System capabilities:\n"
+        "- Communicate with users through message tools\n"
+        "- Access a Linux sandbox environment with internet connection\n"
+        "- Use shell, text editor, browser, and other software\n"
+        "- Write and run code in Python and various programming languages\n"
+        "- Independently install required software packages and "
+        "dependencies via shell\n"
+        "- Deploy websites or applications and provide public access\n"
+        "- Suggest users to temporarily take control of the browser "
+        "for sensitive operations when necessary\n"
+        "- Utilize various tools to complete user-assigned tasks "
+        "step by step"
+    )
+
+    # ── 9. Style rules ──────────────────────────────────────────────────
+    sections.append(
+        "## Style rules\n"
+        "- Be brief. Colleagues don't lecture.\n"
+        "- Use emoji tastefully to add visual punch — one emoji per "
+        "section is plenty, don't overdo it.\n"
+        "- Lead with your conclusion or answer, then explain if needed.\n"
+        "- Use markdown formatting in every chat response: **bold** for "
+        "key terms, `code` for filenames/commands/API calls, bullet "
+        "lists for multiple items, and the occasional heading for "
+        "structure.\n"
+        "- When the user shares a preference, fact, or recurring need, "
+        "silently call save_memory.\n"
+        "- For research tasks, use web_search for general web searches, "
+        "plus the agent-reach tools for platform-specific searches "
+        "(GitHub, YouTube, V2EX, RSS, Bilibili).\n"
+        "- When researching a topic: be surgical — use the minimum "
+        "number of searches needed. Start with 1-2 web_search calls; "
+        "scrape only the most promising results. You have a limited "
+        "search budget (3 searches, 6 scrapes per task) so don't "
+        "exhaust it on tangents."
+    )
+
+    # ── 10. Design quality ──────────────────────────────────────────────
+    sections.append(
+        "## Design quality (CRITICAL — your work must look designed, "
+        "not generic)\n\n"
+        "### PDFs — generate_pdf\n"
+        "Never emit a plain wall of text. Use the rich section types "
+        "to compose a real document:\n"
+        "- Open with a one-line ``subtitle`` under the title that tells "
+        "the reader what they're looking at.\n"
+        "- Pick an ``accent`` color that fits the topic: "
+        "purple (default / brand), green (growth, money in), "
+        "amber (warnings, caution), red (alerts, money out), "
+        "blue (data, neutral).\n"
+        "- If there are numbers, lead with a ``kpis`` row (2-4 cards: "
+        "label + value + optional delta like ``+23%`` or ``↓0.4pt``).\n"
+        "- Use ``callout`` to highlight the single most important "
+        "insight or recommendation per section.\n"
+        "- Use ``table`` for any comparison, breakdown, or list of "
+        "paired data — never describe a table in prose.\n"
+        "- Use ``bullets`` for action items and lists. Use ``paragraph`` "
+        "for narrative.\n"
+        "- Group sections with ``heading``. Use ``divider`` between "
+        "major parts.\n"
+        "- Aim for a document a CEO would actually read on a Sunday: "
+        "scannable, designed, with the conclusion up top.\n"
+        "- Treat every PDF as a polished deliverable: premium visual "
+        "hierarchy, tasteful color accents, and professional report "
+        "styling.\n\n"
+        "### Web apps — generate_webapp\n"
+        "Plain unstyled HTML is a failure. Every web app you ship "
+        "MUST have:\n"
+        "- A clear design system in ``:root`` CSS variables "
+        "(palette, type scale, spacing).\n"
+        "- Real typography — load Google Fonts (e.g. Inter + "
+        "Instrument Serif for landing pages, JetBrains Mono for tools).\n"
+        "- Proper layout via CSS Grid / Flexbox, generous whitespace "
+        "(2x more than feels comfortable), and visual hierarchy "
+        "through size + weight contrast.\n"
+        "- Interactive elements with hover states, smooth transitions "
+        "(200-300ms), and subtle micro-animations.\n"
+        "- No clip art, no center-aligned body text, no generic "
+        "Bootstrap look. Borrow taste from Linear, Stripe, Vercel, "
+        "Notion.\n"
+        "- Keep it single-file — inline ``<style>`` + inline "
+        "``<script>``.\n\n"
+        "If the user attached files, the extracted content is in "
+        "their message. Reference it directly."
+    )
+
+    # ── 11. Runtime info ────────────────────────────────────────────────
+    sections.append(
+        f"Today's date: {datetime.utcnow().strftime('%Y-%m-%d')}."
+    )
+
+    # ── 12. Loop state block ────────────────────────────────────────────
     if loop_block:
         sections.append(loop_block)
-
-    # 6. Extra instructions (Exit Signal Protocol, etc.)
-    if extra_instructions:
-        sections.append(extra_instructions)
 
     return "\n\n".join(sections)
