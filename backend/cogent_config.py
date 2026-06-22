@@ -55,9 +55,9 @@ _DEFAULTS: Dict[str, Any] = {
         {
             "name": "kilocode",
             "base_url": "https://api.kilo.ai/api/gateway/chat/completions",
-            "model": "nex-agi/nex-n2-pro:free",
+            "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
             "api_key_env": "KILOCODE_API_KEY",
-            "priority": 1,
+            "priority": 2,
         },
         {
             "name": "openrouter",
@@ -71,7 +71,7 @@ _DEFAULTS: Dict[str, Any] = {
             "base_url": "https://opencode.ai/zen/v1/chat/completions",
             "model": "deepseek-v4-flash-free",
             "api_key_env": "OPENCODE_API_KEY",
-            "priority": 3,
+            "priority": 1,
         },
         {
             "name": "ollama-cloud",
