@@ -148,14 +148,16 @@ class VirtualProvider:
         messages = cogent_headroom.compress_messages(messages)
 
         for attempt in range(len(self._providers)):
-            idx = (self._current_idx + attempt) % len(self._providers)
+            # NOTE: do NOT use self._current_idx here — _fallback() advances it
+            # inside the loop for persistent state, causing idx to double-step.
+            # Use a fresh local index based on current_idx + attempt.
+            base = self._current_idx
+            idx = (base + attempt) % len(self._providers)
             entry = self._providers[idx]
 
             api_key = _pick_api_key(entry)
             if not api_key:
                 logger.warning("Provider %s skipped — no API key", entry.get("name"))
-                if attempt == 0:
-                    self._fallback(entry.get("name", "?"), "missing API key")
                 continue
 
             # Rate limit before hitting this provider (non-blocking)
@@ -167,6 +169,9 @@ class VirtualProvider:
                 logger.info("Provider %s returned type=%s len=%d",
                             entry.get("name"), type(result).__name__,
                             len(result) if isinstance(result, str) else -1)
+                # Advance the persistent index so the next request
+                # starts from this successful provider.
+                self._current_idx = idx
                 return result
             except requests.HTTPError as exc:
                 status = exc.response.status_code if exc.response is not None else 0
@@ -179,13 +184,13 @@ class VirtualProvider:
                 if status == 429:
                     reason = f"429 rate limited: {body}"
                     last_error = f"{entry.get('name', '?')}: {reason}"
-                    self._fallback(entry.get("name", "?"), reason)
+                    self._advance_next(entry.get("name", "?"), reason)
                     continue
 
                 if status >= 500:
                     reason = f"{status} server error"
                     last_error = f"{entry.get('name', '?')}: {reason}"
-                    self._fallback(entry.get("name", "?"), reason)
+                    self._advance_next(entry.get("name", "?"), reason)
                     continue
 
                 raise
@@ -194,13 +199,13 @@ class VirtualProvider:
                 logger.warning("Provider %s connection error — %s",
                                entry.get("name"), exc)
                 last_error = f"{entry.get('name', '?')}: connection error: {exc}"
-                self._fallback(entry.get("name", "?"), f"connection error: {exc}")
+                self._advance_next(entry.get("name", "?"), f"connection error: {exc}")
                 continue
 
             except RuntimeError as exc:
                 logger.warning("Provider %s RuntimeError — %s", entry.get("name"), exc)
                 last_error = f"{entry.get('name', '?')}: malformed response: {exc}"
-                self._fallback(entry.get("name", "?"), f"malformed response: {exc}")
+                self._advance_next(entry.get("name", "?"), f"malformed response: {exc}")
                 continue
 
         raise RuntimeError(
@@ -237,8 +242,9 @@ class VirtualProvider:
 
     # ── Internals ───────────────────────────────────────────────────────
 
-    def _fallback(self, from_name: str, reason: str) -> None:
-        """Advance to the next provider and log the fallback."""
+    def _advance_next(self, from_name: str, reason: str) -> None:
+        """Advance to the next provider and log the switch."""
+        prev_idx = self._current_idx
         self._current_idx = (self._current_idx + 1) % len(self._providers)
         next_name = self._providers[self._current_idx].get("name", "?") if self._providers else "?"
         msg = f"{from_name} → {next_name}: {reason}"

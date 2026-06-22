@@ -23,32 +23,27 @@ rate_limit:
 # Providers are tried in priority order (lower = first). If one hits a 429,
 # Cogent automatically falls back to the next in the chain and reports the switch.
 providers:
-  - name: kilocode
-    base_url: https://api.kilo.ai/api/gateway/chat/completions
-    model: nvidia/nemotron-3-ultra-550b-a55b:free
-    api_key_env: KILOCODE_API_KEY
-    priority: 1
-  - name: kilocode
-    base_url: https://api.kilo.ai/api/gateway/chat/completions
-    model: nex-agi/nex-n2-pro:free
-    api_key_env: KILOCODE_API_KEY
-    priority: 4
-  - name: openrouter
-    base_url: https://openrouter.ai/api/v1/chat/completions
-    model: openrouter/owl-alpha
-    api_key_env: OPENROUTER_API_KEY
-    priority: 2
   - name: opencode-zen
     base_url: https://opencode.ai/zen/v1/chat/completions
     model: deepseek-v4-flash-free
     api_key_env: OPENCODE_API_KEY
+    priority: 1
+  - name: kilocode
+    base_url: https://api.kilo.ai/api/gateway/chat/completions
+    model: nvidia/nemotron-3-ultra-550b-a55b:free
+    api_key_env: KILOCODE_API_KEY
+    priority: 2
+  - name: openrouter
+    base_url: https://openrouter.ai/api/v1/chat/completions
+    model: openrouter/owl-alpha
+    api_key_env: OPENROUTER_API_KEY
     priority: 3
   - name: ollama-cloud
     library: ollama-cloud
     base_url: https://cloud.ollama.ai
     model: glm-5.2:cloud
     api_key_env: OLLAMA_API_KEY
-    priority: 5
+    priority: 4
 
 agent:
   max_turns: 50               # max tool-using turns per message
