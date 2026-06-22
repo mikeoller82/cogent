@@ -280,7 +280,7 @@ class VirtualProvider:
         """OpenAI-compatible HTTP POST backend."""
         url = entry.get("base_url", "")
         model = entry.get("model", "")
-        max_tokens = kwargs.get("max_tokens", 4000)
+        max_tokens = kwargs.get("max_tokens", 16000)
 
         resp = requests.post(
             url,
@@ -301,15 +301,27 @@ class VirtualProvider:
 
         data = resp.json()
         try:
-            content = data["choices"][0]["message"]["content"]
+            msg = data["choices"][0]["message"]
+            finish = data["choices"][0].get("finish_reason", "?")
         except (KeyError, IndexError, TypeError):
             raise RuntimeError(
-                f"Provider {entry.get('name')} response missing choices[0].message.content"
+                f"Provider {entry.get('name')} response missing choices[0].message"
             )
-        if not isinstance(content, str) or not content.strip():
-            raise RuntimeError(
-                f"Provider {entry.get('name')} response had empty content"
-            )
+
+        content = msg.get("content") or ""
+        if not content.strip():
+            reasoning = msg.get("reasoning_content") or ""
+            if reasoning.strip():
+                content = reasoning
+                logger.info(
+                    "Provider %s: finish_reason=%s used reasoning_content (%d chars)",
+                    entry.get("name"), finish, len(reasoning),
+                )
+            else:
+                raise RuntimeError(
+                    f"Provider {entry.get('name')} response had empty content "
+                    f"(finish_reason={finish})"
+                )
         return content
 
     def _post_ollama(self, entry: Dict[str, Any],
