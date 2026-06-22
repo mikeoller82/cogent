@@ -436,6 +436,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
         tool_loop_error = False
         made_tool_calls = False
         max_turns = MAX_TOOL_TURNS
+        sub_phase = "gather"       # "gather" | "synthesize"
+        gather_turns = 0
+        synthesize_turns = 0
         web_search_budget_msg = (
             "Search budget exceeded (%d web_search + %d web_scrape calls allowed per task). "
             "Use the results you already have or rely on what you know."
@@ -499,70 +502,107 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                     initial_messages = compressed
 
             call, _ = _parse_tool_call(response_text)
-            if not call:
-                # ── Check for explicit LLM completion signal ──────────
-                ralph_status = le.parse_ralph_status_block(response_text)
-                if ralph_status.get("exit_signal"):
-                    yield {"type": "reasoning", "content": "[LLM signaled completion — processing final answer]"}
-                    final_text = response_text.strip()
-                    loop_state.consecutive_no_tool_responses = 0
-                    le.save_state(loop_state)
-                    break
 
-                # ── Auto-continue: if LLM plans without executing, re-prompt ──
-                if (loop_state.continue_count < le.CONTINUE_MAX
-                        and _looks_like_plan(response_text)):
-                    loop_state.continue_count += 1
-                    loop_state.last_plan_text = response_text[:200]
-                    le.save_state(loop_state)
-                    yield {"type": "reasoning", "content": (
-                        f"[auto-continue: plan detected, re-prompting to execute "
-                        f"({loop_state.continue_count}/{le.CONTINUE_MAX})]"
-                    )}
-                    yield {"type": "status", "content": "re-prompting to execute instead of plan"}
+            # ── Phase-aware response dispatch ─────────────────────────
+            # GATHER: tools execute, text flows freely, no re-prompts.
+            # SYNTHESIZE: tool calls blocked, text captured as output.
+
+            if sub_phase == "gather":
+                gather_turns += 1
+
+                if not call:
+                    # Check for ready signal → advance to synthesis
+                    if le.parse_ready_signal(response_text):
+                        yield {"type": "reasoning", "content": (
+                            "[gather complete — advancing to synthesis phase]"
+                        )}
+                        yield {"type": "status", "content": "gathering complete, now synthesizing answer"}
+                        sub_phase = "synthesize"
+                        current_user_text = (
+                            "You have gathered all the data you need. "
+                            "Now produce your final answer to the task. "
+                            "No more tool calls — write your complete answer. "
+                            "When done, include EXIT_SIGNAL: true at the end.\n\n"
+                            f"Original task: {user_text}"
+                        )
+                        continue
+
+                    # Check gather turn limit → auto-advance to synthesis
+                    if gather_turns >= le.GATHER_MAX_TURNS:
+                        yield {"type": "reasoning", "content": (
+                            f"[gather turn limit {gather_turns}/{le.GATHER_MAX_TURNS}"
+                            " — advancing to synthesis]"
+                        )}
+                        yield {"type": "status", "content": "gather phase complete, synthesizing answer"}
+                        sub_phase = "synthesize"
+                        current_user_text = (
+                            "You have gathered as much data as time allows. "
+                            "Now produce your final answer based on what you have. "
+                            "No more tool calls — write your complete answer. "
+                            "When done, include EXIT_SIGNAL: true at the end.\n\n"
+                            f"Original task: {user_text}"
+                        )
+                        continue
+
+                    # Free text in gather — yield as reasoning, no re-prompt
                     current_user_text = (
-                        "You described a plan but did not execute it using tools. "
-                        "You MUST actually call the tool functions to do the work now. "
-                        "Do not describe what you will do — execute.\n\n"
+                        "Continue gathering data using the available tools "
+                        "(search, scrape, read, etc.). "
+                        "Signal READY_FOR_EVALUATION: true when you have "
+                        "enough data to answer.\n\n"
                         f"Original task: {user_text}"
                     )
                     continue
-                # ── Final answer after tool work ─────────────────────
-                # If the model has already used tools and now writes
-                # substantive text, treat it as the final answer instead
-                # of re-prompting for more tool calls.
-                if made_tool_calls and len(response_text.strip()) > 50:
+
+                # Tool call in gather — falls through to execution below
+
+            elif sub_phase == "synthesize":
+                synthesize_turns += 1
+
+                if call:
+                    # Hard block — no tool calls in synthesis phase
                     yield {"type": "reasoning", "content": (
-                        "[accepting text response as final answer — "
-                        "tool work already done]"
+                        "[tool call blocked — synthesis phase, no tools allowed]"
+                    )}
+                    current_user_text = (
+                        "You are in the synthesis phase. "
+                        "No tool calls are allowed — write your final answer. "
+                        "When complete, include EXIT_SIGNAL: true at the end.\n\n"
+                        f"Original task: {user_text}"
+                    )
+                    continue
+
+                # Text response in synthesis — check completion
+                ralph_status = le.parse_ralph_status_block(response_text)
+                if ralph_status.get("exit_signal"):
+                    yield {"type": "reasoning", "content": (
+                        "[LLM signaled completion — processing final answer]"
                     )}
                     final_text = response_text.strip()
                     loop_state.consecutive_no_tool_responses = 0
                     le.save_state(loop_state)
                     break
 
-                # ── No tool call — re-prompt to keep working ──────────
-                loop_state.consecutive_no_tool_responses += 1
-                le.save_state(loop_state)
-                if loop_state.consecutive_no_tool_responses >= le.MAX_CONSECUTIVE_NO_TOOL:
-                    yield {"type": "reasoning", "content": (
-                        f"[no-tool response x{loop_state.consecutive_no_tool_responses} "
-                        f"— passing to evaluator]"
-                    )}
-                    final_text = response_text.strip()
-                    break  # Let evaluator decide — no premature "final"
+                # Accept text as output (may refine in subsequent turns)
+                final_text = response_text.strip()
                 yield {"type": "reasoning", "content": (
-                    f"[no-tool response {loop_state.consecutive_no_tool_responses}/"
-                    f"{le.MAX_CONSECUTIVE_NO_TOOL} — re-prompting to use tools]"
+                    f"[synthesis output ({synthesize_turns}/{le.SYNTHESIZE_MAX_TURNS})]"
                 )}
-                yield {"type": "status", "content": "re-prompting to use tools"}
+
+                if synthesize_turns >= le.SYNTHESIZE_MAX_TURNS:
+                    yield {"type": "reasoning", "content": (
+                        "[synthesis turn limit — accepting final output]"
+                    )}
+                    break
+
                 current_user_text = (
-                    "You responded without calling any tools. "
-                    "Continue working by calling the appropriate tools to complete the task. "
-                    "Do not summarize, plan, or describe — execute.\n\n"
+                    "Refine your answer or signal completion with "
+                    "EXIT_SIGNAL: true. No tool calls — write only.\n\n"
                     f"Original task: {user_text}"
                 )
                 continue
+
+            # ── Tool execution (gather phase with a real tool call) ────
 
             made_tool_calls = True
             tool_name = call.get("name", "")
@@ -642,7 +682,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             le.record_observation(loop_state, obs)
             le.update_risk_level(loop_state, tool_name, args)
 
-            current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue."
+            current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue gathering data."
             yield {"type": "status", "content": "processing results and continuing work"}
 
         if tool_loop_error:
@@ -651,8 +691,24 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             yield {"type": "final", "content": final_text}
             break
 
-        # ── Tool turns exhausted — force summary (CowAgent-style) ────
+        # ── Tool turns exhausted — phase-aware handling ──────────────
         if not final_text:
+            if sub_phase == "gather":
+                # Still gathering but turns exhausted → advance to synthesis
+                yield {"type": "reasoning", "content": (
+                    "[gather turns exhausted — advancing to synthesis phase]"
+                )}
+                yield {"type": "status", "content": "gather complete, synthesizing answer"}
+                sub_phase = "synthesize"
+                current_user_text = (
+                    "Tool calls are exhausted for this phase. "
+                    "Now produce your final answer based on what you have gathered. "
+                    "No more tool calls — write your complete answer. "
+                    "When done, include EXIT_SIGNAL: true at the end.\n\n"
+                    f"Original task: {user_text}"
+                )
+                continue  # Re-enter outer while, restart for loop in synthesize
+
             if loop_state.continue_count >= le.CONTINUE_MAX:
                 # Budget fully exhausted — force a summary before stopping
                 yield {"type": "status", "content": "reached max turns, requesting summary"}

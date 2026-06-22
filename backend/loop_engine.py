@@ -107,8 +107,12 @@ MAX_CONSECUTIVE_TEST_LOOPS = 3
 MAX_CONSECUTIVE_DONE_SIGNALS = 5
 SAFETY_CIRCUIT_BREAKER_LIMIT = 12
 MAX_CONSECUTIVE_NO_TOOL = 3  # re-prompt this many times before sending to evaluator
-MAX_WEB_SEARCH_CALLS = 3  # max web_search calls per task
-MAX_WEB_SCRAPE_CALLS = 6  # max web_scrape calls per task
+MAX_WEB_SEARCH_CALLS = 12  # max web_search calls per task
+MAX_WEB_SCRAPE_CALLS = 20  # max web_scrape calls per task
+
+# Phase sub-types (within PHASE_EXECUTE)
+GATHER_MAX_TURNS = 30      # max turns in gather before auto-advance to synthesis
+SYNTHESIZE_MAX_TURNS = 5   # max turns in synthesis before accepting output
 
 MAX_SAME_ARGS_CALLS = 5
 MAX_CONSECUTIVE_FAILURES = 3
@@ -136,6 +140,9 @@ RALPH_STATUS_RE = re.compile(
 )
 EXIT_SIGNAL_RE = re.compile(r"^[ \t]*EXIT_SIGNAL:\s*(true|false)", re.MULTILINE)
 STATUS_RE = re.compile(r"^[ \t]*STATUS:\s*(\w+)", re.MULTILINE)
+READY_FOR_EVALUATION_RE = re.compile(
+    r"^[ \t]*READY_FOR_EVALUATION:\s*true", re.MULTILINE
+)
 
 
 # ── State ────────────────────────────────────────────────────────────────
@@ -698,6 +705,15 @@ def parse_ralph_status_block(text: str) -> dict:
         result["exit_signal"] = True
 
     return result
+
+
+def parse_ready_signal(text: str) -> bool:
+    """Check if the LLM is signaling it has enough data for evaluation.
+
+    The model outputs ``READY_FOR_EVALUATION: true`` on its own line
+    when it has gathered sufficient data to produce a final answer.
+    """
+    return bool(READY_FOR_EVALUATION_RE.search(text))
 
 
 def count_questions(text: str) -> int:
