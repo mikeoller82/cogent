@@ -527,6 +527,20 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                         f"Original task: {user_text}"
                     )
                     continue
+                # ── Final answer after tool work ─────────────────────
+                # If the model has already used tools and now writes
+                # substantive text, treat it as the final answer instead
+                # of re-prompting for more tool calls.
+                if made_tool_calls and len(response_text.strip()) > 50:
+                    yield {"type": "reasoning", "content": (
+                        "[accepting text response as final answer — "
+                        "tool work already done]"
+                    )}
+                    final_text = response_text.strip()
+                    loop_state.consecutive_no_tool_responses = 0
+                    le.save_state(loop_state)
+                    break
+
                 # ── No tool call — re-prompt to keep working ──────────
                 loop_state.consecutive_no_tool_responses += 1
                 le.save_state(loop_state)

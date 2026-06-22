@@ -72,7 +72,11 @@ def build_system_prompt(
         '<tool>{{"name": "tool_name", "args": {{"key": "value"}}}}</tool>\n\n'
         "After the tool block, STOP generating. The system will execute "
         "the tool and send the result in the next turn. Then continue.\n\n"
-        "Issue ONE tool call per turn. You may chain multiple turns."
+        "Issue ONE tool call per turn. You may chain multiple turns.\n\n"
+        "When the task is complete — all tool calls executed and the "
+        "answer ready — output your final response as plain text "
+        "(no tool block). Include the marker ``EXIT_SIGNAL: true`` "
+        "on its own line at the end of your response to confirm completion."
     )
 
     # ── 4. Tools available ──────────────────────────────────────────────
