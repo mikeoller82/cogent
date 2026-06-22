@@ -264,12 +264,24 @@ def tool_specs_for_prompt() -> str:
     if agent_skills.has_skills():
         specs.extend([
             {
+                "name": "search_skills",
+                "description": (
+                    "Search available skills by keyword to find ones relevant to your task. "
+                    "ALWAYS call this before starting any task — scan skills first, "
+                    "then activate the relevant ones."
+                ),
+                "args": {
+                    "query": "string - keywords from the task description",
+                    "max_results": "integer, optional (default 10)",
+                },
+            },
+            {
                 "name": "activate_skill",
                 "description": (
                     "Load the full instructions for an available Agent Skill. "
-                    "Use before performing a task that matches a listed skill description."
+                    "Use after finding a relevant skill via search_skills."
                 ),
-                "args": {"name": "string - one of the available skill names"},
+                "args": {"name": "string - skill name from search_skills results"},
             },
             {
                 "name": "read_skill_resource",
@@ -284,6 +296,10 @@ def tool_specs_for_prompt() -> str:
             },
         ])
     return json.dumps(specs, indent=2)
+
+
+async def search_skills(query: str, max_results: int = 10) -> dict:
+    return await asyncio.to_thread(agent_skills.search_skills, query, max_results)
 
 
 async def activate_skill(name: str) -> dict:

@@ -68,9 +68,14 @@ def _tool_action_label(name: str, args: dict) -> str:
     elif name == "web_scrape":
         url = (args.get("url") or "").strip()
         return f"reading {url}" if url else "reading a webpage"
+    elif name == "search_skills":
+        q = (args.get("query") or "").strip()
+        return f'searching skills for "{q}"' if q else "searching skills"
+    elif name == "search_skills":
+        return "skill search complete"
     elif name == "activate_skill":
         skill = (args.get("name") or "").strip()
-        return f"loading skill: {skill}" if skill else "activating a skill"
+        return f'skill "{skill}" ready' if skill else "skill activated"
     elif name == "read_skill_resource":
         path = (args.get("path") or "").strip()
         return f"reading {path} from skill" if path else "reading skill resource"
@@ -171,6 +176,36 @@ def _tool_display_summary(name: str, args: dict, raw_summary: str) -> str:
     elif name == "run_command":
         return "command executed"
     return f"{name.replace('_', ' ')} complete"
+
+
+def _build_synthesis_prompt(
+    user_text: str,
+    research_findings: list[str],
+    reason: str = "",
+) -> str:
+    """Build synthesis prompt that grounds the LLM in research data."""
+    parts = []
+    if research_findings:
+        parts.append(
+            "=== RESEARCH DATA (ground truth — base your answer on this) ===\n"
+            + "\n\n".join(research_findings)
+            + "\n=== END RESEARCH DATA ==="
+        )
+    instruction = (
+        "IMPORTANT: Your answer MUST be grounded in the research data above. "
+        "Do NOT rely on your training data or prior knowledge for facts, figures, "
+        "or claims. The research data is the ground truth for this task. "
+        "If the research data is insufficient to fully answer, say so clearly.\n\n"
+        "No more tool calls — write your complete answer.\n"
+        "When done, include EXIT_SIGNAL: true at the end."
+    )
+    if reason:
+        parts.append(f"Note: {reason}")
+    parts.append(instruction)
+    parts.append(f"Original task: {user_text}")
+    return "\n\n".join(parts)
+
+
 def _looks_like_plan(text: str) -> bool:
     """Detect if LLM response describes a plan/promise without executing it.
     Only triggers on explicit future-tense promises using tools.
@@ -259,6 +294,11 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
                 args.get("cadence", "weekly"),
                 args.get("time", "09:00"),
                 args.get("prompt", ""),
+            )
+        if name == "search_skills":
+            return await tool_impls.search_skills(
+                args.get("query", ""),
+                int(args.get("max_results", 10)),
             )
         if name == "activate_skill":
             return await tool_impls.activate_skill(args.get("name", ""))
@@ -418,6 +458,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
     current_user_text = user_text
     final_text = ""
     tool_loop_error = False
+    research_findings: list[str] = []
 
     # ── Main refinement loop ─────────────────────────────────────────
     while loop_state.iteration < le.MAX_ITERATIONS:
@@ -518,12 +559,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                         )}
                         yield {"type": "status", "content": "gathering complete, now synthesizing answer"}
                         sub_phase = "synthesize"
-                        current_user_text = (
-                            "You have gathered all the data you need. "
-                            "Now produce your final answer to the task. "
-                            "No more tool calls — write your complete answer. "
-                            "When done, include EXIT_SIGNAL: true at the end.\n\n"
-                            f"Original task: {user_text}"
+                        current_user_text = _build_synthesis_prompt(
+                            user_text, research_findings,
+                            reason="You have gathered all the data you need.",
                         )
                         continue
 
@@ -535,12 +573,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                         )}
                         yield {"type": "status", "content": "gather phase complete, synthesizing answer"}
                         sub_phase = "synthesize"
-                        current_user_text = (
-                            "You have gathered as much data as time allows. "
-                            "Now produce your final answer based on what you have. "
-                            "No more tool calls — write your complete answer. "
-                            "When done, include EXIT_SIGNAL: true at the end.\n\n"
-                            f"Original task: {user_text}"
+                        current_user_text = _build_synthesis_prompt(
+                            user_text, research_findings,
+                            reason="Gather phase reached its turn limit. Synthesize from what you have.",
                         )
                         continue
 
@@ -564,11 +599,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                     yield {"type": "reasoning", "content": (
                         "[tool call blocked — synthesis phase, no tools allowed]"
                     )}
-                    current_user_text = (
-                        "You are in the synthesis phase. "
-                        "No tool calls are allowed — write your final answer. "
-                        "When complete, include EXIT_SIGNAL: true at the end.\n\n"
-                        f"Original task: {user_text}"
+                    current_user_text = _build_synthesis_prompt(
+                        user_text, research_findings,
+                        reason="No tool calls are allowed in synthesis phase.",
                     )
                     continue
 
@@ -595,10 +628,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                     )}
                     break
 
-                current_user_text = (
-                    "Refine your answer or signal completion with "
-                    "EXIT_SIGNAL: true. No tool calls — write only.\n\n"
-                    f"Original task: {user_text}"
+                current_user_text = _build_synthesis_prompt(
+                    user_text, research_findings,
+                    reason="Refine your answer or signal completion.",
                 )
                 continue
 
@@ -683,6 +715,17 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             le.update_risk_level(loop_state, tool_name, args)
 
             current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue gathering data."
+
+            # ── Accumulate research data for synthesis grounding ─────
+            if tool_name in ("web_search", "web_scrape", "youtube_transcript", "github_search", "rss_read"):
+                result_text = tool_result.get("result", "")
+                if result_text.strip():
+                    research_findings.append(
+                        f"## Source: {tool_name}\n"
+                        f"**Query/Args:** `{json.dumps(args)}`\n\n"
+                        f"{result_text}"
+                    )
+
             yield {"type": "status", "content": "processing results and continuing work"}
 
         if tool_loop_error:
@@ -700,12 +743,9 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 )}
                 yield {"type": "status", "content": "gather complete, synthesizing answer"}
                 sub_phase = "synthesize"
-                current_user_text = (
-                    "Tool calls are exhausted for this phase. "
-                    "Now produce your final answer based on what you have gathered. "
-                    "No more tool calls — write your complete answer. "
-                    "When done, include EXIT_SIGNAL: true at the end.\n\n"
-                    f"Original task: {user_text}"
+                current_user_text = _build_synthesis_prompt(
+                    user_text, research_findings,
+                    reason="Tool calls are exhausted for this phase. Synthesize from what you have.",
                 )
                 continue  # Re-enter outer while, restart for loop in synthesize
 

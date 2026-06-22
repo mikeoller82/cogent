@@ -125,28 +125,51 @@ def discover_skills() -> Dict[str, Skill]:
     return skills
 
 
+def search_skills(query: str, max_results: int = 10) -> Dict[str, Any]:
+    """Search available skills by keyword and return matching skill names + descriptions."""
+    skills = discover_skills()
+    q = query.lower()
+    matches: list[tuple[Skill, int]] = []
+    for skill in skills.values():
+        score = 0
+        if q in skill.name.lower():
+            score += 10
+        if q in skill.description.lower():
+            score += 5
+        if score > 0:
+            matches.append((skill, score))
+    matches.sort(key=lambda x: -x[1])
+
+    if not matches:
+        return {"result": f"No skills found matching '{query}'. Try a different keyword."}
+
+    lines = [
+        f"Found {len(matches)} skill(s) matching '{query}':",
+        "",
+    ]
+    for skill, score in matches[:max_results]:
+        lines.append(f"  - {skill.name}: {skill.description}")
+    if len(matches) > max_results:
+        lines.append(f"  ... and {len(matches) - max_results} more (narrow your query)")
+    return {"result": "\n".join(lines)}
+
+
 def skill_catalog_for_prompt() -> str:
     skills = discover_skills()
     if not skills:
         return ""
 
-    lines = [
-        "## Agent Skills",
-        "The following skills provide specialized instructions for specific tasks.",
-        "When a task matches a skill's description, call activate_skill with the skill name before proceeding.",
-        "After activating a skill, follow its instructions. If it references bundled files, call read_skill_resource.",
-        "",
-        "<available_skills>",
-    ]
-    for skill in skills.values():
-        lines.extend([
-            "  <skill>",
-            f"    <name>{skill.name}</name>",
-            f"    <description>{skill.description}</description>",
-            "  </skill>",
-        ])
-    lines.append("</available_skills>")
-    return "\n".join(lines)
+    count = len(skills)
+    return (
+        "## Agent Skills\n"
+        f"You have {count} specialized skills available. "
+        "BEFORE starting any task, call search_skills with keywords from the "
+        "task to find relevant skills, then activate each matching skill via "
+        "activate_skill and follow its instructions. "
+        "If the skill references bundled files, call read_skill_resource.\n\n"
+        "Example: task mentions 'deploy to Azure' → "
+        'search_skills("Azure deploy") → activate matching skills.'
+    )
 
 
 def has_skills() -> bool:
