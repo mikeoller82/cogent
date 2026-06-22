@@ -62,7 +62,7 @@ _DEFAULTS: Dict[str, Any] = {
         {
             "name": "openrouter",
             "base_url": "https://openrouter.ai/api/v1/chat/completions",
-            "model": "google/gemini-2.0-flash-exp:free",
+            "model": "openrouter/owl-alpha",
             "api_key_env": "OPENROUTER_API_KEY",
             "priority": 2,
         },
@@ -72,13 +72,6 @@ _DEFAULTS: Dict[str, Any] = {
             "model": "deepseek-v4-flash-free",
             "api_key_env": "OPENCODE_API_KEY",
             "priority": 3,
-        },
-        {
-            "name": "ollama-local",
-            "library": "ollama",
-            "model": "qwen3.6",
-            "api_key_env": "OLLAMA_API_KEY",
-            "priority": 4,
         },
         {
             "name": "ollama-cloud",
