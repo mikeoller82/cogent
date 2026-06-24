@@ -23,6 +23,7 @@ from agent import context_compressor as cc
 import loop_engine as le
 
 from cogent_config import get_config
+from subagent.orchestrator import Orchestrator
 from cogent_logging import set_session_context
 from cogent_memory import memory_summary
 from cogent_providers import get_provider
@@ -222,6 +223,37 @@ def _looks_like_plan(text: str) -> bool:
     if len(text) < 200 and any(p in lower for p in plan_phrases):
         return True
     return False
+
+
+def _is_complex_task(text: str) -> bool:
+    """Heuristic: detect if a task warrants subagent orchestration.
+
+    Triggers when the task has 3+ distinct concern areas (research +
+    coding + validation) or explicit multi-part structure.
+    """
+    lower = text.lower()
+    concerns = 0
+    if any(kw in lower for kw in ("research", "analyze", "investigate",
+                                  "study", "compare", "search", "find")):
+        concerns += 1
+    if any(kw in lower for kw in ("build", "implement", "develop",
+                                  "create", "code", "program", "write")):
+        concerns += 1
+    if any(kw in lower for kw in ("test", "verify", "validate",
+                                  "review", "check", "audit")):
+        concerns += 1
+    if any(kw in lower for kw in ("deploy", "design", "architect",
+                                  "migrate", "refactor", "optimize")):
+        concerns += 1
+    # Multi-step signals
+    multi_step = any(p in lower for p in ("step 1", "step one", "first,",
+                                          "then", "after that", "finally",
+                                          "part 1", "part one"))
+    return concerns >= 2 or (concerns >= 1 and multi_step) or (
+        len(text) > 300 and concerns >= 1
+    )
+
+
 TOOL_RE = re.compile(r"<tool>\s*(\{.*?\})\s*</tool>", re.DOTALL)
 
 
@@ -459,6 +491,33 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
     final_text = ""
     tool_loop_error = False
     research_findings: list[str] = []
+
+    # ── Complex task detection → subagent orchestration ──────────────
+    _orchestrated = False
+    if _is_complex_task(user_text):
+        yield {"type": "status", "content": "task is complex — delegating to specialized sub-agents"}
+        orch = Orchestrator(llm_call_fn=_send_kilocode_chat)
+        try:
+            async for event in orch.run(
+                user_text,
+                context=None,
+            ):
+                yield event
+                if event.get("type") == "orchestrator_result":
+                    output = event["data"]["output"]
+                    if output.strip():
+                        research_findings.append(
+                            f"## Subagent Orchestration Results\n\n{output}"
+                        )
+                        _orchestrated = True
+        except Exception as exc:
+            logger.exception("Orchestrator failed")
+            yield {"type": "error", "content": f"Orchestrator error: {exc}"}
+
+        if _orchestrated:
+            yield {"type": "reasoning", "content": (
+                "[orchestrator completed — advancing to synthesis]"
+            )}
 
     # ── Main refinement loop ─────────────────────────────────────────
     while loop_state.iteration < le.MAX_ITERATIONS:

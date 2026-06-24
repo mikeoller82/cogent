@@ -1,0 +1,269 @@
+"""Subagent — individual agent execution with tool loop, budget, and timeout."""
+
+from __future__ import annotations
+
+import asyncio
+import json
+import logging
+import re
+import time
+from typing import Any, Callable, Dict, List, Optional
+
+from cogent_budget import IterationBudget
+
+from .types import (
+    SubagentRole, SubagentStatus, SubagentResult,
+)
+
+logger = logging.getLogger("cogent.subagent.subagent")
+
+TOOL_RE = re.compile(r"<tool>\s*(\{.*?\})\s*</tool>", re.DOTALL)
+
+# ── Tool dispatch table (mirrors llm_service._execute_tool) ────────────────
+
+_TOOL_DISPATCH: Dict[str, Callable] = {}
+
+
+def _register_tools() -> None:
+    """Populate the tool dispatch table lazily."""
+    if _TOOL_DISPATCH:
+        return
+    import tools as tool_impls
+    import agent_reach_tools as art
+
+    _TOOL_DISPATCH.update({
+        "web_search": lambda args: tool_impls.web_search(
+            args.get("query", ""), int(args.get("max_results", 5))),
+        "web_scrape": lambda args: tool_impls.web_scrape(args.get("url", "")),
+        "youtube_transcript": lambda args: art.youtube_transcript(args.get("url", "")),
+        "github_repo_info": lambda args: art.github_repo_info(args.get("repo", "")),
+        "github_search": lambda args: art.github_search(
+            args.get("query", ""), int(args.get("limit", 5))),
+        "github_search_code": lambda args: art.github_search_code(
+            args.get("query", ""), int(args.get("limit", 5))),
+        "rss_read": lambda args: art.rss_read(
+            args.get("url", ""), int(args.get("limit", 10))),
+        "v2ex_hot_topics": lambda args: art.v2ex_hot_topics(
+            int(args.get("limit", 20))),
+        "v2ex_topic_detail": lambda args: art.v2ex_topic_detail(
+            int(args.get("topic_id", 0))),
+        "bilibili_search": lambda args: art.bilibili_search(
+            args.get("query", ""), int(args.get("limit", 5))),
+        "run_shell": lambda args: tool_impls.run_shell(
+            args.get("command", ""), int(args.get("timeout", 30))),
+        "process_media": lambda args: tool_impls.process_media(
+            args.get("action", "info"), args.get("input", ""),
+            output=args.get("output", ""),
+            start=args.get("start", ""),
+            duration=args.get("duration", ""),
+            format=args.get("format", ""),
+            quality=int(args.get("quality", 80)),
+        ),
+        "capture_screenshot": lambda args: tool_impls.capture_screenshot(
+            output=args.get("output", ""),
+            delay=int(args.get("delay", 1)),
+        ),
+        "file_write": lambda args: tool_impls.file_write(
+            args.get("path", ""), args.get("content", ""),
+            mode=args.get("mode", "w"),
+        ),
+        "glob_files": lambda args: tool_impls.glob_files(
+            args.get("pattern", ""), path=args.get("path", "")),
+        "grep_files": lambda args: tool_impls.grep_files(
+            args.get("pattern", ""),
+            include=args.get("include", ""),
+            path=args.get("path", ""),
+            output_mode=args.get("output_mode", "files_with_matches"),
+            case_insensitive=bool(args.get("-i", False)),
+        ),
+    })
+
+
+def _parse_tool_call(text: str) -> tuple:
+    m = TOOL_RE.search(text)
+    if not m:
+        return None, text
+    raw = m.group(1)
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return None, text
+    before = text[:m.start()].strip()
+    return parsed, before
+
+
+async def _execute_tool_call(name: str, args: dict) -> dict:
+    _register_tools()
+    handler = _TOOL_DISPATCH.get(name)
+    if handler is None:
+        return {"result": f"Unknown tool: {name}"}
+    try:
+        result = handler(args)
+        if asyncio.iscoroutine(result):
+            result = await result
+        return result
+    except Exception as exc:
+        logger.warning("Subagent tool %s error: %s", name, exc)
+        return {"result": f"Tool '{name}' failed: {type(exc).__name__}: {exc}"}
+
+
+class Subagent:
+    """A single subagent that executes its task via LLM + tool calls.
+
+    Each subagent has its own identity, system prompt, tool set, iteration
+    budget, and timeout. It runs an autonomous loop: think → tool call →
+    process result → repeat until done or budget exhausted.
+    """
+
+    def __init__(
+        self,
+        agent_id: str,
+        role: SubagentRole,
+        system_prompt: str,
+        task_prompt: str,
+        tool_names: List[str],
+        output_schema: Optional[Dict[str, Any]] = None,
+        max_iterations: int = 15,
+        max_tokens: int = 32000,
+        timeout_seconds: int = 120,
+        provider=None,
+        llm_call_fn=None,
+    ) -> None:
+        self.agent_id = agent_id
+        self.role = role
+        self.system_prompt = system_prompt
+        self.task_prompt = task_prompt
+        self.tool_names = list(tool_names)
+        self.output_schema = output_schema
+        self.budget = IterationBudget(
+            max_iterations=max_iterations,
+            max_tokens=max_tokens,
+        )
+        self.timeout_seconds = timeout_seconds
+        self._provider = provider
+        self._llm_call_fn = llm_call_fn
+
+        self.tool_calls_made: int = 0
+
+    def to_spec(self) -> "SubagentSpec":
+        """Return a SubagentSpec for SSE event generation."""
+        from .types import SubagentSpec
+        return SubagentSpec(
+            id=self.agent_id,
+            role=self.role,
+            system_prompt=self.system_prompt,
+            task_prompt=self.task_prompt,
+            tool_names=self.tool_names,
+            output_schema=self.output_schema,
+            max_iterations=self.budget.max_iterations,
+            max_tokens=self.budget.max_tokens,
+            timeout_seconds=self.timeout_seconds,
+        )
+
+    async def _call_llm(self, messages: List[Dict[str, str]]) -> str:
+        """Send messages to the LLM and return the response text."""
+        if self._llm_call_fn is not None:
+            return await self._llm_call_fn(messages)
+        from cogent_providers import get_provider
+        vp = get_provider()
+        content = await vp.chat(messages)
+        if content is None:
+            raise RuntimeError("Provider returned None content")
+        return content
+
+    async def execute(
+        self,
+        status_callback: Optional[Callable[[str, SubagentRole, str], None]] = None,
+    ) -> SubagentResult:
+        """Run the subagent: autonomous LLM + tool loop.
+
+        Args:
+            status_callback: Optional callback (agent_id, role, message) for
+                streaming status updates.
+
+        Returns:
+            SubagentResult with the agent's output or error.
+        """
+        start_time = time.time()
+        messages: List[Dict[str, str]] = [
+            {"role": "system", "content": self.system_prompt},
+            {"role": "user", "content": self.task_prompt},
+        ]
+
+        def _status(msg: str) -> None:
+            if status_callback:
+                status_callback(self.agent_id, self.role, msg)
+
+        _status("starting")
+
+        try:
+            async with asyncio.timeout(self.timeout_seconds):
+                while not self.budget.exhausted:
+                    # ── Call LLM ────────────────────────────────────────
+                    response = await self._call_llm(messages)
+                    self.budget.record_tokens(len(response) // 4)
+
+                    # ── Parse tool calls ───────────────────────────────
+                    tool_call, reasoning = _parse_tool_call(response)
+                    if tool_call is None:
+                        _status("finalizing")
+                        return SubagentResult.success(
+                            agent_id=self.agent_id,
+                            role=self.role,
+                            output=response,
+                            tool_calls=self.tool_calls_made,
+                            iterations=self.budget.iterations_used,
+                            tokens=self.budget.tokens_used,
+                            elapsed=time.time() - start_time,
+                        )
+
+                    name = tool_call.get("name", "?")
+                    args = tool_call.get("args", {})
+                    _status(f"running {name}")
+
+                    # ── Execute tool ────────────────────────────────────
+                    tool_result = await _execute_tool_call(name, args)
+                    self.tool_calls_made += 1
+
+                    # ── Feed result back ───────────────────────────────
+                    result_text = tool_result.get("result", "")
+                    messages.append({"role": "assistant", "content": response})
+                    messages.append({
+                        "role": "user",
+                        "content": f"<tool_result>\n{result_text}\n</tool_result>",
+                    })
+
+                    if not self.budget.consume():
+                        _status("budget exhausted")
+                        break
+
+        except asyncio.TimeoutError:
+            logger.warning("Subagent %s timed out after %ss",
+                           self.agent_id, self.timeout_seconds)
+            return SubagentResult.failure(
+                agent_id=self.agent_id, role=self.role,
+                error=f"Timed out after {self.timeout_seconds}s",
+                iterations=self.budget.iterations_used,
+                tokens=self.budget.tokens_used,
+                elapsed=time.time() - start_time,
+            )
+        except Exception as exc:
+            logger.exception("Subagent %s failed", self.agent_id)
+            return SubagentResult.failure(
+                agent_id=self.agent_id, role=self.role,
+                error=f"{type(exc).__name__}: {exc}",
+                iterations=self.budget.iterations_used,
+                tokens=self.budget.tokens_used,
+                elapsed=time.time() - start_time,
+            )
+
+        # Budget exhausted — return what we have
+        return SubagentResult.success(
+            agent_id=self.agent_id,
+            role=self.role,
+            output="(subagent reached budget limit)",
+            tool_calls=self.tool_calls_made,
+            iterations=self.budget.iterations_used,
+            tokens=self.budget.tokens_used,
+            elapsed=time.time() - start_time,
+        )
