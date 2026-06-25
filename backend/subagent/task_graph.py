@@ -83,14 +83,25 @@ class TaskGraph:
             node.error = error
 
     def get_ready_nodes(self) -> List[TaskGraphNode]:
-        """Return nodes whose dependencies are all satisfied."""
+        """Return nodes whose dependencies are all satisfied.
+
+        A dependency is satisfied if it has reached a terminal state
+        (COMPLETED, FAILED, or SKIPPED).  This prevents the graph from
+        stalling when a dependency fails — downstream agents can still
+        run and adapt to partial results.
+        """
+        terminal = {
+            SubagentStatus.COMPLETED,
+            SubagentStatus.FAILED,
+            SubagentStatus.SKIPPED,
+        }
         ready: List[TaskGraphNode] = []
         for node in self._nodes.values():
             if node.status != SubagentStatus.PENDING:
                 continue
             deps_met = all(
                 self._nodes.get(dep) is not None
-                and self._nodes[dep].status == SubagentStatus.COMPLETED
+                and self._nodes[dep].status in terminal
                 for dep in node.dependencies
             )
             if deps_met:

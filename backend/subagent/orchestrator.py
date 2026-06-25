@@ -68,13 +68,16 @@ is needed.
 
 Output your decision inside <decision> tags as JSON:
 {
-  "complete": true,
+  "complete": false,
   "explanation": "Why the task is complete or what's still missing",
-  "new_subtasks": []
+  "new_subtasks": [
+    {"role": "researcher", "prompt": "Investigate the API surface", "dependencies": []},
+    {"role": "coder", "prompt": "Implement the fix", "dependencies": ["<previous-subtask-id>"]}
+  ]
 }
 
 Set "complete" to true if the existing results sufficiently address the task.
-If not, provide new_subtasks with the same schema as the original plan."""
+If not, provide new_subtasks. Each subtask must have "role", "prompt", and "dependencies"."""
 
 SYNTHESIS_SYSTEM_PROMPT = """You are a synthesis expert. Combine the results from 
 multiple specialized agents into a coherent, well-structured final output.
@@ -178,7 +181,11 @@ class Orchestrator:
                 break
 
             self._plan = DecompositionPlan(
-                subtasks=[SubtaskSpec(**s) for s in new_subtasks],
+                subtasks=[
+                    SubtaskSpec(**s) if isinstance(s, dict)
+                    else SubtaskSpec(prompt=str(s))
+                    for s in new_subtasks
+                ],
                 reasoning=decision.get("explanation", ""),
             )
             yield {

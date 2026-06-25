@@ -38,6 +38,13 @@ class SubtaskSpec:
     max_tokens: int = 32000
     timeout_seconds: int = 120
 
+    def __post_init__(self) -> None:
+        if isinstance(self.role, str):
+            try:
+                self.role = SubagentRole(self.role)
+            except ValueError:
+                self.role = SubagentRole.RESEARCHER
+
 
 @dataclass
 class SubagentSpec:
