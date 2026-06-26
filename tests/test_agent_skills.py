@@ -49,8 +49,8 @@ def test_catalog_and_activation_use_progressive_disclosure(tmp_path, monkeypatch
     catalog = agent_skills.skill_catalog_for_prompt()
     activation = agent_skills.activate_skill("data-analysis")["result"]
 
-    assert "<available_skills>" in catalog
-    assert "<name>data-analysis</name>" in catalog
+    assert "1 specialized skills" in catalog
+    assert "search_skills" in catalog
     assert "Use pandas" not in catalog
     assert '<skill_content name="data-analysis">' in activation
     assert "Use pandas" in activation

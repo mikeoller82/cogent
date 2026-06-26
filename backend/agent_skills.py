@@ -30,6 +30,27 @@ def _skill_roots() -> List[Path]:
         PROJECT_ROOT / ".agents" / "skills",
         PROJECT_ROOT / ".cogent" / "skills",
     ]
+
+    # Plugin skills: plugins/{plugin}/skills/{skill-name}/SKILL.md
+    plugins_dir = PROJECT_ROOT / "plugins"
+    if plugins_dir.is_dir():
+        for plugin_skills in sorted(plugins_dir.glob("*/skills")):
+            if plugin_skills.is_dir():
+                roots.append(plugin_skills)
+
+    # Optional skills: optional-skills/{category}/{skill-name}/SKILL.md
+    # Read optional_dir from config if available, fall back to default
+    try:
+        from cogent_config import get_config
+        optional_rel = get_config().raw().get("skills", {}).get("optional_dir", "optional-skills")
+    except Exception:
+        optional_rel = "optional-skills"
+    optional_dir = PROJECT_ROOT / optional_rel
+    if optional_dir.is_dir():
+        for category_dir in sorted(optional_dir.iterdir()):
+            if category_dir.is_dir() and not category_dir.name.startswith("."):
+                roots.append(category_dir)
+
     extra = os.environ.get("COGENT_SKILLS_PATHS", "")
     for raw in extra.split(os.pathsep):
         raw = raw.strip()

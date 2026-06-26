@@ -1,7 +1,8 @@
 """Skills Catalog — discovers and catalogs available agent skills.
 
-Mirrors Hermes' skills/ directory structure with a registry-based
-approach compatible with Cogent's agent_skills.py.
+Uses agent_skills.discover_skills() as the single source of truth for
+installed skills.  Also discovers optional skills organized by category
+for the catalog browsing UI.
 """
 from __future__ import annotations
 import json
@@ -12,26 +13,21 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("cogent.skills_catalog")
 
-SKILLS_DIR = Path(__file__).parent.parent / ".cogent" / "skills"
 OPTIONAL_SKILLS_DIR = Path(__file__).parent.parent / "optional-skills"
 
 
-def discover_skills(skills_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
-    """Discover all installed skills. Mirrors Hermes' skills discovery."""
-    base = skills_dir or SKILLS_DIR
-    if not base.exists():
+def discover_skills() -> List[Dict[str, Any]]:
+    """Discover all installed skills via agent_skills (single source of truth)."""
+    try:
+        import agent_skills
+        skills = agent_skills.discover_skills()
+        return [
+            {"name": s.name, "path": str(s.location), "directory": str(s.directory)}
+            for s in skills.values()
+        ]
+    except ImportError:
+        logger.warning("agent_skills not available — returning empty skill list")
         return []
-
-    skills = []
-    for item in base.iterdir():
-        skill_file = item / "SKILL.md"
-        if skill_file.exists():
-            skills.append({
-                "name": item.name,
-                "path": str(skill_file),
-                "directory": str(item),
-            })
-    return skills
 
 
 def discover_categories() -> Dict[str, List[Dict[str, Any]]]:

@@ -565,8 +565,8 @@ def _cmd_skills(args: argparse.Namespace) -> None:
     """Manage agent skills."""
     if args.action == "list":
         try:
-            import agent_skills as ask
-            skills = ask.list_installed_skills()
+            import skill_forge as sf
+            skills = sf.list_installed_skills()
             if args.json:
                 print(json.dumps(skills, indent=2))
                 return
