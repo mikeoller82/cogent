@@ -124,9 +124,9 @@ class Subagent:
         task_prompt: str,
         tool_names: List[str],
         output_schema: Optional[Dict[str, Any]] = None,
-        max_iterations: int = 15,
-        max_tokens: int = 32000,
-        timeout_seconds: int = 120,
+        max_iterations: int = 30,
+        max_tokens: int = 64000,
+        timeout_seconds: int = 180,
         provider=None,
         llm_call_fn=None,
     ) -> None:
@@ -196,6 +196,13 @@ class Subagent:
             if status_callback:
                 status_callback(self.agent_id, self.role, msg, event_data)
 
+        def _extract_partial_output() -> str:
+            """Extract the last substantive LLM response (not a tool call) as partial output."""
+            for msg in reversed(messages):
+                if msg["role"] == "assistant" and "<tool>" not in msg["content"]:
+                    return msg["content"]
+            return ""
+
         _status("starting")
 
         try:
@@ -205,6 +212,11 @@ class Subagent:
                     response = await self._call_llm(messages)
                     # Better token estimation using context_compressor
                     self.budget.record_tokens(cc.estimate_message_tokens([{"role": "assistant", "content": response}]))
+
+                    # ── Budget warning at 75% ──────────────────────────
+                    if self.budget.warn_pct >= 0.75 and self.budget.warn_pct < 0.80:
+                        remaining = self.budget.iterations_remaining
+                        _status(f"warning: {remaining} iterations remaining — finishing soon")
 
                     # ── Parse tool calls ───────────────────────────────
                     tool_call, reasoning = _parse_tool_call(response)
@@ -241,36 +253,39 @@ class Subagent:
                     })
 
                     if not self.budget.consume():
-                        _status("budget exhausted")
-                        break
+                        partial = _extract_partial_output()
+                        _status("budget exhausted — returning partial results")
+                        return SubagentResult.failure(
+                            agent_id=self.agent_id,
+                            role=self.role,
+                            error="Budget exhausted — partial results may be available",
+                            output=partial,
+                            tool_calls=self.tool_calls_made,
+                            iterations=self.budget.iterations_used,
+                            tokens=self.budget.tokens_used,
+                            elapsed=time.time() - start_time,
+                        )
 
         except asyncio.TimeoutError:
             logger.warning("Subagent %s timed out after %ss",
                            self.agent_id, self.timeout_seconds)
+            partial = _extract_partial_output()
             return SubagentResult.failure(
                 agent_id=self.agent_id, role=self.role,
                 error=f"Timed out after {self.timeout_seconds}s",
+                output=partial,
                 iterations=self.budget.iterations_used,
                 tokens=self.budget.tokens_used,
                 elapsed=time.time() - start_time,
             )
         except Exception as exc:
             logger.exception("Subagent %s failed", self.agent_id)
+            partial = _extract_partial_output()
             return SubagentResult.failure(
                 agent_id=self.agent_id, role=self.role,
                 error=f"{type(exc).__name__}: {exc}",
+                output=partial,
                 iterations=self.budget.iterations_used,
                 tokens=self.budget.tokens_used,
                 elapsed=time.time() - start_time,
             )
-
-        # Budget exhausted — return what we have
-        return SubagentResult.success(
-            agent_id=self.agent_id,
-            role=self.role,
-            output="(subagent reached budget limit)",
-            tool_calls=self.tool_calls_made,
-            iterations=self.budget.iterations_used,
-            tokens=self.budget.tokens_used,
-            elapsed=time.time() - start_time,
-        )

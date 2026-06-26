@@ -34,10 +34,10 @@ class SubtaskSpec:
     tools: List[str] = field(default_factory=list)
     dependencies: List[str] = field(default_factory=list)
     output_schema: Optional[Dict[str, Any]] = None
-    max_iterations: int = 15
-    max_tokens: int = 32000
-    timeout_seconds: int = 120
-    max_retries: int = 1
+    max_iterations: int = 30
+    max_tokens: int = 64000
+    timeout_seconds: int = 180
+    max_retries: int = 2
     retry_count: int = 0
 
     def __post_init__(self) -> None:
@@ -88,10 +88,11 @@ class SubagentResult:
 
     @classmethod
     def failure(cls, agent_id: str, role: SubagentRole, error: str,
-                iterations: int = 0, tokens: int = 0, elapsed: float = 0.0) -> SubagentResult:
+                output: str = "", iterations: int = 0, tokens: int = 0,
+                elapsed: float = 0.0) -> SubagentResult:
         return cls(
             agent_id=agent_id, role=role, status=SubagentStatus.FAILED,
-            error=error, iterations_used=iterations,
+            error=error, output=output, iterations_used=iterations,
             tokens_estimated=tokens, elapsed_seconds=elapsed,
         )
 

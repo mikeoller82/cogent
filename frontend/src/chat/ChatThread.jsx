@@ -7,6 +7,7 @@ import {
   Paperclip, X, FileSpreadsheet, FileType, Download, Check, Copy,
 } from "lucide-react";
 import { toast } from "sonner";
+import SubagentProgress from "../components/SubagentProgress";
 
 const toolIconMap = {
   web_search: Search,
@@ -415,7 +416,7 @@ function ThinkingLog({ entries, isOpen, onToggle }) {
   );
 }
 
-function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, liveIteration, liveVerdict, isStreaming, activityLog, thinkingLog, showThinkingLog, onToggleThinkingLog }) {
+function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, liveIteration, liveVerdict, isStreaming, activityLog, thinkingLog, showThinkingLog, onToggleThinkingLog, subagentAgents, subagentPlan, subagentResult, showSubagents }) {
   const tools = isStreaming ? liveTools : (m.tool_uses || []);
   const arts = isStreaming ? liveArtifacts : (m.artifacts || []);
   return (
@@ -450,6 +451,14 @@ function AssistantBubble({ m, liveStatus, liveTools, liveArtifacts, livePhase, l
             <span className="w-1.5 h-1.5 rounded-full bg-[#b5a8f5] pulse-soft" />
             <span className="italic">{liveStatus}…</span>
           </div>
+        )}
+        {isStreaming && showSubagents && subagentAgents && subagentAgents.length > 0 && (
+          <SubagentProgress
+            agents={subagentAgents}
+            plan={subagentPlan}
+            result={subagentResult}
+            isVisible={showSubagents}
+          />
         )}
         {isStreaming && activityLog && activityLog.length > 0 && (
           <div className="border-l-2 border-[#f5ede0]/10 pl-3 ml-1">
@@ -498,6 +507,11 @@ export default function ChatThread({ sessionId, refreshSessions }) {
   // thinking log — raw reasoning text from the LLM
   const [thinkingLog, setThinkingLog] = useState([]);
   const [showThinkingLog, setShowThinkingLog] = useState(false);
+  // subagent progress
+  const [subagentAgents, setSubagentAgents] = useState([]);
+  const [subagentPlan, setSubagentPlan] = useState(null);
+  const [subagentResult, setSubagentResult] = useState(null);
+  const [showSubagents, setShowSubagents] = useState(false);
   const activityIdRef = useRef(0);
   const scrollerRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -568,6 +582,10 @@ export default function ChatThread({ sessionId, refreshSessions }) {
     setThinkingLog([]);
     setShowThinkingLog(false);
     setActivityLog([]);
+    setSubagentAgents([]);
+    setSubagentPlan(null);
+    setSubagentResult(null);
+    setShowSubagents(false);
     const optimistic = {
       id: `tmp-${Date.now()}`,
       role: "user",
@@ -633,6 +651,83 @@ export default function ChatThread({ sessionId, refreshSessions }) {
           toast.error(evt.content);
           pushActivity({ type: "tool_result", text: `error: ${evt.content}` });
         }
+        // Subagent events
+        else if (evt.type === "orchestrator_plan") {
+          const d = evt.data || {};
+          setSubagentPlan({ reasoning: d.reasoning, subtasks: d.subtasks || [] });
+          setShowSubagents(true);
+          pushActivity({ type: "phase", phase: "plan", text: `planning: ${d.subtasks?.length || 0} subtasks` });
+        } else if (evt.type === "orchestrator_status") {
+          const d = evt.data || {};
+          if (d.message) pushActivity({ type: "phase", phase: "orchestrator", text: d.message });
+        } else if (evt.type === "orchestrator_result") {
+          const d = evt.data || {};
+          setSubagentResult(d.output || "");
+        } else if (evt.type === "subagent_start") {
+          const d = evt.data || {};
+          setSubagentAgents((prev) => [
+            ...prev,
+            {
+              id: d.agent_id,
+              role: d.role,
+              task: d.task,
+              status: "starting",
+              toolCalls: [],
+              toolResults: [],
+              statusMessages: [],
+              elapsed: 0,
+            },
+          ]);
+        } else if (evt.type === "subagent_status") {
+          const d = evt.data || {};
+          setSubagentAgents((prev) =>
+            prev.map((a) =>
+              a.id === d.agent_id
+                ? {
+                    ...a,
+                    status: d.content || a.status,
+                    statusMessages: [...(a.statusMessages || []), { text: d.content, ts: Date.now() }],
+                  }
+                : a
+            )
+          );
+        } else if (evt.type === "subagent_tool") {
+          const d = evt.data || {};
+          setSubagentAgents((prev) =>
+            prev.map((a) =>
+              a.id === d.agent_id
+                ? { ...a, toolCalls: [...(a.toolCalls || []), { name: d.name, args: d.args }] }
+                : a
+            )
+          );
+        } else if (evt.type === "subagent_tool_result") {
+          const d = evt.data || {};
+          setSubagentAgents((prev) =>
+            prev.map((a) =>
+              a.id === d.agent_id
+                ? { ...a, toolResults: [...(a.toolResults || []), { name: d.name, summary: d.summary }] }
+                : a
+            )
+          );
+        } else if (evt.type === "subagent_complete") {
+          const d = evt.data || {};
+          setSubagentAgents((prev) =>
+            prev.map((a) =>
+              a.id === d.agent_id
+                ? { ...a, status: "completed", elapsed: d.elapsed || 0 }
+                : a
+            )
+          );
+        } else if (evt.type === "subagent_fail") {
+          const d = evt.data || {};
+          setSubagentAgents((prev) =>
+            prev.map((a) =>
+              a.id === d.agent_id
+                ? { ...a, status: "failed", error: d.error }
+                : a
+            )
+          );
+        }
         scrollToBottom();
       });
       const fresh = await listMessages(sessionId);
@@ -650,6 +745,10 @@ export default function ChatThread({ sessionId, refreshSessions }) {
       setLiveIteration(0);
       setLiveVerdict("");
       setLiveVerdictNotes("");
+      setSubagentAgents([]);
+      setSubagentPlan(null);
+      setSubagentResult(null);
+      setShowSubagents(false);
       scrollToBottom();
     }
   };
@@ -710,6 +809,10 @@ export default function ChatThread({ sessionId, refreshSessions }) {
               thinkingLog={thinkingLog}
               showThinkingLog={showThinkingLog}
               onToggleThinkingLog={() => setShowThinkingLog((p) => !p)}
+              subagentAgents={subagentAgents}
+              subagentPlan={subagentPlan}
+              subagentResult={subagentResult}
+              showSubagents={showSubagents}
             />
           )}
         </div>

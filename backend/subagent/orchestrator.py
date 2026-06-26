@@ -309,9 +309,51 @@ class Orchestrator:
                 reasoning="Could not parse structured plan, running as single agent",
             )
         else:
+            # Scale budgets based on role and prompt complexity
+            for spec in plan.subtasks:
+                self._scale_budget(spec, task)
             self._plan = plan
 
         yield sse_orchestrator_plan(self._plan)
+
+    @staticmethod
+    def _scale_budget(spec: SubtaskSpec, full_task: str) -> None:
+        """Adjust subagent budget based on role and prompt complexity.
+
+        Researchers and coders need more iterations (tool calls).
+        Validators and synthesizers need fewer (pure LLM).
+        Long prompts scale the token budget proportionally.
+        """
+        # Role-based iteration scaling
+        role_iterations = {
+            SubagentRole.RESEARCHER: 35,   # web search + scrape cycles
+            SubagentRole.CODER: 40,         # read files + write + test
+            SubagentRole.EXPLORER: 25,      # read-only, fewer tools
+            SubagentRole.VALIDATOR: 15,     # no tools, pure analysis
+            SubagentRole.SYNTHESIZER: 10,   # aggregation only
+        }
+        role_tokens = {
+            SubagentRole.RESEARCHER: 80000,  # web content is large
+            SubagentRole.CODER: 64000,        # code + context
+            SubagentRole.EXPLORER: 48000,     # file reads
+            SubagentRole.VALIDATOR: 32000,    # pure LLM
+            SubagentRole.SYNTHESIZER: 48000,  # needs to read all inputs
+        }
+
+        spec.max_iterations = role_iterations.get(spec.role, 30)
+        spec.max_tokens = role_tokens.get(spec.role, 64000)
+
+        # Scale token budget by prompt length (long prompts = more context needed)
+        prompt_len = len(spec.prompt)
+        if prompt_len > 2000:
+            # Add 20% token budget for every 2000 chars over baseline
+            extra_pct = min(0.6, (prompt_len - 2000) / 10000)
+            spec.max_tokens = int(spec.max_tokens * (1 + extra_pct))
+
+        logger.debug(
+            "Scaled budget for %s: %d iterations, %d tokens",
+            spec.role.value, spec.max_iterations, spec.max_tokens,
+        )
 
     @staticmethod
     def _parse_plan(response: str) -> Optional[DecompositionPlan]:
@@ -456,7 +498,32 @@ class Orchestrator:
                     result.tool_calls_made, result.elapsed_seconds,
                 )
                 return events, result
-            elif attempt < spec.max_retries:
+
+            # Budget exhaustion with partial output — use what we have, don't retry
+            if result.error and "Budget exhausted" in result.error and result.output:
+                logger.info(
+                    "Subagent %s budget exhausted but has partial output (%d chars)",
+                    agent.agent_id, len(result.output),
+                )
+                # Treat partial output as a completed result
+                partial_result = SubagentResult.success(
+                    agent_id=result.agent_id,
+                    role=result.role,
+                    output=result.output,
+                    tool_calls=result.tool_calls_made,
+                    iterations=result.iterations_used,
+                    tokens=result.tokens_estimated,
+                    elapsed=result.elapsed_seconds,
+                )
+                self._graph.update_status(node.id, SubagentStatus.COMPLETED, result=partial_result)
+                events.append(sse_subagent_status(
+                    agent.agent_id, agent.role,
+                    f"Budget exhausted after {result.iterations_used} iterations — using partial results",
+                ))
+                events.append(sse_subagent_complete(partial_result))
+                return events, partial_result
+
+            if attempt < spec.max_retries:
                 # Will retry
                 continue
             else:
