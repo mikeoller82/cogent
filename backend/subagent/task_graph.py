@@ -49,16 +49,21 @@ class TaskGraph:
     """Directed acyclic graph of subagent tasks.
 
     The orchestrator uses the graph to decide which agents are ready to
-    spawn in each wave (all dependencies must be COMPLETED before a node
-    becomes ready).
+    spawn in each wave (dependencies must be COMPLETED, FAILED, or SKIPPED).
     """
 
     def __init__(self) -> None:
         self._nodes: Dict[str, TaskGraphNode] = {}
+        self._dependents: Dict[str, List[str]] = {}  # node_id -> list of dependent node_ids
 
     def add_node(self, spec: SubtaskSpec) -> TaskGraphNode:
         node = TaskGraphNode(spec)
         self._nodes[node.id] = node
+        # Build reverse dependency map
+        for dep in node.dependencies:
+            if dep not in self._dependents:
+                self._dependents[dep] = []
+            self._dependents[dep].append(node.id)
         return node
 
     def get_node(self, node_id: str) -> Optional[TaskGraphNode]:
@@ -81,6 +86,20 @@ class TaskGraph:
             node.result = result
         if error is not None:
             node.error = error
+
+        # If node failed, recursively mark all dependents as SKIPPED
+        if status == SubagentStatus.FAILED:
+            self._skip_dependents(node_id, error or (result.error if result else 'unknown'))
+
+    def _skip_dependents(self, node_id: str, reason: str) -> None:
+        """Recursively skip all dependents of a failed node."""
+        for dep_id in self._dependents.get(node_id, []):
+            dep_node = self._nodes.get(dep_id)
+            if dep_node and dep_node.status == SubagentStatus.PENDING:
+                self.update_status(dep_id, SubagentStatus.SKIPPED,
+                                   error=f"Dependency {node_id} failed: {reason}")
+                # Recurse to skip dependents of this node too
+                self._skip_dependents(dep_id, reason)
 
     def get_ready_nodes(self) -> List[TaskGraphNode]:
         """Return nodes whose dependencies are all satisfied.
@@ -129,6 +148,22 @@ class TaskGraph:
     @property
     def running_count(self) -> int:
         return sum(1 for n in self._nodes.values() if n.status == SubagentStatus.RUNNING)
+
+    @property
+    def skipped(self) -> List[TaskGraphNode]:
+        return [n for n in self._nodes.values() if n.status == SubagentStatus.SKIPPED]
+
+    def get_dependency_results(self, node_id: str) -> Dict[str, Optional[SubagentResult]]:
+        """Get results of all dependencies for a node."""
+        results: Dict[str, Optional[SubagentResult]] = {}
+        node = self._nodes.get(node_id)
+        if not node:
+            return results
+        for dep in node.dependencies:
+            dep_node = self._nodes.get(dep)
+            if dep_node:
+                results[dep] = dep_node.result
+        return results
 
     def to_dict(self) -> dict:
         return {nid: node.to_dict() for nid, node in self._nodes.items()}

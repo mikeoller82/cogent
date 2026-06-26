@@ -518,6 +518,12 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             yield {"type": "reasoning", "content": (
                 "[orchestrator completed — advancing to synthesis]"
             )}
+            # Skip directly to synthesis phase with orchestrated results
+            sub_phase = "synthesize"
+            current_user_text = _build_synthesis_prompt(
+                user_text, research_findings,
+                reason="Results from subagent orchestration. Synthesize into final answer.",
+            )
 
     # ── Main refinement loop ─────────────────────────────────────────
     while loop_state.iteration < le.MAX_ITERATIONS:

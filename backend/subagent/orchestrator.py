@@ -22,6 +22,8 @@ from .types import (
     SubagentRole, SubagentStatus, SubtaskSpec,
     SubagentResult, DecompositionPlan,
     sse_orchestrator_plan, sse_subagent_start,
+    sse_subagent_status, sse_subagent_tool,
+    sse_subagent_tool_result,
     sse_subagent_complete, sse_subagent_fail,
 )
 from .task_graph import TaskGraph
@@ -313,7 +315,11 @@ class Orchestrator:
 
     @staticmethod
     def _parse_plan(response: str) -> Optional[DecompositionPlan]:
-        """Parse the <plan> JSON block from the LLM response."""
+        """Parse the <plan> JSON block from the LLM response.
+
+        LLM may output dependencies as 0-based indices (e.g., ["0", "1"])
+        which we resolve to actual UUIDs after all subtasks are created.
+        """
         m = PLAN_RE.search(response)
         if m:
             try:
@@ -330,7 +336,9 @@ class Orchestrator:
         if not subtasks_data:
             return None
 
+        # First pass: create subtasks with raw dependency refs
         subtasks = []
+        raw_deps: List[List[str]] = []
         for sd in subtasks_data:
             role_str = sd.get("role", "researcher")
             try:
@@ -340,8 +348,24 @@ class Orchestrator:
             subtasks.append(SubtaskSpec(
                 role=role,
                 prompt=sd.get("prompt", ""),
-                dependencies=sd.get("dependencies", []),
+                dependencies=[],  # will resolve in second pass
             ))
+            raw_deps.append(sd.get("dependencies", []))
+
+        # Second pass: resolve dependency refs to actual IDs
+        for i, spec in enumerate(subtasks):
+            resolved = []
+            for dep_ref in raw_deps[i]:
+                # If it's a numeric index, resolve to that subtask's ID
+                if dep_ref.isdigit():
+                    idx = int(dep_ref)
+                    if 0 <= idx < len(subtasks):
+                        resolved.append(subtasks[idx].id)
+                    else:
+                        resolved.append(dep_ref)  # keep as-is if out of range
+                else:
+                    resolved.append(dep_ref)  # assume it's already a UUID
+            spec.dependencies = resolved
 
         return DecompositionPlan(
             subtasks=subtasks,
@@ -362,7 +386,8 @@ class Orchestrator:
             ready = self._graph.get_ready_nodes()
             if not ready:
                 if self._graph.running_count == 0:
-                    logger.warning("Task graph stalled — unresolvable dependencies")
+                    if not self._graph.all_done:
+                        logger.warning("Task graph stalled — unresolvable dependencies")
                     break
                 await asyncio.sleep(0.1)
                 continue
@@ -378,28 +403,73 @@ class Orchestrator:
     async def _run_agent_and_collect(
         self, node, semaphore: asyncio.Semaphore,
     ):
-        """Run one agent, collect its SSE events and result."""
+        """Run one agent, collect its SSE events and result. Handles retries."""
         events: list = []
         self._graph.update_status(node.id, SubagentStatus.RUNNING)
         agent = self._factory.create_agent(node.spec)
+        spec = node.spec
+
+        # Inject dependency results into the task prompt
+        dep_results = self._graph.get_dependency_results(node.id)
+        if dep_results:
+            dep_block = "\n\n".join(
+                f"=== DEPENDENCY: {self._graph.get_node(dep).role.value} ===\n"
+                f"{res.output[:2000] if res else '(failed or no output)'}"
+                for dep, res in dep_results.items()
+            )
+            agent.task_prompt = (
+                f"{agent.task_prompt}\n\n"
+                f"=== PRIOR SUBTASK RESULTS (dependencies) ===\n"
+                f"{dep_block}\n"
+                f"=== END PRIOR RESULTS ===\n\n"
+                f"Use the above results to inform your work. Cite specific findings."
+            )
+
         events.append(sse_subagent_start(agent.to_spec()))
 
-        async with semaphore:
-            logger.info("Starting subagent %s (%s)", agent.agent_id, agent.role.value)
-            result = await agent.execute()
+        def _status_cb(aid: str, role: SubagentRole, msg: str, event_data: Optional[dict] = None) -> None:
+            if event_data and "tool" in event_data:
+                if "args" in event_data:
+                    events.append(sse_subagent_tool(aid, role, event_data["tool"], event_data["args"]))
+                elif "summary" in event_data:
+                    events.append(sse_subagent_tool_result(aid, role, event_data["tool"], event_data["summary"]))
+            else:
+                events.append(sse_subagent_status(aid, role, msg))
 
-        if result.status == SubagentStatus.COMPLETED:
-            self._graph.update_status(node.id, SubagentStatus.COMPLETED, result=result)
-            events.append(sse_subagent_complete(result))
-        else:
-            self._graph.update_status(node.id, SubagentStatus.FAILED, result=result)
-            events.append(sse_subagent_fail(result))
+        # Retry loop
+        for attempt in range(spec.max_retries + 1):
+            if attempt > 0:
+                spec.retry_count = attempt
+                events.append(sse_subagent_status(agent.agent_id, agent.role, f"Retry attempt {attempt}/{spec.max_retries}"))
+                logger.info("Retrying subagent %s (attempt %d/%d)", agent.agent_id, attempt, spec.max_retries)
 
-        logger.info(
-            "Subagent %s done: %s (tools=%d, elapsed=%.1fs)",
-            agent.agent_id, result.status.value,
-            result.tool_calls_made, result.elapsed_seconds,
-        )
+            async with semaphore:
+                logger.info("Starting subagent %s (%s) attempt %d", agent.agent_id, agent.role.value, attempt + 1)
+                result = await agent.execute(status_callback=_status_cb)
+
+            if result.status == SubagentStatus.COMPLETED:
+                self._graph.update_status(node.id, SubagentStatus.COMPLETED, result=result)
+                events.append(sse_subagent_complete(result))
+                logger.info(
+                    "Subagent %s done: %s (tools=%d, elapsed=%.1fs)",
+                    agent.agent_id, result.status.value,
+                    result.tool_calls_made, result.elapsed_seconds,
+                )
+                return events, result
+            elif attempt < spec.max_retries:
+                # Will retry
+                continue
+            else:
+                # Max retries exhausted
+                self._graph.update_status(node.id, SubagentStatus.FAILED, result=result)
+                events.append(sse_subagent_fail(result))
+                logger.info(
+                    "Subagent %s failed after %d retries: %s",
+                    agent.agent_id, spec.max_retries, result.error,
+                )
+                return events, result
+
+        # Should not reach here
         return events, result
 
     # ── Phase 4b: Re-planning ──────────────────────────────────────────
@@ -411,10 +481,24 @@ class Orchestrator:
         context: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Ask the LLM if more subagents are needed."""
+        successful = [r for r in results if r.status == SubagentStatus.COMPLETED]
+        failed = [r for r in results if r.status == SubagentStatus.FAILED]
+        skipped = [r for r in results if r.status == SubagentStatus.SKIPPED]
+
         results_block = "\n\n".join(
-            f"=== {r.role.value} ({r.status.value}) ===\n{r.output[:800]}"
-            for r in results if r.status == SubagentStatus.COMPLETED
+            f"=== {r.role.value} ({r.status.value}) ===\n{r.output[:1500]}"
+            for r in successful
         )
+        if failed:
+            results_block += "\n\n" + "\n\n".join(
+                f"=== {r.role.value} (FAILED) ===\nError: {r.error}"
+                for r in failed
+            )
+        if skipped:
+            results_block += "\n\n" + "\n\n".join(
+                f"=== {r.role.value} (SKIPPED) ===\nReason: dependency failed"
+                for r in skipped
+            )
 
         messages = [
             {"role": "system", "content": REPLANNING_SYSTEM_PROMPT},

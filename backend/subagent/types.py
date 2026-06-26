@@ -37,6 +37,8 @@ class SubtaskSpec:
     max_iterations: int = 15
     max_tokens: int = 32000
     timeout_seconds: int = 120
+    max_retries: int = 1
+    retry_count: int = 0
 
     def __post_init__(self) -> None:
         if isinstance(self.role, str):

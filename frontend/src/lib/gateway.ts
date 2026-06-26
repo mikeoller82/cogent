@@ -23,7 +23,19 @@ export type GatewayEventType =
   | 'final'
   | 'error'
   | 'heartbeat'
-  | 'disconnected';
+  | 'disconnected'
+  // Orchestrator events
+  | 'orchestrator_plan'
+  | 'orchestrator_status'
+  | 'orchestrator_result'
+  | 'orchestrator_error'
+  // Subagent events
+  | 'subagent_start'
+  | 'subagent_status'
+  | 'subagent_tool'
+  | 'subagent_tool_result'
+  | 'subagent_complete'
+  | 'subagent_fail';
 
 export interface GatewayEvent {
   type: GatewayEventType;
@@ -233,6 +245,24 @@ export class GatewayClient {
         break;
       case 'provider':
         this.emit({ type: 'message', data: { type: 'provider', ...parsed } as any });
+        break;
+
+      // Orchestrator events
+      case 'orchestrator_plan':
+      case 'orchestrator_status':
+      case 'orchestrator_result':
+      case 'orchestrator_error':
+        this.emit({ type: type as GatewayEventType, data: parsed });
+        break;
+
+      // Subagent events
+      case 'subagent_start':
+      case 'subagent_status':
+      case 'subagent_tool':
+      case 'subagent_tool_result':
+      case 'subagent_complete':
+      case 'subagent_fail':
+        this.emit({ type: type as GatewayEventType, data: parsed });
         break;
 
       case 'final':

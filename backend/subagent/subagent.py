@@ -9,6 +9,7 @@ import re
 import time
 from typing import Any, Callable, Dict, List, Optional
 
+from agent import context_compressor as cc
 from cogent_budget import IterationBudget
 
 from .types import (
@@ -173,13 +174,14 @@ class Subagent:
 
     async def execute(
         self,
-        status_callback: Optional[Callable[[str, SubagentRole, str], None]] = None,
+        status_callback: Optional[Callable[[str, SubagentRole, str, Optional[dict]], None]] = None,
     ) -> SubagentResult:
-        """Run the subagent: autonomous LLM + tool loop.
+        """Run the subagent: autonomous LLM with tool calls.
 
         Args:
-            status_callback: Optional callback (agent_id, role, message) for
-                streaming status updates.
+            status_callback: Optional callback (agent_id, role, message, event_data) for
+                streaming status, tool, and tool_result events. event_data is a dict
+                with extra fields like tool name, args, or summary.
 
         Returns:
             SubagentResult with the agent's output or error.
@@ -190,9 +192,9 @@ class Subagent:
             {"role": "user", "content": self.task_prompt},
         ]
 
-        def _status(msg: str) -> None:
+        def _status(msg: str, event_data: Optional[dict] = None) -> None:
             if status_callback:
-                status_callback(self.agent_id, self.role, msg)
+                status_callback(self.agent_id, self.role, msg, event_data)
 
         _status("starting")
 
@@ -201,7 +203,8 @@ class Subagent:
                 while not self.budget.exhausted:
                     # ── Call LLM ────────────────────────────────────────
                     response = await self._call_llm(messages)
-                    self.budget.record_tokens(len(response) // 4)
+                    # Better token estimation using context_compressor
+                    self.budget.record_tokens(cc.estimate_message_tokens([{"role": "assistant", "content": response}]))
 
                     # ── Parse tool calls ───────────────────────────────
                     tool_call, reasoning = _parse_tool_call(response)
@@ -219,14 +222,18 @@ class Subagent:
 
                     name = tool_call.get("name", "?")
                     args = tool_call.get("args", {})
-                    _status(f"running {name}")
+                    _status(f"running {name}", {"tool": name, "args": args})
 
                     # ── Execute tool ────────────────────────────────────
                     tool_result = await _execute_tool_call(name, args)
                     self.tool_calls_made += 1
 
-                    # ── Feed result back ───────────────────────────────
+                    # ── Emit tool result event ──────────────────────────
                     result_text = tool_result.get("result", "")
+                    summary = result_text[:300] if result_text else "(no output)"
+                    _status(f"{name} complete", {"tool": name, "summary": summary})
+
+                    # ── Feed result back ───────────────────────────────
                     messages.append({"role": "assistant", "content": response})
                     messages.append({
                         "role": "user",
