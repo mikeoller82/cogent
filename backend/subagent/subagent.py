@@ -126,7 +126,7 @@ class Subagent:
         output_schema: Optional[Dict[str, Any]] = None,
         max_iterations: int = 30,
         max_tokens: int = 64000,
-        timeout_seconds: int = 180,
+        timeout_seconds: int = 300,
         provider=None,
         llm_call_fn=None,
     ) -> None:

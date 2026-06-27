@@ -206,6 +206,13 @@ class VirtualProvider:
 
                 raise
 
+            except requests.Timeout as exc:
+                logger.warning("Provider %s timeout — %s",
+                               entry.get("name"), exc)
+                last_error = f"{entry.get('name', '?')}: timeout: {exc}"
+                self._advance_next(entry.get("name", "?"), f"timeout: {exc}")
+                continue
+
             except requests.ConnectionError as exc:
                 logger.warning("Provider %s connection error — %s",
                                entry.get("name"), exc)
@@ -304,7 +311,7 @@ class VirtualProvider:
                 "messages": messages,
                 "max_tokens": max_tokens,
             },
-            timeout=kwargs.get("timeout", 120),
+            timeout=kwargs.get("timeout", 180),
         )
 
         if resp.status_code >= 400:
