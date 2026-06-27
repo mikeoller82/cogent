@@ -69,6 +69,14 @@ export const getMCPTopics = () =>
 export const getMCPStatus = () =>
   api.get("/mcp/servers/available").then((r) => r.data);
 
+// ── Settings / Credentials ───────────────────────────────────────────
+export const getCredentials = () =>
+  api.get("/settings/credentials").then((r) => r.data);
+export const setCredential = (service, apiKey) =>
+  api.put(`/settings/credentials/${encodeURIComponent(service)}`, { api_key: apiKey }).then((r) => r.data);
+export const deleteCredential = (service) =>
+  api.delete(`/settings/credentials/${encodeURIComponent(service)}`).then((r) => r.data);
+
 /**
  * Stream a message. onEvent(event) is called for each parsed SSE event.
  * Returns the final 'done' event with the persisted assistant message.

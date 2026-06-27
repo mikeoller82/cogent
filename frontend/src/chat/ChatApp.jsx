@@ -6,6 +6,7 @@ import MemoryPanel from "./MemoryPanel";
 import TasksPanel from "./TasksPanel";
 import SkillsPanel from "./SkillsPanel";
 import MCPPanel from "./MCPPanel";
+import SettingsPanel from "./SettingsPanel";
 import { listSessions, createSession, deleteSession } from "./apiClient";
 import { toast } from "sonner";
 
@@ -99,6 +100,7 @@ export default function ChatApp() {
           <Route path="tasks" element={<TasksPanel />} />
           <Route path="skills" element={<SkillsPanel />} />
           <Route path="mcp" element={<MCPPanel />} />
+          <Route path="settings" element={<SettingsPanel />} />
         </Routes>
       </main>
     </div>

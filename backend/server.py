@@ -19,6 +19,7 @@ from cogent_constants import (
     ENV_DB_NAME,
     ensure_dirs,
 )
+import cogent_auth
 from cogent_logging import setup_logging, set_session_context
 from cogent_config import get_config
 from cogent_state import create_session, touch_session, list_sessions
@@ -96,6 +97,16 @@ class ScheduledTaskOut(BaseModel):
     created_at: datetime
     last_run: Optional[datetime] = None
     last_session_id: Optional[str] = None
+
+
+class CredentialBody(BaseModel):
+    api_key: str
+
+
+class CredentialOut(BaseModel):
+    service: str
+    has_key: bool
+    key_preview: str
 
 
 # ---------------- Helpers ----------------
@@ -339,6 +350,48 @@ async def add_memory(item: MemoryItem):
 async def delete_memory(key: str):
     await db.memories.delete_one({"workspace_id": DEFAULT_WORKSPACE, "key": key})
     return {"ok": True}
+
+
+# ---------------- Settings / Credentials ----------------
+def _mask_key(key: str) -> str:
+    """Return a masked preview of an API key (first 3 + last 4 chars)."""
+    if len(key) <= 7:
+        return key[:3] + "..." if len(key) > 3 else "***"
+    return f"{key[:3]}...{key[-4:]}"
+
+
+@api.get("/settings/credentials", response_model=List[CredentialOut])
+async def list_credentials():
+    """List all stored credentials with masked key previews (no secrets exposed)."""
+    creds = cogent_auth.list_credentials()
+    result = []
+    for service in creds:
+        cred = cogent_auth.get_credential(service)
+        api_key = ""
+        if isinstance(cred, dict):
+            api_key = cred.get("api_key", "")
+        result.append(CredentialOut(
+            service=service,
+            has_key=bool(api_key),
+            key_preview=_mask_key(api_key) if api_key else "",
+        ))
+    return result
+
+
+@api.put("/settings/credentials/{service}")
+async def set_credential(service: str, body: CredentialBody):
+    """Store or update an API key for a provider service."""
+    cogent_auth.set_credential(service, {"api_key": body.api_key})
+    return {"ok": True, "service": service, "key_preview": _mask_key(body.api_key)}
+
+
+@api.delete("/settings/credentials/{service}")
+async def delete_credential(service: str):
+    """Remove a stored API key."""
+    deleted = cogent_auth.delete_credential(service)
+    if not deleted:
+        raise HTTPException(status_code=404, detail=f"No credential found for '{service}'")
+    return {"ok": True, "service": service}
 
 
 # ---------------- Scheduled tasks ----------------

@@ -71,11 +71,22 @@ def _load_providers() -> List[Dict[str, Any]]:
 
 
 def _pick_api_key(entry: Dict[str, Any]) -> Optional[str]:
-    """Read the API key for a provider entry from its env-var name."""
+    """Read the API key for a provider entry.
+
+    Checks environment variable first, then falls back to the auth store
+    (``memory/auth.json``) for keys set via the Settings UI.
+    """
     env_var = entry.get("api_key_env", "")
-    if not env_var:
-        return None
-    return os.environ.get(env_var)
+    if env_var:
+        key = os.environ.get(env_var)
+        if key:
+            return key
+    # Fallback: check auth store
+    from cogent_auth import get_credential
+    cred = get_credential(entry.get("name", ""))
+    if cred and isinstance(cred, dict):
+        return cred.get("api_key")
+    return None
 
 
 class RateLimiter:
