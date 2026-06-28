@@ -1,0 +1,8 @@
+{
+  "name": "ponytail",
+  "version": "1.0.0",
+  "description": "Makes Cogent think like the laziest senior dev. The best code is the code never written. YAGNI, stdlib-first, one-liners, zero over-engineering.",
+  "author": {
+    "name": "DietrichGebert"
+  }
+}

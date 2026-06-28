@@ -189,3 +189,42 @@ memory/
 ├── cogent.json       # General state
 └── observability/    # Tool activity logs
 ```
+
+## 9. Ponytail — Lazy Senior Dev Mode
+
+> Integrated from `DietrichGebert/ponytail`. Always-on via system prompt
+> injection (section 9 of ``cogent_prompt.py``) with post-response review
+> via ``backend/hooks/ponytail_hook.py``.
+
+### How it works
+
+1. **System prompt** — the full 7-rung ladder is injected into every LLM
+   system prompt at ``backend/cogent_prompt.py``.
+2. **Hook review** — ``backend/hooks/ponytail_hook.py`` registers on
+   ``after_message`` and scans every LLM response for over-engineering
+   signals (new deps, boilerplate abstractions, missed reuse).
+3. **Commands** — ``/ponytail`` (set mode intensity) and
+   ``/ponytail-review`` (audit current diff) are installed as a Cogent
+   plugin at ``plugins/ponytail/``.
+
+### The rung ladder
+
+```
+1. Does this need to exist?           -> skip (YAGNI)
+2. Already in this codebase?          -> reuse, don't rewrite
+3. Standard library does it?          -> use it
+4. Native platform feature?           -> use it
+5. Already-installed dependency?      -> use it
+6. Can this be one line?              -> make it one line
+7. Only then: the minimum that works
+```
+
+### Rules
+
+- No abstractions not explicitly requested
+- No new dependencies unless unavoidable
+- Deletion over addition, boring over clever
+- Shortest working diff wins (after understanding the problem)
+- Mark shortcuts with ``ponytail:`` comments naming the ceiling + upgrade path
+- Not lazy about: validation, security, error handling, accessibility
+

@@ -18,7 +18,14 @@ from .types import (
 
 logger = logging.getLogger("cogent.subagent.subagent")
 
-TOOL_RE = re.compile(r"<tool>\s*(\{.*?\})\s*</tool>", re.DOTALL)
+_TOOL_OPEN_RE = re.compile(r"<tool>\s*", re.DOTALL)
+_TOOL_CLOSE_RE = re.compile(r"\s*</tool>", re.DOTALL)
+_TOOL_TAG_RE = re.compile(r"</?tool>", re.IGNORECASE)
+
+
+def _sanitize_tool_result(raw: str) -> str:
+    """Strip accidental <tool> / </tool> tags from tool output."""
+    return _TOOL_TAG_RE.sub("", raw)
 
 # ── Tool dispatch table (mirrors llm_service._execute_tool) ────────────────
 
@@ -81,13 +88,23 @@ def _register_tools() -> None:
 
 
 def _parse_tool_call(text: str) -> tuple:
-    m = TOOL_RE.search(text)
+    """Find the first complete JSON object inside <tool>...</tool> tags.
+
+    Uses json.JSONDecoder.raw_decode() which properly handles arbitrary
+    brace nesting — unlike a non-greedy regex ``{.*?}`` that truncates
+    on the first ``}`` inside argument values.
+    """
+    m = _TOOL_OPEN_RE.search(text)
     if not m:
         return None, text
-    raw = m.group(1)
+    start = m.end()
     try:
-        parsed = json.loads(raw)
-    except json.JSONDecodeError:
+        decoder = json.JSONDecoder()
+        parsed, idx = decoder.raw_decode(text, start)
+    except (json.JSONDecodeError, ValueError, IndexError):
+        return None, text
+    close_m = _TOOL_CLOSE_RE.match(text, idx)
+    if not close_m:
         return None, text
     before = text[:m.start()].strip()
     return parsed, before
@@ -249,7 +266,7 @@ class Subagent:
                     messages.append({"role": "assistant", "content": response})
                     messages.append({
                         "role": "user",
-                        "content": f"<tool_result>\n{result_text}\n</tool_result>",
+                        "content": f"<tool_result>\n{_sanitize_tool_result(result_text)}\n</tool_result>",
                     })
 
                     if not self.budget.consume():

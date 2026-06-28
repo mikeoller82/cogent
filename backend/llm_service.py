@@ -21,6 +21,7 @@ import cogent_prompt
 import cogent_commands
 from agent import context_compressor as cc
 import loop_engine as le
+from cogent_hooks import run_hooks
 
 from cogent_config import get_config
 from subagent.orchestrator import Orchestrator
@@ -254,17 +255,40 @@ def _is_complex_task(text: str) -> bool:
     )
 
 
-TOOL_RE = re.compile(r"<tool>\s*(\{.*?\})\s*</tool>", re.DOTALL)
+_TOOL_OPEN_RE = re.compile(r"<tool>\s*", re.DOTALL)
+_TOOL_CLOSE_RE = re.compile(r"\s*</tool>", re.DOTALL)
+_TOOL_TAG_RE = re.compile(r"</?tool>", re.IGNORECASE)
+
+
+def _sanitize_tool_result(raw: str) -> str:
+    """Strip accidental <tool> / </tool> tags from tool output.
+
+    When tool results are fed back to the LLM inside ``<tool_result>``
+    tags, the ``_parse_tool_call`` function must not interpret them as a
+    new tool invocation.  This strips any ``<tool>`` / ``</tool>``
+    substrings from the raw result text before injection.
+    """
+    return _TOOL_TAG_RE.sub("", raw)
 
 
 def _parse_tool_call(text: str):
-    m = TOOL_RE.search(text)
+    """Find the first complete JSON object inside <tool>...</tool> tags.
+
+    Uses json.JSONDecoder.raw_decode() which properly handles arbitrary
+    brace nesting — unlike a non-greedy regex ``{.*?}`` that truncates
+    on the first ``}`` inside argument values.
+    """
+    m = _TOOL_OPEN_RE.search(text)
     if not m:
         return None, text
-    raw = m.group(1)
+    start = m.end()
     try:
-        parsed = json.loads(raw)
-    except json.JSONDecodeError:
+        decoder = json.JSONDecoder()
+        parsed, idx = decoder.raw_decode(text, start)
+    except (json.JSONDecodeError, ValueError, IndexError):
+        return None, text
+    close_m = _TOOL_CLOSE_RE.match(text, idx)
+    if not close_m:
         return None, text
     before = text[: m.start()].strip()
     return parsed, before
@@ -552,6 +576,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
         for turn in range(max_turns):
             messages = initial_messages.copy()
             messages.append({"role": "user", "content": current_user_text})
+            await run_hooks("before_message", session_id=session_id, user_text=current_user_text)
             try:
                 response_text = await _send_kilocode_chat(messages)
 
@@ -594,6 +619,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
             # ── Emit reasoning event with raw LLM output ─────────────
             yield {"type": "reasoning", "content": response_text}
+            await run_hooks("after_message", session_id=session_id, assistant_text=response_text, user_text=current_user_text)
 
             initial_messages.append({"role": "user", "content": current_user_text})
             initial_messages.append({"role": "assistant", "content": response_text})
@@ -779,7 +805,10 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             le.record_observation(loop_state, obs)
             le.update_risk_level(loop_state, tool_name, args)
 
-            current_user_text = f"<tool_result>\n{tool_result.get('result', '')}\n</tool_result>\n\nContinue gathering data."
+            current_user_text = (
+                f"<tool_result>\n{_sanitize_tool_result(tool_result.get('result', ''))}\n"
+                f"</tool_result>\n\nContinue gathering data."
+            )
 
             # ── Accumulate research data for synthesis grounding ─────
             if tool_name in ("web_search", "web_scrape", "youtube_transcript", "github_search", "rss_read"):

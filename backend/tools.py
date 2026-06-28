@@ -11,6 +11,7 @@ import asyncio
 from pathlib import Path
 from datetime import datetime
 
+import shlex
 import cogent_plugins
 import cogent_commands
 
@@ -772,6 +773,12 @@ async def schedule_task(db, workspace_id: str, name: str, cadence: str, time: st
 async def run_shell(command: str, timeout: int = 30) -> dict:
     """Run a shell command with timeout. Returns stdout, stderr, exit code.
     Default timeout is 30s; max is 600s (10 min) for rendering/processing.
+
+    Note: the command is passed to ``/bin/sh -c`` directly.  If the command
+    contains shell metacharacters (``{``, ``}``, ``[``, ``]``, ``$``, etc.)
+    that should be treated as literal text, quote them or escape them as
+    you would in any shell.  JSON-like patterns are the most common
+    offender — use ``jq -c '.[]'`` (single-quoted) not ``jq -c .[]``.
     """
     import subprocess as sp
     timeout = min(timeout, 600)
@@ -783,8 +790,8 @@ async def run_shell(command: str, timeout: int = 30) -> dict:
             cwd=str(Path(__file__).parent.parent),
         )
         stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
-        stdout = stdout.decode("utf-8", errors="replace")[-25000:]
-        stderr = stderr.decode("utf-8", errors="replace")[-10000:]
+        stdout = stdout.decode("utf-8", errors="replace")[:25000]
+        stderr = stderr.decode("utf-8", errors="replace")[:10000]
         return {
             "result": (
                 f"Exit code: {proc.returncode}\n"
