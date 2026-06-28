@@ -41,10 +41,13 @@ The provider list sorted by priority forms the fallback chain.
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import time
 import random
 import logging
+from datetime import datetime, timedelta
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 import requests
@@ -60,6 +63,58 @@ from cogent_config import get_config
 import cogent_headroom
 
 logger = logging.getLogger("cogent.providers")
+
+
+class DailyCounter:
+    """Tracks per-provider daily request counts with file persistence.
+    
+    Used to enforce daily quota limits (e.g., OpenCode Zen free tier: 100 req/day).
+    """
+
+    def __init__(self, path: Optional[Path] = None) -> None:
+        from cogent_constants import PROJECT_ROOT
+        self._path = path or (PROJECT_ROOT / "memory" / "rate_limits.json")
+        self._data: Dict[str, Any] = {"counts": {}}
+        self._load()
+
+    def _load(self) -> None:
+        if self._path.is_file():
+            try:
+                self._data = json.loads(self._path.read_text())
+            except (json.JSONDecodeError, OSError):
+                self._data = {"counts": {}}
+
+    def _save(self) -> None:
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._path.write_text(json.dumps(self._data, indent=2))
+
+    def _day_key(self) -> str:
+        return datetime.now().strftime("%Y-%m-%d")
+
+    def count(self, provider_name: str) -> int:
+        """Get current count for today for a provider."""
+        day = self._day_key()
+        key = f"{provider_name}:{day}"
+        return self._data["counts"].get(key, 0)
+
+    def increment(self, provider_name: str) -> int:
+        """Increment and return new count for today for a provider."""
+        day = self._day_key()
+        key = f"{provider_name}:{day}"
+        count = self._data["counts"].get(key, 0) + 1
+        self._data["counts"][key] = count
+        self._cleanup()
+        self._save()
+        return count
+
+    def _cleanup(self) -> None:
+        """Remove entries older than 7 days."""
+        today = datetime.now()
+        cutoff = (today - timedelta(days=7)).strftime("%Y-%m-%d")
+        self._data["counts"] = {
+            k: v for k, v in self._data["counts"].items()
+            if k.split(":")[-1] >= cutoff
+        }
 
 
 def _load_providers() -> List[Dict[str, Any]]:
@@ -141,6 +196,7 @@ class VirtualProvider:
         self._rate_limiter = RateLimiter()
         self._current_idx: int = 0
         self._fallback_log: List[str] = []
+        self._daily_counter = DailyCounter()
         self.reload_config()
 
     # ── Public API ──────────────────────────────────────────────────────
@@ -171,6 +227,18 @@ class VirtualProvider:
                 logger.warning("Provider %s skipped — no API key", entry.get("name"))
                 continue
 
+            # Check daily rate limit for this provider (if configured)
+            daily_limit = entry.get("daily_limit")
+            if daily_limit:
+                current_count = self._daily_counter.count(entry.get("name", ""))
+                if current_count >= daily_limit:
+                    logger.warning(
+                        "Provider %s daily limit reached (%d/%d) — skipping",
+                        entry.get("name"), current_count, daily_limit,
+                    )
+                    self._advance_next(entry.get("name", "?"), f"daily limit {daily_limit} reached")
+                    continue
+
             # Rate limit before hitting this provider (non-blocking)
             await self._rate_limiter.wait_if_needed()
 
@@ -180,6 +248,9 @@ class VirtualProvider:
                 logger.info("Provider %s returned type=%s len=%d",
                             entry.get("name"), type(result).__name__,
                             len(result) if isinstance(result, str) else -1)
+                # Increment daily counter for providers with limits
+                if daily_limit:
+                    self._daily_counter.increment(entry.get("name", ""))
                 # Advance the persistent index so the next request
                 # starts from this successful provider.
                 self._current_idx = idx
@@ -224,6 +295,13 @@ class VirtualProvider:
                 logger.warning("Provider %s RuntimeError — %s", entry.get("name"), exc)
                 last_error = f"{entry.get('name', '?')}: malformed response: {exc}"
                 self._advance_next(entry.get("name", "?"), f"malformed response: {exc}")
+                continue
+
+            except json.JSONDecodeError as exc:
+                logger.warning("Provider %s returned non-JSON response — %s",
+                               entry.get("name"), exc)
+                last_error = f"{entry.get('name', '?')}: malformed JSON: {exc}"
+                self._advance_next(entry.get("name", "?"), f"malformed JSON: {exc}")
                 continue
 
         raise RuntimeError(

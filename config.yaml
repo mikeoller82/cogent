@@ -16,8 +16,8 @@ model:
 
 rate_limit:
   enabled: true
-  min_delay_ms: 5000          # Minimum gap between requests (30 s)
-  max_delay_ms: 7000          # Maximum gap (60 s) — randomized to avoid thundering herd
+  min_delay_ms: 5000          # Minimum gap between requests (5 s)
+  max_delay_ms: 7000          # Maximum gap (7 s) — randomized to avoid thundering herd
 
 # Virtual Provider — fallback chain when a provider returns 429 Rate Limited.
 # Providers are tried in priority order (lower = first). If one hits a 429,
@@ -28,6 +28,7 @@ providers:
     model: deepseek-v4-flash-free
     api_key_env: OPENCODE_API_KEY
     priority: 1
+    daily_limit: 100
   - name: kilocode
     base_url: https://api.kilo.ai/api/gateway/chat/completions
     model: nvidia/nemotron-3-ultra-550b-a55b:free
