@@ -20,14 +20,19 @@ ROLE_TOOLS: Dict[SubagentRole, List[str]] = {
         "github_search", "github_repo_info", "github_search_code",
         "rss_read", "v2ex_hot_topics", "v2ex_topic_detail",
         "bilibili_search",
+        "search_skills", "activate_skill", "read_skill_resource",
+        "mcp_call",
     ],
     SubagentRole.CODER: [
         "glob_files", "grep_files", "run_shell", "file_write",
         "process_media", "capture_screenshot", "generate_webapp",
+        "search_skills", "activate_skill", "read_skill_resource",
+        "mcp_call",
     ],
     SubagentRole.VALIDATOR: [],  # Pure LLM evaluation, no tools
     SubagentRole.EXPLORER: [
         "glob_files", "grep_files", "run_shell",
+        "search_skills", "activate_skill", "read_skill_resource",
     ],
     SubagentRole.SYNTHESIZER: [],  # Aggregation only
 }

@@ -33,18 +33,54 @@ _TOOL_DISPATCH: Dict[str, Callable] = {}
 
 
 def _register_tools() -> None:
-    """Populate the tool dispatch table lazily."""
+    """Populate the tool dispatch table lazily.
+
+    Mirrors ``llm_service._execute_tool`` so subagents have the same
+    tool set (excluding db-dependent memory & schedule tools).
+    """
     if _TOOL_DISPATCH:
         return
     import tools as tool_impls
     import agent_reach_tools as art
 
     _TOOL_DISPATCH.update({
+        # ── Web / content ────────────────────────────────────────────
         "web_search": lambda args: tool_impls.web_search(
             args.get("query", ""), int(args.get("max_results", 5))),
         "web_scrape": lambda args: tool_impls.web_scrape(args.get("url", "")),
-        "youtube_transcript": lambda args: art.youtube_transcript(args.get("url", "")),
-        "github_repo_info": lambda args: art.github_repo_info(args.get("repo", "")),
+
+        # ── PDF / Web app generation ─────────────────────────────────
+        "generate_pdf": lambda args: tool_impls.generate_pdf(
+            args.get("title", "Untitled"),
+            args.get("sections") or [],
+            subtitle=args.get("subtitle", ""),
+            accent=args.get("accent", "purple"),
+        ),
+        "generate_webapp": lambda args: tool_impls.generate_webapp(
+            args.get("title", "App"), args.get("html", "")),
+
+        # ── Skills ───────────────────────────────────────────────────
+        "search_skills": lambda args: tool_impls.search_skills(
+            args.get("query", ""), int(args.get("max_results", 10))),
+        "activate_skill": lambda args: tool_impls.activate_skill(
+            args.get("name", "")),
+        "read_skill_resource": lambda args: tool_impls.read_skill_resource(
+            args.get("skill_name", ""), args.get("path", "")),
+        "import_skill": lambda args: tool_impls.import_skill(
+            args.get("repo_url", ""),
+            force=bool(args.get("force", False)),
+        ),
+
+        # ── Loop state ───────────────────────────────────────────────
+        "get_loop_state": lambda args: tool_impls.get_loop_state(
+            args.get("session_id", "")),
+
+        # ── Agent reach tools ────────────────────────────────────────
+        "agent_reach_doctor": lambda args: art.agent_reach_doctor(),
+        "youtube_transcript": lambda args: art.youtube_transcript(
+            args.get("url", "")),
+        "github_repo_info": lambda args: art.github_repo_info(
+            args.get("repo", "")),
         "github_search": lambda args: art.github_search(
             args.get("query", ""), int(args.get("limit", 5))),
         "github_search_code": lambda args: art.github_search_code(
@@ -57,19 +93,18 @@ def _register_tools() -> None:
             int(args.get("topic_id", 0))),
         "bilibili_search": lambda args: art.bilibili_search(
             args.get("query", ""), int(args.get("limit", 5))),
+
+        # ── Shell / file ─────────────────────────────────────────────
         "run_shell": lambda args: tool_impls.run_shell(
             args.get("command", ""), int(args.get("timeout", 30))),
         "process_media": lambda args: tool_impls.process_media(
             args.get("action", "info"), args.get("input", ""),
-            output=args.get("output", ""),
-            start=args.get("start", ""),
-            duration=args.get("duration", ""),
-            format=args.get("format", ""),
+            output=args.get("output", ""), start=args.get("start", ""),
+            duration=args.get("duration", ""), format=args.get("format", ""),
             quality=int(args.get("quality", 80)),
         ),
         "capture_screenshot": lambda args: tool_impls.capture_screenshot(
-            output=args.get("output", ""),
-            delay=int(args.get("delay", 1)),
+            output=args.get("output", ""), delay=int(args.get("delay", 1)),
         ),
         "file_write": lambda args: tool_impls.file_write(
             args.get("path", ""), args.get("content", ""),
@@ -78,12 +113,25 @@ def _register_tools() -> None:
         "glob_files": lambda args: tool_impls.glob_files(
             args.get("pattern", ""), path=args.get("path", "")),
         "grep_files": lambda args: tool_impls.grep_files(
-            args.get("pattern", ""),
-            include=args.get("include", ""),
+            args.get("pattern", ""), include=args.get("include", ""),
             path=args.get("path", ""),
             output_mode=args.get("output_mode", "files_with_matches"),
             case_insensitive=bool(args.get("-i", False)),
         ),
+
+        # ── Plugin commands ──────────────────────────────────────────
+        "plugin_install": lambda args: tool_impls.plugin_install(
+            args.get("repo_url", ""), args.get("plugin_name", "")),
+        "plugin_list": lambda args: tool_impls.plugin_list(),
+        "plugin_describe": lambda args: tool_impls.plugin_describe(
+            args.get("name", "")),
+        "run_command": lambda args: tool_impls.run_command(
+            args.get("command", "")),
+
+        # ── MCP (Model Context Protocol) ─────────────────────────────
+        "mcp_call": lambda args: tool_impls.mcp_call(
+            args.get("server", ""), args.get("tool", ""),
+            args.get("args", {})),
     })
 
 

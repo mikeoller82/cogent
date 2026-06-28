@@ -27,7 +27,6 @@ class Skill:
 
 def _skill_roots() -> List[Path]:
     roots = [
-        PROJECT_ROOT / ".agents" / "skills",
         PROJECT_ROOT / ".cogent" / "skills",
     ]
 

@@ -28,6 +28,10 @@ from subagent.orchestrator import Orchestrator
 from cogent_logging import set_session_context
 from cogent_memory import memory_summary
 from cogent_providers import get_provider
+from tools_registry import init_default_registry
+
+# Initialize the central tool registry at startup
+init_default_registry()
 
 load_dotenv()
 _cfg = get_config()
@@ -132,6 +136,10 @@ def _tool_action_label(name: str, args: dict) -> str:
     elif name == "run_command":
         cmd = (args.get("command") or "").strip()
         return f'running command "{cmd}"' if cmd else "running command"
+    elif name == "mcp_call":
+        server = (args.get("server") or "").strip()
+        tool = (args.get("tool") or "").strip()
+        return f'MCP {server}.{tool}' if server and tool else "MCP call"
     return name.replace("_", " ")
 
 
@@ -177,6 +185,8 @@ def _tool_display_summary(name: str, args: dict, raw_summary: str) -> str:
         return "plugin info retrieved"
     elif name == "run_command":
         return "command executed"
+    elif name == "mcp_call":
+        return "MCP tool completed"
     return f"{name.replace('_', ' ')} complete"
 
 
@@ -430,6 +440,12 @@ async def _execute_tool(db, workspace_id: str, call: dict) -> dict:
             return await tool_impls.plugin_describe(args.get("name", ""))
         if name == "run_command":
             return await tool_impls.run_command(args.get("command", ""))
+        if name == "mcp_call":
+            return await tool_impls.mcp_call(
+                args.get("server", ""),
+                args.get("tool", ""),
+                args.get("args", {}),
+            )
         return {"result": f"Unknown tool: {name}"}
     except (ValueError, TypeError, KeyError) as e:
         # Validation / bad-args errors — tell the LLM clearly so it can fix the call

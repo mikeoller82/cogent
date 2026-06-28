@@ -1326,6 +1326,298 @@ def list_available_languages() -> List[str]:
     return sorted(langs)
 
 
+# ── MCP Tool Execution (runtime bridge to the agent loop) ─────────────────
+
+
+def get_mcp_tool_spec() -> Optional[Dict[str, Any]]:
+    """Return a tool spec for ``mcp_call`` if any MCP servers are installed.
+
+    The spec is consumed by ``tools.py::tool_specs_for_prompt()`` to
+    expose MCP tools as a single ``mcp_call`` tool in the agent's system
+    prompt.  Returns ``None`` when no servers are installed so the prompt
+    stays clean.
+    """
+    installed = get_installed_servers()
+    if not installed:
+        return None
+
+    lines = ["Call a tool on an installed MCP (Model Context Protocol) server.\n",
+             "Installed servers:"]
+    for s in installed:
+        name = s.get("name", "?")
+        desc = s.get("description", "")
+        transport = s.get("transport", "stdio")
+        tools = s.get("tools", [])
+        tool_names = ", ".join(t.get("name", "?") for t in tools) if tools else "(auto-detect)"
+        lines.append(f"  - {name}  [{transport}]  {desc[:120]}")
+        if tool_names:
+            lines.append(f"    tools: {tool_names}")
+
+    return {
+        "name": "mcp_call",
+        "description": "\n".join(lines),
+        "args": {
+            "server": "string — one of the installed server names (listed above)",
+            "tool": "string — the tool name to call on that server",
+            "args": "dict — arguments to pass to the tool (may be empty {})",
+        },
+    }
+
+
+async def execute_mcp_call(
+    server_name: str,
+    tool_name: str,
+    tool_args: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Execute an MCP tool call on an installed server.
+
+    Looks up the server manifest, determines the transport (stdio or
+    http), and dispatches accordingly.  Returns a ``dict`` with a
+    ``"result"`` key (text for the LLM).
+    """
+    server_dir = OPTIONAL_MCPS_DIR / server_name
+    manifest_file = server_dir / "manifest.yaml"
+    if not manifest_file.exists():
+        installed = get_installed_servers()
+        names = ", ".join(s.get("name", "?") for s in installed) if installed else "(none)"
+        return {"result": f"MCP server '{server_name}' not found. Installed: {names}"}
+
+    manifest = _parse_manifest(manifest_file)
+    if not manifest:
+        return {"result": f"Could not parse manifest for '{server_name}'"}
+
+    transport = manifest.get("transport", "stdio")
+    tool_args = tool_args or {}
+
+    if transport == "http":
+        return await _execute_http_mcp_call(manifest, tool_name, tool_args)
+    return await _execute_stdio_mcp_call(manifest, tool_name, tool_args)
+
+
+# ── MCP stdio transport (JSON-RPC 2.0 with Content-Length framing) ──
+
+
+def _encode_mcp_message(msg: Dict[str, Any]) -> bytes:
+    """Encode a JSON-RPC message using MCP Content-Length framing."""
+    body = json.dumps(msg, ensure_ascii=False)
+    return f"Content-Length: {len(body)}\r\n\r\n{body}".encode("utf-8")
+
+
+async def _read_mcp_response(stream: asyncio.StreamReader) -> Dict[str, Any]:
+    """Read one complete JSON-RPC response from an MCP stdio server.
+
+    Handles the Content-Length framing protocol used by MCP.
+    """
+    headers = b""
+    while True:
+        line = await stream.readline()
+        if not line:
+            raise ConnectionError("MCP server closed connection without sending headers")
+        if line in (b"\r\n", b"\n", b"\r"):
+            break
+        headers += line
+
+    content_length = 0
+    for header in headers.decode("utf-8", errors="replace").split("\r\n"):
+        if header.lower().startswith("content-length:"):
+            try:
+                content_length = int(header.split(":", 1)[1].strip())
+            except (ValueError, IndexError):
+                pass
+            break
+
+    if content_length <= 0:
+        raise ConnectionError("Missing or invalid Content-Length header")
+
+    body = await stream.readexactly(content_length)
+    return json.loads(body.decode("utf-8", errors="replace"))
+
+
+async def _execute_stdio_mcp_call(
+    manifest: Dict[str, Any],
+    tool_name: str,
+    tool_args: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Execute one MCP tool call via the stdio transport.
+
+    Spawns the server process, performs the full MCP initialization
+    handshake, calls the tool, reads the response, and terminates the
+    server.  Not efficient for repeated calls but guarantees correctness.
+    """
+    command = manifest.get("command", "")
+    args_list = manifest.get("args", [])
+    if not command:
+        return {"result": f"MCP server '{manifest.get('name')}' has no command configured"}
+
+    cmd_parts = [command] + (args_list or [])
+    name = manifest.get("name", "?")
+
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *cmd_parts,
+            stdin=asyncio.subprocess.PIPE,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+    except FileNotFoundError:
+        return {"result": f"MCP command not found: {command}. Re-install the server."}
+    except Exception as e:
+        return {"result": f"Failed to start MCP server '{name}': {e}"}
+
+    try:
+        async with asyncio.timeout(30):
+            # Phase 1 — Initialize handshake
+            init_request = {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "initialize",
+                "params": {
+                    "protocolVersion": "2024-11-05",
+                    "capabilities": {},
+                    "clientInfo": {"name": "cogent", "version": "1.0"},
+                },
+            }
+            proc.stdin.write(_encode_mcp_message(init_request))
+            await proc.stdin.drain()
+
+            # Read initialize result
+            init_result = await _read_mcp_response(proc.stdout)
+
+            # Send initialized notification (no response expected)
+            notif = {
+                "jsonrpc": "2.0",
+                "method": "notifications/initialized",
+            }
+            proc.stdin.write(_encode_mcp_message(notif))
+            await proc.stdin.drain()
+
+            # Read any post-init notifications the server may send
+            # (some servers send a "sampling/createMessage" request, etc.)
+            notification = await _read_mcp_response(proc.stdout)
+
+            # Phase 2 — tool call
+            call_request = {
+                "jsonrpc": "2.0",
+                "id": 2,
+                "method": "tools/call",
+                "params": {
+                    "name": tool_name,
+                    "arguments": tool_args,
+                },
+            }
+            proc.stdin.write(_encode_mcp_message(call_request))
+            await proc.stdin.drain()
+
+            # Read tool result
+            response = await _read_mcp_response(proc.stdout)
+
+            if "error" in response:
+                err = response["error"]
+                return {"result": f"MCP error [{name}.{tool_name}]: {err.get('message', str(err))}"}
+
+            result = response.get("result", {})
+            content_items = result.get("content", [])
+            is_error = result.get("isError", False)
+
+            output_parts = []
+            for c in content_items:
+                c_type = c.get("type", "text")
+                if c_type == "text":
+                    output_parts.append(c.get("text", ""))
+                elif c_type == "resource":
+                    uri = c.get("uri", c.get("resource", ""))
+                    text = c.get("text", "")
+                    if uri:
+                        output_parts.append(f"[Resource: {uri}]\n{text}")
+                    else:
+                        output_parts.append(text)
+                else:
+                    output_parts.append(c.get("text", str(c)))
+
+            combined = "\n".join(output_parts) if output_parts else "(no output)"
+            if is_error:
+                combined = f"[MCP error]\n{combined}"
+
+            return {"result": combined}
+
+    except asyncio.TimeoutError:
+        return {"result": f"MCP call '{name}.{tool_name}' timed out after 30s"}
+    except json.JSONDecodeError as e:
+        return {"result": f"MCP server '{name}' returned invalid JSON: {e}"}
+    except ConnectionError as e:
+        return {"result": f"MCP server '{name}' connection error: {e}"}
+    except Exception as e:
+        return {"result": f"MCP call '{name}.{tool_name}' failed: {type(e).__name__}: {e}"}
+    finally:
+        try:
+            proc.kill()
+        except Exception:
+            pass
+
+
+# ── MCP HTTP transport ─────────────────────────────────────────────
+
+
+async def _execute_http_mcp_call(
+    manifest: Dict[str, Any],
+    tool_name: str,
+    tool_args: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Execute one MCP tool call via HTTP transport."""
+    base_url = manifest.get("base_url") or manifest.get("url", "")
+    if not base_url:
+        return {"result": f"HTTP MCP server '{manifest.get('name')}' has no URL configured"}
+
+    url = base_url.rstrip("/")
+    if not url.endswith("/mcp"):
+        url = url.rstrip("/") + "/mcp"
+
+    request = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "tools/call",
+        "params": {
+            "name": tool_name,
+            "arguments": tool_args,
+        },
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            headers = {"Content-Type": "application/json"}
+            auth = manifest.get("auth", {})
+            if auth.get("type") == "api_key":
+                env_var = auth.get("env_var", "")
+                if env_var and os.environ.get(env_var):
+                    headers["Authorization"] = f"Bearer {os.environ[env_var]}"
+
+            async with session.post(
+                url,
+                json=request,
+                headers=headers,
+                timeout=aiohttp.ClientTimeout(total=30),
+            ) as resp:
+                if resp.status != 200:
+                    text = await resp.text()
+                    return {"result": f"HTTP MCP error ({resp.status}): {text[:500]}"}
+
+                response = await resp.json()
+
+                if "error" in response:
+                    err = response["error"]
+                    return {"result": f"MCP error: {err.get('message', str(err))}"}
+
+                result = response.get("result", {})
+                content_items = result.get("content", [])
+                output_parts = [c.get("text", "") for c in content_items if c.get("type") == "text"]
+                return {"result": "\n".join(output_parts) if output_parts else "(no output)"}
+
+    except aiohttp.ClientError as e:
+        return {"result": f"HTTP MCP call failed: {e}"}
+    except Exception as e:
+        return {"result": f"HTTP MCP call failed: {type(e).__name__}: {e}"}
+
+
 def list_available_topics() -> List[Dict[str, int]]:
     """Get topic frequency from the registry."""
     registry = get_cached_registry()

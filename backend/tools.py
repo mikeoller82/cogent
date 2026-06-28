@@ -20,6 +20,7 @@ import skill_forge
 import loop_engine
 import firecrawl_service as fc
 import agent_reach_tools as art
+import mcp_registry
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
@@ -262,6 +263,8 @@ TOOL_SPECS = [
 
 def tool_specs_for_prompt() -> str:
     specs = list(TOOL_SPECS)
+
+    # Skill tools (conditional on skills being installed)
     if agent_skills.has_skills():
         specs.extend([
             {
@@ -296,6 +299,12 @@ def tool_specs_for_prompt() -> str:
                 },
             },
         ])
+
+    # MCP tool (conditional on installed MCP servers)
+    mcp_spec = mcp_registry.get_mcp_tool_spec()
+    if mcp_spec:
+        specs.append(mcp_spec)
+
     return json.dumps(specs, indent=2)
 
 
@@ -309,6 +318,11 @@ async def activate_skill(name: str) -> dict:
 
 async def read_skill_resource(skill_name: str, path: str) -> dict:
     return await asyncio.to_thread(agent_skills.read_skill_resource, skill_name, path)
+
+
+async def mcp_call(server: str, tool: str, args: dict = None) -> dict:
+    """Call a tool on an installed MCP server."""
+    return await mcp_registry.execute_mcp_call(server, tool, args or {})
 
 
 async def import_skill(repo_url: str, force: bool = False) -> dict:
