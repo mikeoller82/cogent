@@ -62,6 +62,22 @@ async def test_db() -> AsyncGenerator[FakeMotorDatabase, None]:
     yield db
 
 
+# ── Clean persisted loop state between tests ────────────────────────────────
+@pytest.fixture(autouse=True)
+def _clean_loop_state():
+    """Remove persisted loop state files for test sessions.
+
+    Tests use hardcoded session IDs (session-test, session-stream-1, etc.).
+    If state from a prior run persists on disk, the next test loads stale
+    state (e.g. iteration=90) and the while loop never executes.
+    """
+    import loop_engine as le
+    if le.LOOP_STATE_DIR.exists():
+        for f in le.LOOP_STATE_DIR.glob("session-*"):
+            f.unlink(missing_ok=True)
+    yield
+
+
 # ── Loop state fixture ─────────────────────────────────────────────────────
 @pytest.fixture
 def loop_state():

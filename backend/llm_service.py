@@ -993,6 +993,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
     else:
         if not final_text:
             final_text = "(stopped after max iterations)"
-            yield {"type": "final", "content": final_text}
 
+    if final_text:
+        yield {"type": "final", "content": final_text}
     yield {"type": "status", "content": ""}

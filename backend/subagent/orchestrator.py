@@ -392,12 +392,15 @@ class Orchestrator:
                 prompt=sd.get("prompt", ""),
                 dependencies=[],  # will resolve in second pass
             ))
-            raw_deps.append(sd.get("dependencies", []))
+            raw_deps.append([str(d) for d in sd.get("dependencies", [])])
 
         # Second pass: resolve dependency refs to actual IDs
         for i, spec in enumerate(subtasks):
             resolved = []
             for dep_ref in raw_deps[i]:
+                # Defense-in-depth: ensure string before .isdigit()
+                if not isinstance(dep_ref, str):
+                    dep_ref = str(dep_ref)
                 # If it's a numeric index, resolve to that subtask's ID
                 if dep_ref.isdigit():
                     idx = int(dep_ref)
