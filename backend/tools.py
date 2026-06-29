@@ -405,7 +405,18 @@ async def get_loop_state(session_id: str = "") -> dict:
         f"Token budget: ~{state.tokens_estimated}/{state.budget_max}",
         f"Attempts: {len(state.attempts)}",
         f"Errors: {len(state.errors)}",
+        f"Searches done: {state.web_search_count}/{loop_engine.MAX_WEB_SEARCH_CALLS}",
+        f"Scrapes done: {state.web_scrape_count}/{loop_engine.MAX_WEB_SCRAPE_CALLS}",
+        f"Skills activated: {', '.join(state.activated_skills) if state.activated_skills else 'none'}",
     ]
+    if state.searched_queries:
+        lines.append(f"Searched queries: {len(state.searched_queries)}")
+        for q in state.searched_queries[-3:]:
+            lines.append(f"  - {q[:80]}")
+    if state.scraped_urls:
+        lines.append(f"Scraped URLs: {len(state.scraped_urls)}")
+        for u in state.scraped_urls[-3:]:
+            lines.append(f"  - {u[:80]}")
     if state.errors:
         for e in state.errors:
             lines.append(f"  - {e}")

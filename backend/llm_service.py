@@ -310,7 +310,12 @@ async def _call_llm(messages: List[Dict[str, str]], **kwargs) -> str:
     are exhausted or a non-retryable error occurs.
     """
     vp = get_provider()
-    content = await vp.chat(messages, **kwargs)
+    try:
+        content = await vp.chat(messages, **kwargs)
+    except RuntimeError as e:
+        if "All providers exhausted" in str(e):
+            raise RuntimeError("All LLM providers exhausted. Check API keys or wait for rate limits to reset.") from e
+        raise
     if content is None:
         raise RuntimeError("Provider returned None content")
     return content
@@ -605,6 +610,14 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                     "context length", "maximum context", "prompt is too long",
                     "context overflow", "too large", "tokens exceed", "request_too_large",
                 ])
+                is_provider_exhausted = "all llm providers exhausted" in error_msg
+
+                if is_provider_exhausted:
+                    yield {"type": "error", "content": "All LLM providers exhausted. Check API keys or wait for rate limits to reset."}
+                    final_text = "(All LLM providers exhausted. Check API keys or wait for rate limits to reset.)"
+                    le.fail_task(loop_state, "All providers exhausted")
+                    tool_loop_error = True
+                    break
 
                 if is_overflow and turn > 0:
                     # Trim context and retry once
@@ -774,7 +787,16 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
 
             # ── Web search budget ────────────────────────────────────
             if tool_name == "web_search":
+                query = args.get("query", "")
+                if query and query in loop_state.searched_queries:
+                    msg = f"Already searched for: '{query}'. Skipping duplicate search."
+                    yield {"type": "tool_result", "data": {"tool": tool_name, "summary": msg, "display": msg}}
+                    yield {"type": "reasoning", "content": f"[duplicate search prevented] {msg}"}
+                    current_user_text = f"<tool_result>\n{msg}\n</tool_result>\n\nTry a different query or use existing results."
+                    continue
                 loop_state.web_search_count += 1
+                if query:
+                    loop_state.searched_queries.append(query)
                 le.save_state(loop_state)
                 if loop_state.web_search_count > le.MAX_WEB_SEARCH_CALLS:
                     msg = web_search_budget_msg % (le.MAX_WEB_SEARCH_CALLS, le.MAX_WEB_SCRAPE_CALLS)
@@ -784,7 +806,16 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                     current_user_text = f"<tool_result>\n{msg}\n</tool_result>\n\nContinue."
                     continue
             elif tool_name == "web_scrape":
+                url = args.get("url", "")
+                if url and url in loop_state.scraped_urls:
+                    msg = f"Already scraped: {url}. Skipping duplicate scrape."
+                    yield {"type": "tool_result", "data": {"tool": tool_name, "summary": msg, "display": msg}}
+                    yield {"type": "reasoning", "content": f"[duplicate scrape prevented] {msg}"}
+                    current_user_text = f"<tool_result>\n{msg}\n</tool_result>\n\nTry a different URL or use existing results."
+                    continue
                 loop_state.web_scrape_count += 1
+                if url:
+                    loop_state.scraped_urls.append(url)
                 le.save_state(loop_state)
                 if loop_state.web_scrape_count > le.MAX_WEB_SCRAPE_CALLS:
                     msg = web_search_budget_msg % (le.MAX_WEB_SEARCH_CALLS, le.MAX_WEB_SCRAPE_CALLS)
@@ -793,6 +824,11 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                     initial_messages.append({"role": "user", "content": f"<system>{msg}</system>"})
                     current_user_text = f"<tool_result>\n{msg}\n</tool_result>\n\nContinue."
                     continue
+            elif tool_name == "activate_skill":
+                skill = args.get("name", "")
+                if skill and skill not in loop_state.activated_skills:
+                    loop_state.activated_skills.append(skill)
+                    le.save_state(loop_state)
 
             tool_result = await _execute_tool(db, workspace_id, call)
             is_success = tool_result.get("result", "").find("Error") != 0

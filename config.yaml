@@ -28,7 +28,6 @@ providers:
     model: deepseek-v4-flash-free
     api_key_env: OPENCODE_API_KEY
     priority: 1
-    daily_limit: 100
   - name: kilocode
     base_url: https://api.kilo.ai/api/gateway/chat/completions
     model: nvidia/nemotron-3-ultra-550b-a55b:free
@@ -47,8 +46,8 @@ providers:
     priority: 4
 
 agent:
-  max_turns: 50               # max tool-using turns per message
-  max_iterations: 90         # max Plan→Execute→Verify cycles
+  max_turns: 15               # max tool-using turns per message
+  max_iterations: 15         # max Plan→Execute→Verify cycles
   verbose: false             # when true, narrate every tool call
   reasoning_effort: medium    # minimal | low | medium | high
 

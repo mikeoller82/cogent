@@ -125,6 +125,8 @@ def build_system_prompt(
         "## Agent loop: GATHER → SYNTHESIZE → VERIFY\n\n"
         "Each task runs through three ordered phases.\n\n"
         "### GATHER phase\n"
+        "- MANDATORY: Before ANY tool call, call `search_skills` with keywords from the task, then `activate_skill` for each match. Skills contain API endpoints, workflows, and commands that replace manual tool chains.\n"
+        "- The system tracks your searches and skills - duplicate searches and scrapes will be blocked. Check your loop state with `get_loop_state` to see what you've already done.\n"
         "- Use tools to gather information. You may write text freely "
         "(analysis, plans, notes) without being interrupted.\n"
         "- When researching: be surgical. Start with 1-2 searches; "

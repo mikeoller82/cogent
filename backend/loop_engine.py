@@ -78,10 +78,10 @@ BACKEND_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BACKEND_DIR.parent
 LOOP_STATE_DIR = PROJECT_ROOT / "memory" / "loops"
 
-MAX_ITERATIONS = 90
+MAX_ITERATIONS = 15
 MAX_TOKENS_PER_TASK = 100_000
 WARN_TOKEN_PCT = 0.75
-CONTINUE_MAX = 15
+CONTINUE_MAX = 5
 
 PHASE_IDLE = "idle"
 PHASE_PLAN = "plan"
@@ -209,6 +209,11 @@ class LoopState:
     web_scrape_count: int = 0
     artifact_produced: bool = False
 
+    # Search/skill tracking to prevent duplicates
+    searched_queries: List[str] = field(default_factory=list)
+    scraped_urls: List[str] = field(default_factory=list)
+    activated_skills: List[str] = field(default_factory=list)
+
     last_files_changed: int = 0
     last_errors_detected: bool = False
     last_output_length: int = 0
@@ -316,6 +321,9 @@ def begin_task(state: LoopState, task: str, criteria: Optional[List[str]] = None
     state.web_search_count = 0
     state.web_scrape_count = 0
     state.artifact_produced = False
+    state.searched_queries = []
+    state.scraped_urls = []
+    state.activated_skills = []
     state.last_files_changed = 0
     state.last_errors_detected = False
     state.last_output_length = 0
