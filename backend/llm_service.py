@@ -560,10 +560,16 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
             yield {"type": "error", "content": f"Orchestrator error: {exc}"}
 
         if _orchestrated:
-            yield {"type": "reasoning", "content": (
-                "[orchestrator completed — advancing to synthesis]"
-            )}
-            # Skip directly to synthesis phase with orchestrated results
+            # Orchestrator already synthesized a complete answer — deliver it directly
+            final_output = research_findings[-1].replace("## Subagent Orchestration Results\n\n", "") if research_findings else ""
+            if final_output.strip():
+                yield {"type": "reasoning", "content": "[orchestrator completed — delivering synthesized result]"}
+                yield {"type": "final", "content": final_output.strip()}
+                le.complete_task(loop_state, final_output[:200])
+                yield {"type": "loop", "data": {"phase": le.PHASE_DONE}}
+                return
+            # Fallback: if somehow empty, continue to main loop synthesis
+            yield {"type": "reasoning", "content": "[orchestrator produced no output — falling back to main agent synthesis]"}
             sub_phase = "synthesize"
             current_user_text = _build_synthesis_prompt(
                 user_text, research_findings,

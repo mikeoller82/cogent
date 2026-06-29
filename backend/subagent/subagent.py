@@ -36,12 +36,14 @@ def _register_tools() -> None:
     """Populate the tool dispatch table lazily.
 
     Mirrors ``llm_service._execute_tool`` so subagents have the same
-    tool set (excluding db-dependent memory & schedule tools).
+    tool set (excluding db-dependent memory & schedule tools; uses
+    file-based memory instead).
     """
     if _TOOL_DISPATCH:
         return
     import tools as tool_impls
     import agent_reach_tools as art
+    import cogent_memory as cm
 
     _TOOL_DISPATCH.update({
         # ── Web / content ────────────────────────────────────────────
@@ -70,6 +72,12 @@ def _register_tools() -> None:
             args.get("repo_url", ""),
             force=bool(args.get("force", False)),
         ),
+
+        # ── File-based Memory (like main agent's cogent_memory) ───────
+        "save_memory": lambda args: {"result": cm.remember(args.get("key", ""), args.get("value", "")) or "saved"},
+        "recall_memory": lambda args: {"result": cm.recall(args.get("key", "")) or "not found"},
+        "recall_all_memory": lambda args: {"result": cm.recall_all()},
+        "forget_memory": lambda args: {"result": str(cm.forget(args.get("key", "")))},
 
         # ── Loop state ───────────────────────────────────────────────
         "get_loop_state": lambda args: tool_impls.get_loop_state(
@@ -104,12 +112,10 @@ def _register_tools() -> None:
             quality=int(args.get("quality", 80)),
         ),
         "capture_screenshot": lambda args: tool_impls.capture_screenshot(
-            output=args.get("output", ""), delay=int(args.get("delay", 1)),
-        ),
+            output=args.get("output", ""), delay=int(args.get("delay", 1))),
         "file_write": lambda args: tool_impls.file_write(
             args.get("path", ""), args.get("content", ""),
-            mode=args.get("mode", "w"),
-        ),
+            mode=args.get("mode", "w")),
         "glob_files": lambda args: tool_impls.glob_files(
             args.get("pattern", ""), path=args.get("path", "")),
         "grep_files": lambda args: tool_impls.grep_files(

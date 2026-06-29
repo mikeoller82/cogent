@@ -21,20 +21,27 @@ ROLE_TOOLS: Dict[SubagentRole, List[str]] = {
         "rss_read", "v2ex_hot_topics", "v2ex_topic_detail",
         "bilibili_search",
         "search_skills", "activate_skill", "read_skill_resource",
+        "import_skill",
         "mcp_call",
+        "save_memory", "recall_memory", "recall_all_memory", "forget_memory",
     ],
     SubagentRole.CODER: [
         "glob_files", "grep_files", "run_shell", "file_write",
         "process_media", "capture_screenshot", "generate_webapp",
         "search_skills", "activate_skill", "read_skill_resource",
+        "import_skill",
         "mcp_call",
+        "save_memory", "recall_memory", "recall_all_memory", "forget_memory",
     ],
     SubagentRole.VALIDATOR: [],  # Pure LLM evaluation, no tools
     SubagentRole.EXPLORER: [
         "glob_files", "grep_files", "run_shell",
         "search_skills", "activate_skill", "read_skill_resource",
+        "save_memory", "recall_memory", "recall_all_memory", "forget_memory",
     ],
-    SubagentRole.SYNTHESIZER: [],  # Aggregation only
+    SubagentRole.SYNTHESIZER: [
+        "save_memory", "recall_memory", "recall_all_memory", "forget_memory",
+    ],  # Aggregation only, but may need memory
 }
 
 # ── Role descriptions for system prompt ────────────────────────────────────
