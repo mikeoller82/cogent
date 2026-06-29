@@ -4,7 +4,7 @@ const Logo = ({ className = "" }) => {
   return (
     <a href="/" className={`flex items-center ${className}`}>
       <img
-        src="/cogentlogo.png"
+        src="/cogentfinal.png"
         alt="Cogent"
         className="h-[36px] w-auto rounded-md"
       />

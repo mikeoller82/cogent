@@ -27,14 +27,7 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
     <aside className="w-[280px] flex-shrink-0 h-screen flex flex-col border-r border-[#f5ede0]/8 bg-[#16110c] glass-heavy depth-1 z-10">
       <div className="px-4 py-4 border-b border-[#f5ede0]/8">
         <Link to="/" className="flex items-center gap-2 mb-4">
-          <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
-            <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2.2" strokeLinecap="round" fill="none" />
-            <circle cx="16" cy="16" r="2.4" fill="#b5a8f5" />
-          </svg>
-          <span className="font-mono text-[15px] text-[#f5ede0] lowercase">
-            co<span className="text-[#b5a8f5]">gent</span>
-          </span>
+          <img src="/cogentfinal.png" alt="Cogent" className="h-[36px] w-auto rounded-md" />
         </Link>
         <button
           onClick={onNew}
@@ -94,9 +87,6 @@ export default function Sidebar({ sessions, loading, onNew, onDelete }) {
         })}
       </nav>
 
-      <div className="px-4 py-3 border-t border-[#f5ede0]/8 text-[10px] font-mono text-[#6e6760]">
-        Powered by Kilo Gateway
-      </div>
     </aside>
   );
 }

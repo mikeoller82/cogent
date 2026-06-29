@@ -14,12 +14,8 @@ function ChatHome() {
   return (
     <div className="flex-1 flex items-center justify-center text-center px-8">
       <div className="max-w-md">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-[#1d1813] border border-[#b5a8f5]/30 flex items-center justify-center mb-5">
-          <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
-            <path d="M4 16 Q 16 4, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-            <path d="M4 16 Q 16 28, 28 16" stroke="#b5a8f5" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-            <circle cx="16" cy="16" r="2.4" fill="#b5a8f5" />
-          </svg>
+        <div className="w-16 h-16 mx-auto mb-5">
+          <img src="/cogentfinal.png" alt="Cogent" className="w-full h-full object-contain rounded-2xl" />
         </div>
         <h2 className="text-[28px] tracking-[-0.02em] text-[#f5ede0]">
           What should Cogent do for you?
