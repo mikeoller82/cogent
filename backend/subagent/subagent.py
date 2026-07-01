@@ -313,7 +313,10 @@ class Subagent:
 
                     # ── Emit tool result event ──────────────────────────
                     result_text = tool_result.get("result", "")
-                    summary = result_text[:300] if result_text else "(no output)"
+                    if isinstance(result_text, dict):
+                        summary = ", ".join(f"{k}={str(v)[:50]}" for k, v in list(result_text.items())[:5])[:300]
+                    else:
+                        summary = str(result_text)[:300] if result_text else "(no output)"
                     _status(f"{name} complete", {"tool": name, "summary": summary})
 
                     # ── Feed result back ───────────────────────────────
