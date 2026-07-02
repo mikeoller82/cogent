@@ -31,7 +31,7 @@ from reportlab.platypus import (
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
 from reportlab.lib import colors
 
-ARTIFACTS_DIR = Path("artifacts")
+from cogent_constants import ARTIFACTS_DIR
 ARTIFACTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------------- Theme ----------------
@@ -211,7 +211,7 @@ TOOL_SPECS = [
         "name": "file_write",
         "description": "Write text content to a file. Creates directories as needed. Use for saving code, configs, markdown, data files. Will overwrite existing files.",
         "args": {
-            "path": "string - relative path from cogent root (e.g. 'output/report.md', 'data/config.json')",
+            "path": "string - relative path from home directory (e.g. 'Desktop/report.md', 'Projects/config.json')",
             "content": "string - text content to write to the file",
             "mode": "string, optional - 'w' to overwrite (default) or 'a' to append",
         },
@@ -845,8 +845,7 @@ async def process_media(action: str, input: str, output: str = "",
         return {"result": f"Input not found: {input}"}
 
     # Default output in artifacts/
-    arts_dir = PPath(__file__).parent / "artifacts"
-    arts_dir.mkdir(exist_ok=True)
+    ARTIFACTS_DIR.mkdir(exist_ok=True)
     if not output:
         stem = inp.stem
         # Derive extension from action
@@ -859,7 +858,7 @@ async def process_media(action: str, input: str, output: str = "",
             "gif": ".gif",
         }
         out_ext = ext_map.get(action, inp.suffix or ".mp4")
-        output = str(arts_dir / f"{stem}_{action}{out_ext}")
+        output = str(ARTIFACTS_DIR / f"{stem}_{action}{out_ext}")
 
     try:
         if action == "info":
@@ -909,7 +908,7 @@ async def process_media(action: str, input: str, output: str = "",
         elif action == "gif":
             if not start:
                 start = "00:00:00"
-            palette = arts_dir / f"{inp.stem}_palette.png"
+            palette = ARTIFACTS_DIR / f"{inp.stem}_palette.png"
             # Generate palette
             cmd1 = ["ffmpeg", "-y", "-i", str(inp), "-ss", start]
             if duration:
@@ -968,11 +967,10 @@ async def process_media(action: str, input: str, output: str = "",
 async def capture_screenshot(output: str = "", delay: int = 1) -> dict:
     """Capture a screenshot using scrot or ImageMagick import."""
     import subprocess as sp
-    arts_dir = Path(__file__).parent / "artifacts"
-    arts_dir.mkdir(exist_ok=True)
+    ARTIFACTS_DIR.mkdir(exist_ok=True)
     if not output:
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output = str(arts_dir / f"screenshot_{ts}.png")
+        output = str(ARTIFACTS_DIR / f"screenshot_{ts}.png")
 
     # Prefer scrot, fallback to ImageMagick import, then xdg-desktop-portal
     cmds = [
@@ -1003,14 +1001,19 @@ async def capture_screenshot(output: str = "", delay: int = 1) -> dict:
 
 async def file_write(path: str, content: str, mode: str = "w") -> dict:
     """Write text content to a file. Creates parent directories as needed."""
-    root = Path(__file__).parent.parent   # cogent root
-    target = root / path
+    home = Path.home()
+    target = home / path
 
-    # Security: prevent path traversal outside project root
+    # Security: block writes to sensitive system directories
+    blocked = [Path("/etc"), Path("/proc"), Path("/sys"), Path("/dev"),
+               Path("/boot"), Path("/sbin"), Path("/bin"), Path("/usr")]
     try:
-        target.resolve().relative_to(root.resolve())
-    except ValueError:
-        return {"result": f"Access denied: path must be inside {root}"}
+        resolved = target.resolve()
+        for b in blocked:
+            if resolved == b or str(resolved).startswith(str(b) + "/"):
+                return {"result": f"Access denied: cannot write to {b}"}
+    except Exception:
+        pass
 
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -1018,7 +1021,7 @@ async def file_write(path: str, content: str, mode: str = "w") -> dict:
             f.write(content)
         size = target.stat().st_size
         return {
-            "result": f"Written {size} bytes to {path}",
+            "result": f"Written {size} bytes to {path} ({target})",
             "artifact": {"id": f"file_{target.stem}", "type": "file",
                          "title": target.name, "path": str(target)},
         }

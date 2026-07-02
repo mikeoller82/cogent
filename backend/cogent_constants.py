@@ -33,7 +33,7 @@ HOOKS_DIR: Path = BACKEND_DIR / "hooks"
 SESSIONS_DIR: Path = MEMORY_DIR / "sessions"
 LOOPS_DIR: Path = MEMORY_DIR / "loops"
 MEMORIES_DIR: Path = MEMORY_DIR / "memories"
-ARTIFACTS_DIR: Path = BACKEND_DIR / "artifacts"
+ARTIFACTS_DIR: Path = Path.home() / "Desktop" / "CogentArtifacts"
 UPLOADS_DIR: Path = BACKEND_DIR / "uploads"
 CONFIG_PATH: Path = PROJECT_ROOT / "config.yaml"
 
