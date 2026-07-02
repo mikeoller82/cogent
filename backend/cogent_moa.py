@@ -131,8 +131,10 @@ def _post_to_provider(
     try:
         msg = data["choices"][0]["message"]
     except (KeyError, IndexError, TypeError):
+        body_preview = resp.text[:500]
         raise RuntimeError(
-            f"Provider {entry.get('name')} response missing choices[0].message"
+            f"Provider {entry.get('name')} response missing choices[0].message — "
+            f"body: {body_preview}"
         )
 
     content = msg.get("content") or ""

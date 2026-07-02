@@ -30,12 +30,12 @@ providers:
     priority: 1
   - name: kilocode
     base_url: https://api.kilo.ai/api/gateway/chat/completions
-    model: nvidia/nemotron-3-ultra-550b-a55b:free
+    model: inclusionai/ling-2.6-1t:free
     api_key_env: KILOCODE_API_KEY
     priority: 2
   - name: openrouter
     base_url: https://openrouter.ai/api/v1/chat/completions
-    model: openrouter/owl-alpha
+    model: nvidia/nemotron-3-super-120b-a12b:free
     api_key_env: OPENROUTER_API_KEY
     priority: 3
   - name: ollama-cloud
@@ -110,7 +110,7 @@ moa:
     - opencode-zen
     - kilocode
     - openrouter
-  aggregator_provider: kilocode  # provider used for final synthesis
+  aggregator_provider: opencode-zen  # provider used for final synthesis
   layers: 2                      # 2 = 1 fan-out + 1 aggregation pass
   max_tokens: 16000
   temperature: 0.7

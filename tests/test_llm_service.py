@@ -12,10 +12,6 @@ dotenv_stub = types.ModuleType("dotenv")
 dotenv_stub.load_dotenv = lambda: None
 sys.modules.setdefault("dotenv", dotenv_stub)
 
-tools_stub = types.ModuleType("tools")
-tools_stub.tool_specs_for_prompt = lambda: "[]"
-sys.modules.setdefault("tools", tools_stub)
-
 import llm_service
 import cogent_providers
 
@@ -88,7 +84,7 @@ def test_missing_kilocode_api_key_yields_useful_error(monkeypatch):
     monkeypatch.delenv("OPENCODE_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("OLLAMA_API_KEY", raising=False)
-    with pytest.raises(RuntimeError, match="All providers exhausted"):
+    with pytest.raises(RuntimeError, match="All LLM providers exhausted"):
         llm_service._post_kilocode_chat([])
 
 
@@ -100,7 +96,7 @@ def test_bad_kilocode_response_shape_yields_error(monkeypatch):
         return FakeResponse(data={"choices": []})
 
     monkeypatch.setattr(cogent_providers.requests, "post", fake_post)
-    with pytest.raises(RuntimeError, match=r"All providers exhausted"):
+    with pytest.raises(RuntimeError, match=r"All LLM providers exhausted"):
         llm_service._post_kilocode_chat([])
 
 
