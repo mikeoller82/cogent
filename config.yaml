@@ -30,7 +30,7 @@ providers:
     priority: 1
   - name: kilocode
     base_url: https://api.kilo.ai/api/gateway/chat/completions
-    model: inclusionai/ling-2.6-1t:free
+    model: kilo-auto/free
     api_key_env: KILOCODE_API_KEY
     priority: 2
   - name: openrouter
