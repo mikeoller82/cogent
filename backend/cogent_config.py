@@ -276,6 +276,31 @@ class CogentConfig:
     def log_dir(self) -> str:
         return self._data.get("logging", {}).get("dir", "")
 
+    # Mixture-of-Agents
+    @property
+    def moa_enabled(self) -> bool:
+        return bool(self._data.get("moa", {}).get("enabled", False))
+
+    @property
+    def moa_reference_providers(self) -> list:
+        return list(self._data.get("moa", {}).get("reference_providers", []))
+
+    @property
+    def moa_aggregator_provider(self) -> str:
+        return str(self._data.get("moa", {}).get("aggregator_provider", "kilocode"))
+
+    @property
+    def moa_layers(self) -> int:
+        return int(self._data.get("moa", {}).get("layers", 2))
+
+    @property
+    def moa_max_tokens(self) -> int:
+        return int(self._data.get("moa", {}).get("max_tokens", 16000))
+
+    @property
+    def moa_temperature(self) -> float:
+        return float(self._data.get("moa", {}).get("temperature", 0.7))
+
     # Raw access
     def raw(self) -> Dict[str, Any]:
         return dict(self._data)

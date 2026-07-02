@@ -101,6 +101,20 @@ headroom:
   compression_level: auto  # off | auto | aggressive
   output_shaper: false     # also trim output tokens (proxy mode)
 
+# Mixture-of-Agents (MoA) — fan out to multiple models in parallel,
+# then aggregate into a single higher-quality response.
+# Only applies to the main agent output loop (not eval/reflection).
+moa:
+  enabled: true
+  reference_providers:      # provider names to fan out to (by name)
+    - opencode-zen
+    - kilocode
+    - openrouter
+  aggregator_provider: kilocode  # provider used for final synthesis
+  layers: 2                      # 2 = 1 fan-out + 1 aggregation pass
+  max_tokens: 16000
+  temperature: 0.7
+
 mcp:
   enabled: true
   servers_dir: optional-mcps/

@@ -28,6 +28,7 @@ from subagent.orchestrator import Orchestrator
 from cogent_logging import set_session_context
 from cogent_memory import memory_summary
 from cogent_providers import get_provider
+import cogent_moa
 from tools_registry import init_default_registry
 
 # Initialize the central tool registry at startup
@@ -306,9 +307,22 @@ def _parse_tool_call(text: str):
 async def _call_llm(messages: List[Dict[str, str]], **kwargs) -> str:
     """Send a chat-completion request via the VirtualProvider fallback chain (async).
 
+    When MoA is enabled in config, routes through the Mixture-of-Agents
+    pipeline instead — fanning out to multiple models and aggregating.
+    Pass ``use_moa=False`` to bypass MoA (used for eval/reflection).
+
     Returns the response text.  Raises RuntimeError when all providers
     are exhausted or a non-retryable error occurs.
     """
+    use_moa = kwargs.pop("use_moa", True)
+    cfg = get_config()
+
+    if use_moa and cfg.moa_enabled:
+        try:
+            return await cogent_moa.moa_chat(messages)
+        except Exception as e:
+            logger.warning("MoA failed, falling back to single model: %s", e)
+
     vp = get_provider()
     try:
         content = await vp.chat(messages, **kwargs)
@@ -321,8 +335,8 @@ async def _call_llm(messages: List[Dict[str, str]], **kwargs) -> str:
     return content
 
 
-async def _send_kilocode_chat(messages: List[Dict[str, str]]) -> str:
-    return await _call_llm(messages)
+async def _send_kilocode_chat(messages: List[Dict[str, str]], use_moa: bool = True) -> str:
+    return await _call_llm(messages, use_moa=use_moa)
 
 
 def _collect_provider_events() -> List[str]:
@@ -981,7 +995,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                 llm_complete_fn=lambda p: _send_kilocode_chat([
                     {"role": "system", "content": "You are a strict quality evaluator."},
                     {"role": "user", "content": p},
-                ]),
+                ], use_moa=False),
                 recent_observations=loop_state.observations,
             )
 
@@ -1037,7 +1051,7 @@ async def run_turn_stream(db, session_id: str, workspace_id: str, user_text: str
                     llm_complete_fn=lambda p: _send_kilocode_chat([
                         {"role": "system", "content": "You are a reflective analyst."},
                         {"role": "user", "content": p},
-                    ]),
+                    ], use_moa=False),
                 )
                 if lesson:
                     le.store_reflective_lesson(loop_state, lesson)
