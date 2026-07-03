@@ -323,6 +323,7 @@ class Orchestrator:
         Researchers and coders need more iterations (tool calls).
         Validators and synthesizers need fewer (pure LLM).
         Long prompts scale the token budget proportionally.
+        Synthesizers running MoA need extended timeout (multi-layer aggregation).
         """
         # Role-based iteration scaling
         role_iterations = {
@@ -339,9 +340,19 @@ class Orchestrator:
             SubagentRole.VALIDATOR: 32000,    # pure LLM
             SubagentRole.SYNTHESIZER: 48000,  # needs to read all inputs
         }
+        # Role-based timeout scaling (seconds)
+        # Synthesizer runs MoA: 2 layers × 3 refs × ~60s + aggregation ~120s = ~360s minimum
+        role_timeouts = {
+            SubagentRole.RESEARCHER: 300,   # web searches can be slow
+            SubagentRole.CODER: 300,         # file ops + tests
+            SubagentRole.EXPLORER: 180,      # read-only, faster
+            SubagentRole.VALIDATOR: 180,     # pure LLM analysis
+            SubagentRole.SYNTHESIZER: 600,   # MoA multi-layer aggregation
+        }
 
         spec.max_iterations = role_iterations.get(spec.role, 30)
         spec.max_tokens = role_tokens.get(spec.role, 64000)
+        spec.timeout_seconds = role_timeouts.get(spec.role, 180)
 
         # Scale token budget by prompt length (long prompts = more context needed)
         prompt_len = len(spec.prompt)
@@ -351,8 +362,8 @@ class Orchestrator:
             spec.max_tokens = int(spec.max_tokens * (1 + extra_pct))
 
         logger.debug(
-            "Scaled budget for %s: %d iterations, %d tokens",
-            spec.role.value, spec.max_iterations, spec.max_tokens,
+            "Scaled budget for %s: %d iterations, %d tokens, %ds timeout",
+            spec.role.value, spec.max_iterations, spec.max_tokens, spec.timeout_seconds,
         )
 
     @staticmethod
