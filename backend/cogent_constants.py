@@ -33,8 +33,16 @@ HOOKS_DIR: Path = BACKEND_DIR / "hooks"
 SESSIONS_DIR: Path = MEMORY_DIR / "sessions"
 LOOPS_DIR: Path = MEMORY_DIR / "loops"
 MEMORIES_DIR: Path = MEMORY_DIR / "memories"
-ARTIFACTS_DIR: Path = Path.home() / "Desktop" / "CogentArtifacts"
-UPLOADS_DIR: Path = BACKEND_DIR / "uploads"
+# Allow operators to redirect generated artifacts/uploads out of the user's
+# home directory — critical for container/CI deployments where ~/Desktop
+# doesn't exist and would otherwise fail writes silently.
+_DEFAULT_ARTIFACTS_DIR = Path.home() / "Desktop" / "CogentArtifacts"
+ARTIFACTS_DIR: Path = Path(
+    os.environ.get("ARTIFACTS_DIR") or str(_DEFAULT_ARTIFACTS_DIR)
+)
+UPLOADS_DIR: Path = Path(
+    os.environ.get("UPLOADS_DIR") or str(BACKEND_DIR / "uploads")
+)
 CONFIG_PATH: Path = PROJECT_ROOT / "config.yaml"
 
 
@@ -47,6 +55,8 @@ ENV_FIRECRAWL_API_KEY = "FIRECRAWL_API_KEY"
 ENV_FIRECRAWL_BASE_URL = "FIRECRAWL_BASE_URL"
 ENV_LOG_LEVEL = "COGENT_LOG_LEVEL"
 ENV_LOG_DIR = "COGENT_LOG_DIR"
+ENV_AUTH_SECRET = "COGENT_AUTH_SECRET"
+ENV_ALLOWED_ORIGINS = "ALLOWED_ORIGINS"
 
 
 # ── Defaults ──────────────────────────────────────────────────────────────

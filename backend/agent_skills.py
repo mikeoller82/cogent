@@ -138,7 +138,7 @@ def discover_skills() -> Dict[str, Skill]:
     for root in _skill_roots():
         if not root.exists() or not root.is_dir():
             continue
-        for skill_file in sorted(root.glob("*/SKILL.md")):
+        for skill_file in sorted(root.rglob("SKILL.md")):
             skill = _load_skill(skill_file)
             if skill and skill.name not in skills:
                 skills[skill.name] = skill

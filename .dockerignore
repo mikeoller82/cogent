@@ -1,0 +1,54 @@
+# ── Cogent .dockerignore ──────────────────────────────────────────────────
+# Keeps `COPY backend/ ./backend/` and `COPY frontend/` from packing caches,
+# runtime artefacts, dev tooling, or secrets into the image.
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+backend/.venv/
+backend/venv/
+
+# Backend runtime artefacts (bind-mounted at runtime)
+backend/logs/
+backend/uploads/
+backend/artifacts/
+backend/.env
+
+# Frontend build/output
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.next/
+
+# State, skills, secrets
+memory/
+.cogent/skills/
+optional-skills/
+.git/
+.gitignore
+.env
+.env.local
+.env.*.local
+
+# Tests / docs scratch
+tests/__pycache__/
+.coverage
+htmlcov/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store

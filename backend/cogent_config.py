@@ -23,6 +23,7 @@ from cogent_constants import (
     DEFAULT_LOG_LEVEL,
     DEFAULT_MODEL,
     DEFAULT_WORKSPACE,
+    ENV_AUTH_SECRET,
     ENV_DB_NAME,
     ENV_FIRECRAWL_API_KEY,
     ENV_FIRECRAWL_BASE_URL,
@@ -132,6 +133,9 @@ _ENV_MAP: Dict[str, str] = {
     ENV_DB_NAME: "database.db_name",
     ENV_FIRECRAWL_API_KEY: "web.firecrawl_api_key",
     ENV_FIRECRAWL_BASE_URL: "web.firecrawl_base_url",
+    # Map COGENT_AUTH_SECRET -> auth.secret_key so cogent_auth_v2 picks it
+    # up via the existing CogentConfig.auth_secret_key property.
+    ENV_AUTH_SECRET: "auth.secret_key",
 }
 
 
@@ -227,6 +231,19 @@ class CogentConfig:
     @property
     def default_workspace(self) -> str:
         return self._data.get("workspace", {}).get("default", DEFAULT_WORKSPACE)
+
+    # Auth
+    @property
+    def auth_secret_key(self) -> str:
+        """JWT signing secret. Wired from config.yaml ``auth.secret_key`` and
+        from the :data:`ENV_AUTH_SECRET` env var via ``_ENV_MAP``.
+
+        Returns an empty string when neither source is set, so callers can
+        distinguish "explicitly empty" from "missing". cogent_auth_v2 falls
+        back to a development-default string in that case (with a loud
+        startup warning, see :func:`server.startup`).
+        """
+        return self._data.get("auth", {}).get("secret_key", "")
 
     # Web
     @property

@@ -1,0 +1,60 @@
+# ── Cogent docker-compose ──────────────────────────────────────────────────
+# Usage:
+#   cp .env.example .env && edit KILOCODE_API_KEY etc.
+#   docker compose up -d --build
+#
+# Persistence:
+#   - mongo_data: named volume for MongoDB
+#   - ./memory:   bind-mounted into backend so files survive container restarts
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      ARTIFACTS_DIR: /app/artifacts
+    ports:
+      - "8000:8000"
+    volumes:
+      # cogent_constants computes PROJECT_ROOT as parent.parent of
+      # backend/cogent_constants.py, so MEMORY_DIR = /app/memory.
+      - ./memory:/app/memory
+      - ./artifacts:/app/artifacts
+      - ./uploads:/app/backend/uploads
+      - ./.cogent:/app/.cogent
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        REACT_APP_BACKEND_URL: ${REACT_APP_BACKEND_URL:-http://localhost:8000}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo_data:

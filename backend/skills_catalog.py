@@ -1,13 +1,13 @@
 """Skills Catalog — discovers and catalogs available agent skills.
 
-Uses agent_skills.discover_skills() as the single source of truth for
-installed skills.  Also discovers optional skills organized by category
-for the catalog browsing UI.
+Discovers skills from .cogent/skills/ via cogent's own agent_skills module,
+plus optional skills from optional-skills/ for the catalog browsing UI.
 """
 from __future__ import annotations
 import json
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -17,15 +17,19 @@ OPTIONAL_SKILLS_DIR = Path(__file__).parent.parent / "optional-skills"
 
 
 def discover_skills() -> List[Dict[str, Any]]:
-    """Discover all installed skills via agent_skills (single source of truth)."""
+    """Discover all installed skills from .cogent/skills/."""
+    # Ensure we import cogent's own backend/agent_skills.py, not the pip package
+    _backend = str(Path(__file__).resolve().parent)
+    if _backend not in sys.path:
+        sys.path.insert(0, _backend)
     try:
-        import agent_skills
+        import agent_skills  # noqa: F811 — cogent's own module
         skills = agent_skills.discover_skills()
         return [
             {"name": s.name, "path": str(s.location), "directory": str(s.directory)}
             for s in skills.values()
         ]
-    except ImportError:
+    except (ImportError, AttributeError):
         logger.warning("agent_skills not available — returning empty skill list")
         return []
 

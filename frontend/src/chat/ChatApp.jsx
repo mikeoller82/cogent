@@ -8,6 +8,7 @@ import SkillsPanel from "./SkillsPanel";
 import MCPPanel from "./MCPPanel";
 import SettingsPanel from "./SettingsPanel";
 import { listSessions, createSession, deleteSession } from "./apiClient";
+import AuthGate from "./AuthGate";
 import { toast } from "sonner";
 
 function ChatHome() {
@@ -34,7 +35,7 @@ function ChatRoute({ sessions, refresh }) {
   return <ChatThread key={id} sessionId={id} sessions={sessions} refreshSessions={refresh} />;
 }
 
-export default function ChatApp() {
+function ChatShell({ currentUser, onLogout }) {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -87,6 +88,8 @@ export default function ChatApp() {
         loading={loading}
         onNew={handleNew}
         onDelete={handleDelete}
+        currentUser={currentUser}
+        onLogout={onLogout}
       />
       <main className="flex-1 flex flex-col min-w-0">
         <Routes>
@@ -100,5 +103,13 @@ export default function ChatApp() {
         </Routes>
       </main>
     </div>
+  );
+}
+
+export default function ChatApp() {
+  return (
+    <AuthGate>
+      <ChatShell />
+    </AuthGate>
   );
 }

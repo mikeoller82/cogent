@@ -1,4 +1,5 @@
 import axios from "axios";
+import { attachAuthInterceptors, clearSession } from "./auth";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API = `${BACKEND_URL}/api`;
@@ -8,6 +9,34 @@ export const api = axios.create({
   baseURL: API,
   timeout: 180000,
 });
+
+// Attach Authorization header + silent refresh-on-401.
+// On hard auth failure (refresh fails or no refresh token), clear the session
+// so AuthGate shows the login screen.
+attachAuthInterceptors(api, {
+  onAuthFailed: () => {
+    clearSession();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("cogent:auth-failed"));
+    }
+  },
+});
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+export const registerUser = (email, password, name) =>
+  api.post("/auth/register", { email, password, name }).then((r) => r.data);
+
+export const loginUser = (email, password) =>
+  api.post("/auth/login", { email, password }).then((r) => r.data);
+
+export const fetchMe = () => api.get("/auth/me").then((r) => r.data);
+
+export const logout = () => {
+  clearSession();
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("cogent:auth-failed"));
+  }
+};
 
 export const listSessions = () => api.get("/sessions").then((r) => r.data);
 export const createSession = (title) =>
