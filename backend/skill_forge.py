@@ -25,7 +25,19 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from pydantic import BaseModel, Field
+
 logger = logging.getLogger("cogent.skill_forge")
+
+
+class ImportSkillBody(BaseModel):
+    repo_url: str = Field(..., description="GitHub repository URL or owner/repo shorthand")
+    force: bool = Field(default=False, description="Overwrite existing skills")
+
+
+class ForgeSkillBody(BaseModel):
+    repo_url: str = Field(..., description="GitHub repository URL or owner/repo shorthand")
+    force: bool = Field(default=False, description="Overwrite existing skill")
 
 # ── Paths ────────────────────────────────────────────────────────────────
 BACKEND_DIR = Path(__file__).resolve().parent
